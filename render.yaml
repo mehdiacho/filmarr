@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: filmarr-api
+    runtime: docker
+    dockerContext: apps/api
+    dockerfilePath: apps/api/Dockerfile
+    envVars:
+      - key: DATABASE_URL
+        sync: false          # you paste the Supabase URL in Render dashboard
+      - key: TMDB_API_KEY
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true  # Render auto-generates a secure random value
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "10080"
+      - key: FRONTEND_URL
+        sync: false          # paste your Vercel URL here, e.g. https://filmarr.vercel.app

@@ -1,0 +1,39 @@
+# deps
+node_modules/
+.pnpm-store/
+
+# build output
+dist/
+build/
+
+# env — never commit secrets
+.env
+.env.local
+.env.*.local
+apps/api/.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# editor
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# logs
+*.log
+npm-debug.log*
+
+# alembic
+apps/api/alembic/versions/*.py
+!apps/api/alembic/versions/.gitkeep
