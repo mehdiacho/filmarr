@@ -3,11 +3,22 @@
  * Vercel's rewrite (prod) both work transparently.
  */
 import type { Movie, FeedType, SwipeDirection } from '@/types'
+import { useAuthStore } from '@/stores/authStore'
 
 const BASE = '/api'
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, init)
+  const token = useAuthStore.getState().token
+  const headers = new Headers(init?.headers)
+  if (token) headers.set('Authorization', `Bearer ${token}`)
+
+  const res = await fetch(`${BASE}${path}`, { ...init, headers })
+
+  if (res.status === 401) {
+    // Token missing/expired — drop it so the app redirects to /auth
+    useAuthStore.getState().logout()
+    throw new Error('Unauthorized')
+  }
   if (!res.ok) throw new Error(`API ${res.status}: ${path}`)
   return res.json() as Promise<T>
 }

@@ -8,22 +8,21 @@ from fastapi.middleware.cors import CORSMiddleware
 
 # Register models with SQLAlchemy metadata (needed by Alembic)
 import app.auth.models  # noqa: F401
-import app.movies.models  # noqa: F401
 import app.library.models  # noqa: F401
-
+import app.movies.models  # noqa: F401
 from app.auth.router import router as auth_router
-from app.movies.router import router as movies_router
-from app.library.router import router as library_router
-from app.recommender.router import router as recommend_router
 from app.letterboxd.router import router as letterboxd_router
+from app.library.router import router as library_router
+from app.movies.router import router as movies_router
+from app.recommender.router import router as recommend_router
 
 logger = logging.getLogger(__name__)
 
 
 async def _startup_ingest() -> None:
     """Seed the default user and populate movies table on first boot."""
-    from app.db.session import AsyncSessionLocal
     from app.auth.service import ensure_default_user
+    from app.db.session import AsyncSessionLocal
     from app.movies.service import ingest_popular, movie_count
     async with AsyncSessionLocal() as db:
         try:

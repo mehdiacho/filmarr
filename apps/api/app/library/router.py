@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.auth.deps import get_current_user
+from app.auth.models import User
 from app.db.session import get_db
 from app.library import schemas
 from app.library.models import Interaction
@@ -15,7 +17,7 @@ router = APIRouter(prefix="/library", tags=["library"])
 async def log_interaction(
     body: schemas.InteractRequest,
     db: AsyncSession = Depends(get_db),
-    # TODO: inject current user from JWT
+    current_user: User = Depends(get_current_user),
 ):
     movie = await db.execute(select(Movie).where(Movie.tmdb_id == body.tmdb_id))
     movie_row = movie.scalar_one_or_none()
@@ -23,7 +25,7 @@ async def log_interaction(
         raise HTTPException(status_code=404, detail="Movie not in local cache yet")
 
     interaction = Interaction(
-        user_id=1,  # placeholder until JWT auth is wired
+        user_id=current_user.id,
         movie_id=movie_row.id,
         feed_type=body.feed_type,
         direction=body.direction,
@@ -38,11 +40,14 @@ async def log_interaction(
 
 
 @router.get("/watched", response_model=list[MovieOut])
-async def watched(db: AsyncSession = Depends(get_db)):
+async def watched(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     result = await db.execute(
         select(Movie)
         .join(Interaction, Interaction.movie_id == Movie.id)
-        .where(Interaction.user_id == 1, Interaction.direction == "right")
+        .where(Interaction.user_id == current_user.id, Interaction.direction == "right")
         .order_by(Interaction.interacted_at.desc())
     )
     return result.scalars().all()

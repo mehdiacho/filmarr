@@ -1,4 +1,5 @@
-import { Star } from 'lucide-react'
+import { Star, LogOut } from 'lucide-react'
+import { useAuthStore } from '@/stores/authStore'
 
 // Placeholder — will pull from user's interactions once API is wired
 const MOCK_WATCHED = [
@@ -8,11 +9,25 @@ const MOCK_WATCHED = [
 ]
 
 export function LibraryPage() {
+  const { user, logout } = useAuthStore()
+
   return (
     <div className="h-full overflow-y-auto pb-20 safe-top">
-      <div className="px-4 pt-12 pb-4">
-        <h1 className="text-white text-xl font-semibold tracking-tight">Library</h1>
-        <p className="text-white/40 text-sm mt-0.5">{MOCK_WATCHED.length} films logged</p>
+      <div className="px-4 pt-12 pb-4 flex items-start justify-between">
+        <div>
+          <h1 className="text-white text-xl font-semibold tracking-tight">Library</h1>
+          <p className="text-white/40 text-sm mt-0.5">
+            {user?.email ?? `${MOCK_WATCHED.length} films logged`}
+          </p>
+        </div>
+        <button
+          onClick={logout}
+          aria-label="Sign out"
+          className="flex items-center gap-1.5 text-white/40 text-xs px-3 py-2 rounded-lg active:scale-95 transition-transform"
+        >
+          <LogOut size={16} />
+          Sign out
+        </button>
       </div>
 
       <div className="grid grid-cols-3 gap-1 px-1">
