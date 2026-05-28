@@ -2,7 +2,7 @@
  * Thin API client. All paths are relative so Vite's proxy (dev) and
  * Vercel's rewrite (prod) both work transparently.
  */
-import type { Movie, FeedType, SwipeDirection } from '@/types'
+import type { Movie, FeedType, SwipeDirection, WatchedEntry } from '@/types'
 import { useAuthStore } from '@/stores/authStore'
 
 const BASE = '/api'
@@ -68,6 +68,40 @@ export const api = {
   libraryBuild: async (limit = 20): Promise<Movie[]> => {
     const dtos = await request<MovieDTO[]>(`/recommend/build?limit=${limit}`)
     return dtos.map(dtoToMovie)
+  },
+
+  watched: async (): Promise<WatchedEntry[]> => {
+    const dtos = await request<
+      { movie: MovieDTO; rating: number | null; review: string | null; watched_at: string }[]
+    >('/library/watched')
+    return dtos.map((d) => ({
+      movie: dtoToMovie(d.movie),
+      rating: d.rating,
+      review: d.review,
+      watchedAt: d.watched_at,
+    }))
+  },
+
+  /** Fetches the Letterboxd CSV (auth-gated) and triggers a browser download. */
+  exportCsv: async (): Promise<void> => {
+    const token = useAuthStore.getState().token
+    const res = await fetch(`${BASE}/letterboxd/export`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+    if (res.status === 401) {
+      useAuthStore.getState().logout()
+      throw new Error('Unauthorized')
+    }
+    if (!res.ok) throw new Error(`Export failed: ${res.status}`)
+    const blob = await res.blob()
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'filmarr-letterboxd.csv'
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(url)
   },
 
   interact: (body: {

@@ -39,15 +39,27 @@ async def log_interaction(
     return interaction
 
 
-@router.get("/watched", response_model=list[MovieOut])
+@router.get("/watched", response_model=list[schemas.WatchedEntry])
 async def watched(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    # DISTINCT ON keeps the most recent right-swipe per movie (dedupes rewatches).
     result = await db.execute(
-        select(Movie)
+        select(Movie, Interaction)
         .join(Interaction, Interaction.movie_id == Movie.id)
         .where(Interaction.user_id == current_user.id, Interaction.direction == "right")
-        .order_by(Interaction.interacted_at.desc())
+        .order_by(Interaction.movie_id, Interaction.interacted_at.desc())
+        .distinct(Interaction.movie_id)
     )
-    return result.scalars().all()
+    entries = [
+        schemas.WatchedEntry(
+            movie=MovieOut.model_validate(movie),
+            rating=interaction.rating,
+            review=interaction.review,
+            watched_at=interaction.interacted_at,
+        )
+        for movie, interaction in result.all()
+    ]
+    entries.sort(key=lambda e: e.watched_at, reverse=True)
+    return entries

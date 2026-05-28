@@ -1,65 +1,154 @@
 """
 Phase 1 content-based recommender.
 
-Cold start: returns popular movies filtered by user's preferred genres.
-Warm:       ranks candidates by overlap with genres/keywords of
-            movies the user has swiped right on.
+Two distinct scoring functions over the same movie pool:
+
+* discovery  — "stuff you'd like": ranks unseen movies by how well their
+  genres match a taste profile built from your swipes (right swipes pull a
+  genre up, left swipes push it down), tie-broken by quality. Hearted-but-
+  not-watched items are drip-fed back in. Cold start falls back to popularity.
+
+* library-build — "stuff you've probably already seen": popularity-primary,
+  boosted toward the genres you like and the era you tend to watch, so it
+  surfaces mainstream titles you likely have an opinion on.
+
+Note: TMDB keywords/cast/crew aren't ingested yet (empty arrays), so genres +
+quality + era are the available content signals. The interface is stable, so a
+later pgvector/embedding upgrade slots in behind the same scoring hooks.
 """
-from sqlalchemy import select, func
+from collections import defaultdict
+
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.library.models import Interaction
 from app.movies.models import Movie
 from app.recommender.base import BaseRecommender
 
+# How strongly each swipe direction shifts the weight of a movie's genres.
+_DIRECTION_WEIGHT: dict[str, float] = {
+    "right": 1.0,   # watched / interested
+    "up": 0.6,      # currently watching
+    "down": 0.4,    # on the fence / plan to watch
+    "left": -0.6,   # not interested
+}
+
+_CANDIDATE_CAP = 300
+_DRIP_MAX = 2  # hearted-but-not-right items re-surfaced per discovery fetch
+
+
+class _Profile:
+    def __init__(self) -> None:
+        self.genre_weight: dict[str, float] = defaultdict(float)
+        self.swiped: set[int] = set()
+        self.hearted_not_right: set[int] = set()
+        self._years: list[int] = []
+
+    @property
+    def has_signal(self) -> bool:
+        return any(w > 0 for w in self.genre_weight.values())
+
+    @property
+    def liked_genres(self) -> set[str]:
+        return {g for g, w in self.genre_weight.items() if w > 0}
+
+    @property
+    def mean_year(self) -> float | None:
+        return sum(self._years) / len(self._years) if self._years else None
+
 
 class ContentBasedRecommender(BaseRecommender):
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def _swiped_ids(self, user_id: int) -> set[int]:
-        result = await self.db.execute(
-            select(Interaction.movie_id).where(Interaction.user_id == user_id)
-        )
-        return set(result.scalars().all())
+    # ── data access ──────────────────────────────────────────────────────────
 
-    async def _liked_genres(self, user_id: int) -> list[str]:
-        """Genres from movies the user swiped right on."""
+    async def _build_profile(self, user_id: int) -> _Profile:
         result = await self.db.execute(
-            select(Movie.genres)
-            .join(Interaction, Interaction.movie_id == Movie.id)
-            .where(Interaction.user_id == user_id, Interaction.direction == "right")
+            select(
+                Interaction.movie_id,
+                Interaction.direction,
+                Interaction.hearted,
+                Movie.genres,
+                Movie.year,
+            )
+            .join(Movie, Movie.id == Interaction.movie_id)
+            .where(Interaction.user_id == user_id)
         )
-        genre_lists: list[list[str]] = result.scalars().all()
-        counts: dict[str, int] = {}
-        for gl in genre_lists:
-            for g in gl:
-                counts[g] = counts.get(g, 0) + 1
-        return sorted(counts, key=lambda g: counts[g], reverse=True)
+        profile = _Profile()
+        for movie_id, direction, hearted, genres, year in result.all():
+            profile.swiped.add(movie_id)
+            weight = _DIRECTION_WEIGHT.get(direction, 0.0)
+            for genre in genres or []:
+                profile.genre_weight[genre] += weight
+            if direction == "right" and year:
+                profile._years.append(year)
+            if hearted and direction != "right":
+                profile.hearted_not_right.add(movie_id)
+        return profile
+
+    async def _candidate_pool(self, cap: int = _CANDIDATE_CAP) -> list[Movie]:
+        result = await self.db.execute(
+            select(Movie).order_by(Movie.popularity.desc()).limit(cap)
+        )
+        return list(result.scalars().all())
+
+    async def _movies_by_ids(self, ids: list[int]) -> list[Movie]:
+        if not ids:
+            return []
+        result = await self.db.execute(select(Movie).where(Movie.id.in_(ids)))
+        return list(result.scalars().all())
+
+    # ── discovery: "stuff you'd like" ────────────────────────────────────────
 
     async def recommend(self, user_id: int, limit: int = 20) -> list[Movie]:
-        swiped = await self._swiped_ids(user_id)
-        genres = await self._liked_genres(user_id)
+        profile = await self._build_profile(user_id)
+        candidates = await self._candidate_pool()
 
-        query = select(Movie).order_by(Movie.popularity.desc())
-        if genres:
-            # Filter: at least one liked genre present in movie's genres array
-            # (JSON contains check — works with SQLAlchemy JSON)
-            pass  # TODO: refine with pgvector cosine similarity once embeddings exist
+        if not profile.has_signal:
+            # Cold start — no useful taste signal yet, lead with popularity.
+            ranked = sorted(candidates, key=lambda m: m.popularity or 0, reverse=True)
+        else:
+            def score(m: Movie) -> float:
+                genre_score = sum(
+                    profile.genre_weight.get(g, 0.0) for g in (m.genres or [])
+                )
+                quality = 0.15 * (m.vote_average or 0.0)
+                return genre_score + quality
 
-        result = await self.db.execute(query.limit(limit * 3))
-        candidates = result.scalars().all()
-        unseen = [m for m in candidates if m.id not in swiped]
-        return unseen[:limit]
+            ranked = sorted(candidates, key=score, reverse=True)
 
-    async def library_build_suggestions(self, user_id: int, limit: int = 20) -> list[Movie]:
-        """
-        Returns high-popularity films the user likely knows but hasn't logged.
-        Filters by their era/genre signals derived from liked movies.
-        """
-        swiped = await self._swiped_ids(user_id)
-        result = await self.db.execute(
-            select(Movie).order_by(Movie.popularity.desc(), Movie.vote_average.desc()).limit(limit * 3)
-        )
-        all_movies = result.scalars().all()
-        return [m for m in all_movies if m.id not in swiped][:limit]
+        result = [m for m in ranked if m.id not in profile.swiped][:limit]
+
+        # Drip-feed hearted-but-not-watched items back into discovery.
+        if profile.hearted_not_right:
+            drip_ids_in = list(profile.hearted_not_right)[:_DRIP_MAX]
+            drip = await self._movies_by_ids(drip_ids_in)
+            drip_ids = {m.id for m in drip}
+            result = drip + [m for m in result if m.id not in drip_ids]
+            result = result[:limit]
+
+        return result
+
+    # ── library-build: "stuff you've probably seen" ──────────────────────────
+
+    async def library_build_suggestions(
+        self, user_id: int, limit: int = 20
+    ) -> list[Movie]:
+        profile = await self._build_profile(user_id)
+        candidates = await self._candidate_pool()
+        liked = profile.liked_genres
+        mean_year = profile.mean_year
+
+        def score(m: Movie) -> float:
+            s = m.popularity or 0.0  # popularity-primary: titles you likely know
+            if liked and set(m.genres or []) & liked:
+                s *= 1.5  # nudge toward genres they engage with
+            if mean_year and m.year:
+                # closer to the era they tend to watch => more likely already seen
+                proximity = max(0.0, 1.0 - abs(m.year - mean_year) / 30.0)
+                s *= 1.0 + 0.5 * proximity
+            return s
+
+        ranked = sorted(candidates, key=score, reverse=True)
+        return [m for m in ranked if m.id not in profile.swiped][:limit]

@@ -12,6 +12,13 @@ export interface Movie {
   mediaType: 'movie' | 'tv'
 }
 
+export interface WatchedEntry {
+  movie: Movie
+  rating: number | null
+  review: string | null
+  watchedAt: string
+}
+
 export type FeedType = 'discovery' | 'library_build'
 
 export type SwipeDirection = 'left' | 'right' | 'up' | 'down'
