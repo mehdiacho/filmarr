@@ -19,4 +19,5 @@ COPY . .
 EXPOSE 8000
 
 # Render injects $PORT; fall back to 8000 locally
-CMD ["sh", "-c", "uv run uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# Run migrations then start the server
+CMD ["sh", "-c", "uv run alembic upgrade head && uv run uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

@@ -34,6 +34,5 @@ Thumbs.db
 *.log
 npm-debug.log*
 
-# alembic
-apps/api/alembic/versions/*.py
-!apps/api/alembic/versions/.gitkeep
+# alembic versions are intentionally committed (needed for deployment)
+
