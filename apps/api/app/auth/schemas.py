@@ -16,8 +16,13 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
 
 
+class OnboardingRequest(BaseModel):
+    genres: list[str]
+
+
 class UserOut(BaseModel):
     id: int
     email: str
+    preferences: dict = {}
 
     model_config = {"from_attributes": True}

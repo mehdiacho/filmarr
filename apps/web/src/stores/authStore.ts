@@ -4,6 +4,7 @@ import { persist } from 'zustand/middleware'
 export interface AuthUser {
   id: number
   email: string
+  preferences: { genres?: string[]; onboarded?: boolean }
 }
 
 interface AuthState {
@@ -14,6 +15,7 @@ interface AuthState {
 
   login: (email: string, password: string) => Promise<boolean>
   register: (email: string, password: string) => Promise<boolean>
+  completeOnboarding: (genres: string[]) => Promise<boolean>
   logout: () => void
   clearError: () => void
 }
@@ -61,7 +63,7 @@ async function authenticate(
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       token: null,
       user: null,
       loading: false,
@@ -69,6 +71,30 @@ export const useAuthStore = create<AuthState>()(
 
       login: (email, password) => authenticate('/login', email, password, set),
       register: (email, password) => authenticate('/register', email, password, set),
+
+      completeOnboarding: async (genres) => {
+        const token = get().token
+        if (!token) return false
+        set({ loading: true, error: null })
+        try {
+          const res = await fetch('/api/auth/onboarding', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ genres }),
+          })
+          if (!res.ok) throw new Error('Could not save preferences')
+          const user = (await res.json()) as AuthUser
+          set({ user, loading: false })
+          return true
+        } catch (e) {
+          set({ error: (e as Error).message, loading: false })
+          return false
+        }
+      },
+
       logout: () => set({ token: null, user: null, error: null }),
       clearError: () => set({ error: null }),
     }),

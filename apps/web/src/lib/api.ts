@@ -70,6 +70,8 @@ export const api = {
     return dtos.map(dtoToMovie)
   },
 
+  genres: (): Promise<string[]> => request<string[]>('/movies/genres'),
+
   watched: async (): Promise<WatchedEntry[]> => {
     const dtos = await request<
       { movie: MovieDTO; rating: number | null; review: string | null; watched_at: string }[]

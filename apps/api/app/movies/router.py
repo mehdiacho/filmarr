@@ -12,8 +12,8 @@ router = APIRouter(prefix="/movies", tags=["movies"])
 
 @router.get("/search", response_model=list[MovieOut])
 async def search(q: str = Query(min_length=1), db: AsyncSession = Depends(get_db)):
-    results = await tmdb.search_movies(q)
-    # TODO: upsert results into DB cache and return
+    # TODO: upsert TMDB search results into the DB cache and return them
+    await tmdb.search_movies(q)
     return []
 
 
@@ -23,6 +23,19 @@ async def popular(db: AsyncSession = Depends(get_db)):
         select(Movie).order_by(Movie.popularity.desc()).limit(50)
     )
     return result.scalars().all()
+
+
+@router.get("/genres", response_model=list[str])
+async def genres(db: AsyncSession = Depends(get_db)):
+    """Distinct genres present in the local catalogue, most common first.
+    Used by the onboarding interest picker so it only offers genres we
+    actually have content for."""
+    result = await db.execute(select(Movie.genres))
+    counts: dict[str, int] = {}
+    for (genre_list,) in result.all():
+        for g in genre_list or []:
+            counts[g] = counts.get(g, 0) + 1
+    return sorted(counts, key=lambda g: counts[g], reverse=True)
 
 
 @router.get("/{tmdb_id}", response_model=MovieOut)

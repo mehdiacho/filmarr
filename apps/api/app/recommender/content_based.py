@@ -21,6 +21,7 @@ from collections import defaultdict
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.auth.models import User
 from app.library.models import Interaction
 from app.movies.models import Movie
 from app.recommender.base import BaseRecommender
@@ -99,6 +100,14 @@ class ContentBasedRecommender(BaseRecommender):
         result = await self.db.execute(select(Movie).where(Movie.id.in_(ids)))
         return list(result.scalars().all())
 
+    async def _onboarding_genres(self, user_id: int) -> set[str]:
+        """Genres the user picked during onboarding — used to warm up the
+        discovery feed before they've swiped on anything."""
+        user = await self.db.get(User, user_id)
+        if user and isinstance(user.preferences, dict):
+            return set(user.preferences.get("genres") or [])
+        return set()
+
     # ── discovery: "stuff you'd like" ────────────────────────────────────────
 
     async def recommend(self, user_id: int, limit: int = 20) -> list[Movie]:
@@ -106,8 +115,19 @@ class ContentBasedRecommender(BaseRecommender):
         candidates = await self._candidate_pool()
 
         if not profile.has_signal:
-            # Cold start — no useful taste signal yet, lead with popularity.
-            ranked = sorted(candidates, key=lambda m: m.popularity or 0, reverse=True)
+            # Cold start — no swipe signal yet. Use onboarding genre picks if
+            # present (popularity within chosen genres first), else popularity.
+            onboarding = await self._onboarding_genres(user_id)
+            if onboarding:
+                def cold(m: Movie) -> tuple[int, float]:
+                    match = len(set(m.genres or []) & onboarding)
+                    return (match, m.popularity or 0.0)
+
+                ranked = sorted(candidates, key=cold, reverse=True)
+            else:
+                ranked = sorted(
+                    candidates, key=lambda m: m.popularity or 0, reverse=True
+                )
         else:
             def score(m: Movie) -> float:
                 genre_score = sum(
