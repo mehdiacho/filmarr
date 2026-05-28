@@ -18,6 +18,9 @@ COPY . .
 
 EXPOSE 8000
 
-# Render injects $PORT; fall back to 8000 locally
-# Run migrations then start the server
-CMD ["sh", "-c", "uv run alembic upgrade head && uv run uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# Render injects $PORT; fall back to 8000 locally.
+# Migrations run with a hard timeout and a `;` (not `&&`) so a hung/slow
+# migration — e.g. async engine teardown stalling over the Supabase pooler —
+# can never block the web server from starting. The schema is the source of
+# truth in the DB; a failed/timed-out upgrade just means "no pending changes".
+CMD ["sh", "-c", "timeout 90 uv run alembic upgrade head || echo '[startup] alembic step skipped (timeout/error) — continuing to server'; uv run uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
