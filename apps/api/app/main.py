@@ -14,6 +14,7 @@ from app.auth.router import router as auth_router
 from app.letterboxd.router import router as letterboxd_router
 from app.library.router import router as library_router
 from app.movies.router import router as movies_router
+from app.profile.router import router as profile_router
 from app.recommender.router import router as recommend_router
 
 logger = logging.getLogger(__name__)
@@ -67,6 +68,7 @@ app.include_router(movies_router,    prefix="/api")
 app.include_router(library_router,   prefix="/api")
 app.include_router(recommend_router, prefix="/api")
 app.include_router(letterboxd_router, prefix="/api")
+app.include_router(profile_router,   prefix="/api")
 
 
 @app.get("/health")

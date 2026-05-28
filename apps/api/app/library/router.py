@@ -39,6 +39,29 @@ async def log_interaction(
     return interaction
 
 
+@router.get("/diary", response_model=list[schemas.WatchedEntry])
+async def diary(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Chronological log of every watch (not deduped), newest first."""
+    result = await db.execute(
+        select(Movie, Interaction)
+        .join(Interaction, Interaction.movie_id == Movie.id)
+        .where(Interaction.user_id == current_user.id, Interaction.direction == "right")
+        .order_by(Interaction.interacted_at.desc())
+    )
+    return [
+        schemas.WatchedEntry(
+            movie=MovieOut.model_validate(movie),
+            rating=interaction.rating,
+            review=interaction.review,
+            watched_at=interaction.interacted_at,
+        )
+        for movie, interaction in result.all()
+    ]
+
+
 @router.get("/watched", response_model=list[schemas.WatchedEntry])
 async def watched(
     db: AsyncSession = Depends(get_db),

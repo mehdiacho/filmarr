@@ -9,6 +9,9 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 10080  # 1 week
     tmdb_api_key: str = ""
     tmdb_base_url: str = "https://api.themoviedb.org/3"
+    # Supabase Storage (avatar uploads). Service key set via Render env.
+    supabase_url: str = "https://itpfwheuycbnegvszqjf.supabase.co"
+    supabase_service_key: str = ""
 
 
 settings = Settings()
