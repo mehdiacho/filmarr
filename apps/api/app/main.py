@@ -1,3 +1,8 @@
+import asyncio
+import logging
+import os
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -12,17 +17,41 @@ from app.library.router import router as library_router
 from app.recommender.router import router as recommend_router
 from app.letterboxd.router import router as letterboxd_router
 
-app = FastAPI(title="filmarr API", version="0.1.0")
+logger = logging.getLogger(__name__)
 
-import os
+
+async def _startup_ingest() -> None:
+    """Populate movies table on first boot if it's empty."""
+    from app.db.session import AsyncSessionLocal
+    from app.movies.service import ingest_popular, movie_count
+    async with AsyncSessionLocal() as db:
+        try:
+            count = await movie_count(db)
+            if count == 0:
+                logger.info("Movies table empty — starting TMDB ingestion...")
+                n = await ingest_popular(db, pages=5)
+                logger.info("Ingested %d movies from TMDB", n)
+            else:
+                logger.info("Movies table has %d rows — skipping ingestion", count)
+        except Exception:
+            logger.exception("Startup ingestion failed (non-fatal)")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):  # type: ignore[type-arg]
+    asyncio.create_task(_startup_ingest())
+    yield
+
+
+app = FastAPI(title="filmarr API", version="0.1.0", lifespan=lifespan)
 
 _origins = [
     "http://localhost:5173",
     "http://localhost:4173",
+    "https://filmarr.vercel.app",
 ]
-# Allow the production frontend — set FRONTEND_URL env var on Render
-if _frontend := os.getenv("FRONTEND_URL"):
-    _origins.append(_frontend)
+if extra := os.getenv("FRONTEND_URL"):
+    _origins.append(extra)
 
 app.add_middleware(
     CORSMiddleware,
