@@ -3,7 +3,7 @@ from typing import Any
 
 from jose import jwt
 from passlib.context import CryptContext
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth.models import User
@@ -37,3 +37,27 @@ async def create_user(db: AsyncSession, email: str, password: str) -> User:
     await db.commit()
     await db.refresh(user)
     return user
+
+
+async def ensure_default_user(db: AsyncSession) -> None:
+    """Seed the placeholder single user (id=1) used by the MVP until JWT auth
+    is wired. Interactions/library routes hardcode user_id=1, so this row must
+    exist or inserts fail on the foreign key. Idempotent."""
+    existing = await db.get(User, 1)
+    if existing is not None:
+        return
+    await db.execute(
+        text(
+            "INSERT INTO users (id, email, password_hash, preferences) "
+            "VALUES (1, :email, :pw, '{}') ON CONFLICT (id) DO NOTHING"
+        ),
+        {"email": "placeholder@filmarr.local", "pw": "!placeholder-no-login"},
+    )
+    # Keep the serial sequence ahead of the manually-inserted id
+    await db.execute(
+        text(
+            "SELECT setval(pg_get_serial_sequence('users','id'), "
+            "GREATEST((SELECT max(id) FROM users), 1))"
+        )
+    )
+    await db.commit()

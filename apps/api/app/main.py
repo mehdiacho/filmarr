@@ -21,11 +21,13 @@ logger = logging.getLogger(__name__)
 
 
 async def _startup_ingest() -> None:
-    """Populate movies table on first boot if it's empty."""
+    """Seed the default user and populate movies table on first boot."""
     from app.db.session import AsyncSessionLocal
+    from app.auth.service import ensure_default_user
     from app.movies.service import ingest_popular, movie_count
     async with AsyncSessionLocal() as db:
         try:
+            await ensure_default_user(db)
             count = await movie_count(db)
             if count == 0:
                 logger.info("Movies table empty — starting TMDB ingestion...")
