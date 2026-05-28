@@ -55,3 +55,16 @@
     @apply w-full px-4 py-3 rounded-xl bg-zinc-800 border border-white/10 text-white placeholder:text-white/30 outline-none focus:border-white/30 transition-colors;
   }
 }
+
+/* Accessibility: honour reduced-motion for CSS transitions/animations.
+   (Swipe gestures still work; only non-essential motion is dampened.) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

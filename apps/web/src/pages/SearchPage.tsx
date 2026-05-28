@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Search as SearchIcon, Star } from 'lucide-react'
 import { api } from '@/lib/api'
 import type { Movie } from '@/types'
@@ -8,7 +8,9 @@ const IMG = 'https://image.tmdb.org/t/p'
 
 export function SearchPage() {
   const navigate = useNavigate()
-  const [q, setQ] = useState('')
+  const [searchParams] = useSearchParams()
+  // Seed from ?q= so the PWA share-target (OS share sheet -> filmarr) works.
+  const [q, setQ] = useState(() => searchParams.get('q') ?? '')
   const [results, setResults] = useState<Movie[]>([])
   const [loading, setLoading] = useState(false)
   const [searched, setSearched] = useState(false)
