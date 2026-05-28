@@ -8,6 +8,10 @@ import type {
   SwipeDirection,
   WatchedEntry,
   MovieDetail,
+  MyProfile,
+  PublicProfile,
+  ProfileStats,
+  ProfileUpdate,
 } from '@/types'
 import { useAuthStore } from '@/stores/authStore'
 
@@ -107,6 +111,63 @@ function dtoToMovieDetail(d: MovieDetailDTO): MovieDetail {
   }
 }
 
+// ── Profile mapping ───────────────────────────────────────────────────────────
+
+interface StatsDTO {
+  films_watched: number
+  reviews: number
+  avg_rating: number | null
+  rating_histogram: Record<string, number>
+  top_genres: { name: string; count: number }[]
+  top_decades: { decade: number; count: number }[]
+}
+interface PublicProfileDTO {
+  id: number
+  username: string | null
+  display_name: string | null
+  bio: string | null
+  avatar_url: string | null
+  joined: string
+  favorites: MovieDTO[]
+  stats: StatsDTO
+}
+interface MyProfileDTO extends PublicProfileDTO {
+  email: string
+  date_of_birth: string | null
+  preferences: { genres?: string[]; onboarded?: boolean }
+}
+
+function mapStats(s: StatsDTO): ProfileStats {
+  return {
+    filmsWatched: s.films_watched,
+    reviews: s.reviews,
+    avgRating: s.avg_rating,
+    ratingHistogram: s.rating_histogram,
+    topGenres: s.top_genres,
+    topDecades: s.top_decades,
+  }
+}
+function mapPublicProfile(d: PublicProfileDTO): PublicProfile {
+  return {
+    id: d.id,
+    username: d.username,
+    displayName: d.display_name,
+    bio: d.bio,
+    avatarUrl: d.avatar_url,
+    joined: d.joined,
+    favorites: d.favorites.map(dtoToMovie),
+    stats: mapStats(d.stats),
+  }
+}
+function mapMyProfile(d: MyProfileDTO): MyProfile {
+  return {
+    ...mapPublicProfile(d),
+    email: d.email,
+    dateOfBirth: d.date_of_birth,
+    preferences: d.preferences,
+  }
+}
+
 // ── API calls ─────────────────────────────────────────────────────────────────
 
 export const api = {
@@ -142,6 +203,48 @@ export const api = {
       review: d.review,
       watchedAt: d.watched_at,
     }))
+  },
+
+  diary: async (): Promise<WatchedEntry[]> => {
+    const dtos = await request<
+      { movie: MovieDTO; rating: number | null; review: string | null; watched_at: string }[]
+    >('/library/diary')
+    return dtos.map((d) => ({
+      movie: dtoToMovie(d.movie),
+      rating: d.rating,
+      review: d.review,
+      watchedAt: d.watched_at,
+    }))
+  },
+
+  myProfile: async (): Promise<MyProfile> =>
+    mapMyProfile(await request<MyProfileDTO>('/profile/me')),
+
+  profileByUsername: async (username: string): Promise<PublicProfile> =>
+    mapPublicProfile(await request<PublicProfileDTO>(`/profile/u/${username}`)),
+
+  updateProfile: async (patch: ProfileUpdate): Promise<MyProfile> => {
+    const body: Record<string, unknown> = {}
+    if (patch.username !== undefined) body.username = patch.username
+    if (patch.displayName !== undefined) body.display_name = patch.displayName
+    if (patch.bio !== undefined) body.bio = patch.bio
+    if (patch.dateOfBirth !== undefined) body.date_of_birth = patch.dateOfBirth
+    if (patch.favoriteFilmIds !== undefined) body.favorite_film_ids = patch.favoriteFilmIds
+    return mapMyProfile(
+      await request<MyProfileDTO>('/profile/me', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      }),
+    )
+  },
+
+  uploadAvatar: async (file: File): Promise<MyProfile> => {
+    const form = new FormData()
+    form.append('file', file)
+    return mapMyProfile(
+      await request<MyProfileDTO>('/profile/me/avatar', { method: 'POST', body: form }),
+    )
   },
 
   /** Fetches the Letterboxd CSV (auth-gated) and triggers a browser download. */

@@ -62,6 +62,50 @@ export interface MovieDetail extends Movie {
   viewer: ViewerStatus
 }
 
+export interface GenreCount {
+  name: string
+  count: number
+}
+
+export interface DecadeCount {
+  decade: number
+  count: number
+}
+
+export interface ProfileStats {
+  filmsWatched: number
+  reviews: number
+  avgRating: number | null
+  ratingHistogram: Record<string, number>
+  topGenres: GenreCount[]
+  topDecades: DecadeCount[]
+}
+
+export interface PublicProfile {
+  id: number
+  username: string | null
+  displayName: string | null
+  bio: string | null
+  avatarUrl: string | null
+  joined: string
+  favorites: Movie[]
+  stats: ProfileStats
+}
+
+export interface MyProfile extends PublicProfile {
+  email: string
+  dateOfBirth: string | null
+  preferences: { genres?: string[]; onboarded?: boolean }
+}
+
+export interface ProfileUpdate {
+  username?: string
+  displayName?: string
+  bio?: string
+  dateOfBirth?: string | null
+  favoriteFilmIds?: number[]
+}
+
 export type FeedType = 'discovery' | 'library_build'
 
 export type SwipeDirection = 'left' | 'right' | 'up' | 'down'

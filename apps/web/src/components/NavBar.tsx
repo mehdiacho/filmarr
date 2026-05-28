@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { Compass, Library, BookMarked, Search } from 'lucide-react'
+import { Compass, Library, BookMarked, Search, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const LINKS = [
@@ -7,6 +7,7 @@ const LINKS = [
   { to: '/build',    icon: BookMarked, label: 'Build'    },
   { to: '/search',   icon: Search,     label: 'Search'   },
   { to: '/library',  icon: Library,    label: 'Library'  },
+  { to: '/profile',  icon: User,       label: 'Profile'  },
 ]
 
 export function NavBar() {
@@ -18,10 +19,13 @@ export function NavBar() {
             key={to}
             to={to}
             className={({ isActive }) =>
-              cn('flex flex-col items-center gap-0.5 px-6 py-2', isActive ? 'text-white' : 'text-white/30')
+              cn(
+                'flex flex-col items-center gap-0.5 flex-1 py-2',
+                isActive ? 'text-white' : 'text-white/30',
+              )
             }
           >
-            <Icon size={22} />
+            <Icon size={21} />
             <span className="text-[10px] tracking-wide">{label}</span>
           </NavLink>
         ))}

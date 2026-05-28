@@ -7,6 +7,9 @@ import { LibraryBuildPage } from '@/pages/LibraryBuildPage'
 import { LibraryPage } from '@/pages/LibraryPage'
 import { SearchPage } from '@/pages/SearchPage'
 import { FilmDetailPage } from '@/pages/FilmDetailPage'
+import { ProfilePage } from '@/pages/ProfilePage'
+import { SettingsPage } from '@/pages/SettingsPage'
+import { DiaryPage } from '@/pages/DiaryPage'
 import { NavBar } from '@/components/NavBar'
 import { useAuthStore } from '@/stores/authStore'
 
@@ -38,6 +41,10 @@ function AppShell() {
         <Route path="/search"       element={<SearchPage />} />
         <Route path="/library"      element={<LibraryPage />} />
         <Route path="/film/:tmdbId" element={<FilmDetailPage />} />
+        <Route path="/profile"      element={<ProfilePage />} />
+        <Route path="/u/:username"  element={<ProfilePage />} />
+        <Route path="/settings"     element={<SettingsPage />} />
+        <Route path="/diary"        element={<DiaryPage />} />
         <Route path="*"             element={<Navigate to="/discover" replace />} />
       </Routes>
       <NavBar />
