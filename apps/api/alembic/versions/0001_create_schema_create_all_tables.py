@@ -52,7 +52,7 @@ def upgrade() -> None:
             popularity FLOAT NOT NULL DEFAULT 0,
             runtime INTEGER,
             keywords JSON NOT NULL DEFAULT '[]',
-            cast JSON NOT NULL DEFAULT '[]',
+            "cast" JSON NOT NULL DEFAULT '[]',
             crew JSON NOT NULL DEFAULT '[]',
             cached_at TIMESTAMP NOT NULL DEFAULT now()
         )
