@@ -135,9 +135,15 @@ export function SwipeCard({
   const stackY      = stackIndex * 14
   const stackScale  = 1 - stackIndex * 0.04
 
+  // @use-gesture spreads onDrag (native DragEvent) which conflicts with
+  // framer-motion's onDrag (PointerEvent + PanInfo). Strip it — we don't need it.
+  const { onDrag: _nativeDrag, ...gestureHandlers } = isTop
+    ? (bind() as { onDrag?: unknown } & Record<string, unknown>)
+    : ({} as { onDrag?: unknown } & Record<string, unknown>)
+
   return (
     <motion.div
-      {...(isTop ? bind() : {})}
+      {...gestureHandlers}
       animate={isTop ? controls : { y: stackY, scale: stackScale }}
       initial={{ y: stackY, scale: stackScale }}
       style={isTop ? { x, y, rotate, zIndex: 30 - stackIndex } : { zIndex: 30 - stackIndex }}
