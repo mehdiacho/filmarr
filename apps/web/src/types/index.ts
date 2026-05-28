@@ -19,6 +19,49 @@ export interface WatchedEntry {
   watchedAt: string
 }
 
+export interface CastMember {
+  name: string
+  character: string | null
+  profilePath: string | null
+}
+
+export interface CrewMember {
+  name: string
+  job: string | null
+  profilePath: string | null
+}
+
+export interface SimilarMovie {
+  tmdbId: number
+  title: string
+  year: number | null
+  posterPath: string | null
+}
+
+export interface WatchProvider {
+  name: string
+  logoPath: string | null
+}
+
+export type ViewerFilmStatus = 'watched' | 'watching' | 'plan' | 'not_interested'
+
+export interface ViewerStatus {
+  status: ViewerFilmStatus | null
+  rating: number | null
+  review: string | null
+  hearted: boolean
+}
+
+export interface MovieDetail extends Movie {
+  director: string | null
+  cast: CastMember[]
+  crew: CrewMember[]
+  trailerKey: string | null
+  similar: SimilarMovie[]
+  watchProviders: WatchProvider[]
+  viewer: ViewerStatus
+}
+
 export type FeedType = 'discovery' | 'library_build'
 
 export type SwipeDirection = 'left' | 'right' | 'up' | 'down'

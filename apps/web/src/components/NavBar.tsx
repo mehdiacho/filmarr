@@ -1,11 +1,12 @@
 import { NavLink } from 'react-router-dom'
-import { Compass, Library, BookMarked } from 'lucide-react'
+import { Compass, Library, BookMarked, Search } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const LINKS = [
-  { to: '/discover', icon: Compass,   label: 'Discover' },
+  { to: '/discover', icon: Compass,    label: 'Discover' },
   { to: '/build',    icon: BookMarked, label: 'Build'    },
-  { to: '/library',  icon: Library,   label: 'Library'  },
+  { to: '/search',   icon: Search,     label: 'Search'   },
+  { to: '/library',  icon: Library,    label: 'Library'  },
 ]
 
 export function NavBar() {

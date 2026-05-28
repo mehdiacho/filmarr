@@ -1,6 +1,8 @@
 """TMDB API client. Uses Bearer token (Read Access Token) auth."""
 from typing import Any
+
 import httpx
+
 from app.config import settings
 
 
@@ -30,7 +32,10 @@ async def fetch_trending() -> list[dict[str, Any]]:
 
 
 async def fetch_movie_detail(tmdb_id: int) -> dict[str, Any]:
-    return await _get(f"/movie/{tmdb_id}", {"append_to_response": "keywords,credits"})
+    return await _get(
+        f"/movie/{tmdb_id}",
+        {"append_to_response": "keywords,credits,videos,similar,watch/providers"},
+    )
 
 
 async def search_movies(query: str, page: int = 1) -> list[dict[str, Any]]:

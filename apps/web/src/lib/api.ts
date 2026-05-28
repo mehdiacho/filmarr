@@ -2,7 +2,13 @@
  * Thin API client. All paths are relative so Vite's proxy (dev) and
  * Vercel's rewrite (prod) both work transparently.
  */
-import type { Movie, FeedType, SwipeDirection, WatchedEntry } from '@/types'
+import type {
+  Movie,
+  FeedType,
+  SwipeDirection,
+  WatchedEntry,
+  MovieDetail,
+} from '@/types'
 import { useAuthStore } from '@/stores/authStore'
 
 const BASE = '/api'
@@ -57,12 +63,66 @@ export function dtoToMovie(dto: MovieDTO): Movie {
   }
 }
 
+interface MovieDetailDTO extends MovieDTO {
+  director: string | null
+  cast: { name: string; character: string | null; profile_path: string | null }[]
+  crew: { name: string; job: string | null; profile_path: string | null }[]
+  trailer_key: string | null
+  similar: { tmdb_id: number; title: string; year: number | null; poster_path: string | null }[]
+  watch_providers: { name: string; logo_path: string | null }[]
+  viewer: {
+    status: 'watched' | 'watching' | 'plan' | 'not_interested' | null
+    rating: number | null
+    review: string | null
+    hearted: boolean
+  }
+}
+
+function dtoToMovieDetail(d: MovieDetailDTO): MovieDetail {
+  return {
+    ...dtoToMovie(d),
+    director: d.director,
+    cast: d.cast.map((c) => ({
+      name: c.name,
+      character: c.character,
+      profilePath: c.profile_path,
+    })),
+    crew: d.crew.map((c) => ({
+      name: c.name,
+      job: c.job,
+      profilePath: c.profile_path,
+    })),
+    trailerKey: d.trailer_key,
+    similar: d.similar.map((s) => ({
+      tmdbId: s.tmdb_id,
+      title: s.title,
+      year: s.year,
+      posterPath: s.poster_path,
+    })),
+    watchProviders: d.watch_providers.map((w) => ({
+      name: w.name,
+      logoPath: w.logo_path,
+    })),
+    viewer: d.viewer,
+  }
+}
+
 // ── API calls ─────────────────────────────────────────────────────────────────
 
 export const api = {
   discovery: async (limit = 20): Promise<Movie[]> => {
     const dtos = await request<MovieDTO[]>(`/recommend/discovery?limit=${limit}`)
     return dtos.map(dtoToMovie)
+  },
+
+  search: async (q: string): Promise<Movie[]> => {
+    const dtos = await request<MovieDTO[]>(`/movies/search?q=${encodeURIComponent(q)}`)
+    return dtos.map(dtoToMovie)
+  },
+
+  movieDetail: async (tmdbId: number): Promise<MovieDetail> => {
+    const dto = await request<MovieDetailDTO>(`/movies/${tmdbId}/detail`)
+    return dtoToMovieDetail(dto)
   },
 
   libraryBuild: async (limit = 20): Promise<Movie[]> => {

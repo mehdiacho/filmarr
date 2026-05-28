@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Star, LogOut, Download, Film } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 import { api } from '@/lib/api'
 import type { WatchedEntry } from '@/types'
 
 export function LibraryPage() {
+  const navigate = useNavigate()
   const { user, logout } = useAuthStore()
   const [entries, setEntries] = useState<WatchedEntry[]>([])
   const [loading, setLoading] = useState(true)
@@ -76,9 +78,10 @@ export function LibraryPage() {
       ) : (
         <div className="grid grid-cols-3 gap-1 px-1">
           {entries.map(({ movie, rating }) => (
-            <div
+            <button
               key={movie.id}
-              className="relative aspect-[2/3] rounded-lg overflow-hidden bg-zinc-900"
+              onClick={() => navigate(`/film/${movie.tmdbId}`)}
+              className="relative aspect-[2/3] rounded-lg overflow-hidden bg-zinc-900 active:scale-95 transition-transform"
             >
               {movie.posterPath ? (
                 <img
@@ -99,7 +102,7 @@ export function LibraryPage() {
                   </div>
                 </div>
               )}
-            </div>
+            </button>
           ))}
         </div>
       )}
