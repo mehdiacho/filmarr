@@ -29,7 +29,13 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     useAuthStore.getState().logout()
     throw new Error('Unauthorized')
   }
-  if (!res.ok) throw new Error(`API ${res.status}: ${path}`)
+  if (!res.ok) {
+    const data = (await res.json().catch(() => ({}))) as { detail?: string }
+    throw new Error(data.detail || `API ${res.status}: ${path}`)
+  }
+  if (res.status === 204 || res.headers.get('content-length') === '0') {
+    return undefined as T
+  }
   return res.json() as Promise<T>
 }
 
@@ -216,6 +222,49 @@ export const api = {
       watchedAt: d.watched_at,
     }))
   },
+
+  watchlist: async (): Promise<WatchedEntry[]> => {
+    const dtos = await request<
+      { movie: MovieDTO; rating: number | null; review: string | null; watched_at: string }[]
+    >('/library/watchlist')
+    return dtos.map((d) => ({
+      movie: dtoToMovie(d.movie),
+      rating: d.rating,
+      review: d.review,
+      watchedAt: d.watched_at,
+    }))
+  },
+
+  /** Idempotent set of a film's status/rating/review (film-page editor). */
+  logFilm: (body: {
+    tmdbId: number
+    status: 'watched' | 'watching' | 'plan' | 'not_interested'
+    rating: number | null
+    review: string | null
+  }) =>
+    request<void>('/library/log', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tmdb_id: body.tmdbId,
+        status: body.status,
+        rating: body.rating,
+        review: body.review || null,
+      }),
+    }),
+
+  unlogFilm: (tmdbId: number) =>
+    request<void>(`/library/log/${tmdbId}`, { method: 'DELETE' }),
+
+  changePassword: (currentPassword: string, newPassword: string) =>
+    request<void>('/auth/change-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        current_password: currentPassword,
+        new_password: newPassword,
+      }),
+    }),
 
   myProfile: async (): Promise<MyProfile> =>
     mapMyProfile(await request<MyProfileDTO>('/profile/me')),

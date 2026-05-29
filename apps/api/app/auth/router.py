@@ -42,6 +42,22 @@ async def onboarding(
     return current_user
 
 
+@router.post("/change-password", status_code=204)
+async def change_password(
+    body: schemas.ChangePasswordRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> None:
+    if not service.verify_password(body.current_password, current_user.password_hash):
+        raise HTTPException(status_code=400, detail="Current password is incorrect.")
+    if len(body.new_password) < 6:
+        raise HTTPException(
+            status_code=400, detail="New password must be at least 6 characters."
+        )
+    current_user.password_hash = service.hash_password(body.new_password)
+    await db.commit()
+
+
 @router.post("/login", response_model=schemas.TokenResponse)
 async def login(body: schemas.LoginRequest, db: AsyncSession = Depends(get_db)):
     user = await service.get_user_by_email(db, body.email)

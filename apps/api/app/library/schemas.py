@@ -33,3 +33,11 @@ class WatchedEntry(BaseModel):
     rating: float | None
     review: str | None
     watched_at: datetime
+
+
+class LogRequest(BaseModel):
+    """Idempotent set of the user's relationship to a film (film-page editor)."""
+    tmdb_id: int
+    status: Literal["watched", "watching", "plan", "not_interested"]
+    rating: float | None = None
+    review: str | None = None

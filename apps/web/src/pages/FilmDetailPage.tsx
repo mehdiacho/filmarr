@@ -1,8 +1,9 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Star, Play, Check, Clock, Heart } from 'lucide-react'
+import { ArrowLeft, Star, Play, Check, Clock, Heart, Pencil, Trash2 } from 'lucide-react'
 import { api } from '@/lib/api'
 import { cn } from '@/lib/utils'
+import { StarRating } from '@/components/StarRating'
 import type { MovieDetail, ViewerFilmStatus } from '@/types'
 
 const IMG = 'https://image.tmdb.org/t/p'
@@ -20,11 +21,17 @@ export function FilmDetailPage() {
   const [film, setFilm] = useState<MovieDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [acting, setActing] = useState(false)
+  const [editing, setEditing] = useState(false)
+  const [rating, setRating] = useState<number | null>(null)
+  const [review, setReview] = useState('')
 
   const load = useCallback(async () => {
     if (!tmdbId) return
     try {
-      setFilm(await api.movieDetail(Number(tmdbId)))
+      const f = await api.movieDetail(Number(tmdbId))
+      setFilm(f)
+      setRating(f.viewer.rating)
+      setReview(f.viewer.review ?? '')
     } catch (e) {
       console.error('load film:', e)
     } finally {
@@ -38,25 +45,55 @@ export function FilmDetailPage() {
     load()
   }, [load])
 
-  const act = async (
-    direction: 'right' | 'down',
-    feedType: 'library_build' | 'discovery',
-    hearted = false,
-  ) => {
+  const setStatus = async (status: 'watched' | 'plan') => {
+    if (!film) return
+    setActing(true)
+    try {
+      await api.logFilm({ tmdbId: film.tmdbId, status, rating, review })
+      await load()
+    } finally {
+      setActing(false)
+    }
+  }
+
+  const saveReview = async () => {
+    if (!film) return
+    setActing(true)
+    try {
+      await api.logFilm({ tmdbId: film.tmdbId, status: 'watched', rating, review })
+      setEditing(false)
+      await load()
+    } finally {
+      setActing(false)
+    }
+  }
+
+  const remove = async () => {
+    if (!film) return
+    setActing(true)
+    try {
+      await api.unlogFilm(film.tmdbId)
+      setRating(null)
+      setReview('')
+      await load()
+    } finally {
+      setActing(false)
+    }
+  }
+
+  const heart = async () => {
     if (!film) return
     setActing(true)
     try {
       await api.interact({
         tmdbId: film.tmdbId,
-        feedType,
-        direction,
-        hearted,
+        feedType: 'discovery',
+        direction: 'down',
+        hearted: true,
         rating: null,
         review: null,
       })
       await load()
-    } catch (e) {
-      console.error('action failed:', e)
     } finally {
       setActing(false)
     }
@@ -77,6 +114,7 @@ export function FilmDetailPage() {
   }
 
   const v = film.viewer
+  const logged = v.status === 'watched' || v.status === 'plan'
 
   return (
     <div className="h-full overflow-y-auto pb-24">
@@ -142,7 +180,7 @@ export function FilmDetailPage() {
         )}
 
         {/* Your status */}
-        {v.status && (
+        {v.status && !editing && (
           <div className="mt-4 flex items-center gap-2 text-sm">
             <span className="text-white/70">{STATUS_LABEL[v.status]}</span>
             {v.rating != null && (
@@ -154,7 +192,7 @@ export function FilmDetailPage() {
             {v.hearted && <Heart size={13} className="fill-red-500 text-red-500" />}
           </div>
         )}
-        {v.review && (
+        {v.review && !editing && (
           <p className="mt-2 text-white/70 text-sm italic border-l-2 border-white/10 pl-3">
             {v.review}
           </p>
@@ -167,22 +205,75 @@ export function FilmDetailPage() {
             label="Watched"
             active={v.status === 'watched'}
             disabled={acting}
-            onClick={() => act('right', 'library_build')}
+            onClick={() => setStatus('watched')}
           />
           <ActionButton
             icon={<Clock size={16} />}
             label="Watchlist"
             active={v.status === 'plan'}
             disabled={acting}
-            onClick={() => act('down', 'library_build')}
+            onClick={() => setStatus('plan')}
           />
           <ActionButton
             icon={<Heart size={16} className={v.hearted ? 'fill-red-500 text-red-500' : ''} />}
             label="Interested"
             active={v.hearted}
             disabled={acting}
-            onClick={() => act('down', 'discovery', true)}
+            onClick={heart}
           />
+        </div>
+
+        {/* Rate & review */}
+        <div className="mt-3">
+          {!editing ? (
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setEditing(true)}
+                className="flex items-center gap-1.5 text-white/60 text-sm active:scale-95"
+              >
+                <Pencil size={14} /> {v.rating != null || v.review ? 'Edit rating & review' : 'Rate & review'}
+              </button>
+              {logged && (
+                <button
+                  onClick={remove}
+                  disabled={acting}
+                  className="flex items-center gap-1.5 text-red-400/70 text-sm active:scale-95 disabled:opacity-50"
+                >
+                  <Trash2 size={14} /> Remove
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="rounded-xl bg-zinc-900 border border-white/10 p-4">
+              <StarRating value={rating} onChange={setRating} />
+              <textarea
+                value={review}
+                onChange={(e) => setReview(e.target.value)}
+                rows={3}
+                placeholder="Write a review…"
+                className="input mt-3 resize-none"
+              />
+              <div className="flex gap-2 mt-3">
+                <button
+                  onClick={saveReview}
+                  disabled={acting}
+                  className="flex-1 py-2.5 rounded-xl bg-white text-black font-semibold text-sm active:scale-[0.98] disabled:opacity-50"
+                >
+                  {acting ? 'Saving…' : 'Save'}
+                </button>
+                <button
+                  onClick={() => {
+                    setEditing(false)
+                    setRating(v.rating)
+                    setReview(v.review ?? '')
+                  }}
+                  className="px-4 py-2.5 rounded-xl bg-zinc-800 text-white/70 text-sm"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Trailer */}

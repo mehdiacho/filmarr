@@ -4,6 +4,7 @@ import {
   useMotionValue,
   useTransform,
   useAnimation,
+  useReducedMotion,
   AnimatePresence,
 } from 'framer-motion'
 import { useDrag } from '@use-gesture/react'
@@ -41,9 +42,14 @@ export function SwipeCard({
   onHold,
 }: Props) {
   const controls = useAnimation()
+  const reduceMotion = useReducedMotion()
   const x = useMotionValue(0)
   const y = useMotionValue(0)
-  const rotate = useTransform(x, [-250, 0, 250], [-18, 0, 18])
+  const rotate = useTransform(
+    x,
+    [-250, 0, 250],
+    reduceMotion ? [0, 0, 0] : [-18, 0, 18],
+  )
 
   // Directional indicator opacities — clamped at 1
   const rightOpacity  = useTransform(x, [0, SWIPE_THRESHOLD + 20], [0, 1])
@@ -67,19 +73,21 @@ export function SwipeCard({
       }
       await controls.start({
         ...targets[dir],
-        transition: { duration: 0.28, ease: 'easeOut' },
+        transition: { duration: reduceMotion ? 0.12 : 0.28, ease: 'easeOut' },
       })
       onSwipe(movie, dir)
     },
-    [controls, x, y, movie, onSwipe],
+    [controls, x, y, movie, onSwipe, reduceMotion],
   )
 
   const snapBack = useCallback(() => {
     controls.start({
       x: 0, y: 0, rotate: 0,
-      transition: { type: 'spring', stiffness: 420, damping: 32 },
+      transition: reduceMotion
+        ? { duration: 0.1 }
+        : { type: 'spring', stiffness: 420, damping: 32 },
     })
-  }, [controls])
+  }, [controls, reduceMotion])
 
   const bind = useDrag(
     ({ offset: [ox, oy], velocity: [vx, vy], first, last }) => {

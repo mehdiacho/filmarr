@@ -26,6 +26,12 @@ export function SettingsPage() {
   const [error, setError] = useState<string | null>(null)
   const [saved, setSaved] = useState(false)
 
+  // change password
+  const [curPw, setCurPw] = useState('')
+  const [newPw, setNewPw] = useState('')
+  const [pwMsg, setPwMsg] = useState<string | null>(null)
+  const [pwBusy, setPwBusy] = useState(false)
+
   // favorites search
   const [favQuery, setFavQuery] = useState('')
   const [favResults, setFavResults] = useState<Movie[]>([])
@@ -101,6 +107,21 @@ export function SettingsPage() {
       setError(err instanceof Error ? err.message : 'Could not save')
     } finally {
       setSaving(false)
+    }
+  }
+
+  const changePw = async () => {
+    setPwMsg(null)
+    setPwBusy(true)
+    try {
+      await api.changePassword(curPw, newPw)
+      setPwMsg('Password updated ✓')
+      setCurPw('')
+      setNewPw('')
+    } catch (err) {
+      setPwMsg(err instanceof Error ? err.message : 'Could not change password')
+    } finally {
+      setPwBusy(false)
     }
   }
 
@@ -254,6 +275,39 @@ export function SettingsPage() {
         >
           {saving ? 'Saving…' : saved ? 'Saved ✓' : 'Save changes'}
         </button>
+
+        {/* Change password */}
+        <div className="pt-6 border-t border-white/5 space-y-3">
+          <h2 className="text-white/80 text-sm font-medium">Change password</h2>
+          <input
+            type="password"
+            value={curPw}
+            onChange={(e) => setCurPw(e.target.value)}
+            placeholder="Current password"
+            autoComplete="current-password"
+            className="input"
+          />
+          <input
+            type="password"
+            value={newPw}
+            onChange={(e) => setNewPw(e.target.value)}
+            placeholder="New password"
+            autoComplete="new-password"
+            className="input"
+          />
+          {pwMsg && (
+            <p className={cn('text-xs', pwMsg.includes('✓') ? 'text-green-400' : 'text-red-400')}>
+              {pwMsg}
+            </p>
+          )}
+          <button
+            onClick={changePw}
+            disabled={pwBusy || !curPw || newPw.length < 6}
+            className="w-full py-2.5 rounded-xl bg-zinc-800 border border-white/10 text-white/80 text-sm disabled:opacity-40"
+          >
+            {pwBusy ? 'Updating…' : 'Update password'}
+          </button>
+        </div>
 
         <button
           onClick={logout}

@@ -20,6 +20,11 @@ class OnboardingRequest(BaseModel):
     genres: list[str]
 
 
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+
+
 class UserOut(BaseModel):
     id: int
     email: str
