@@ -2,7 +2,7 @@ import { useEffect, useCallback, useState } from 'react'
 import { MoreVertical } from 'lucide-react'
 import { useLibraryBuildStore } from '@/stores/libraryBuildStore'
 import { useFocusStore, shouldShowDiscardWarning } from '@/stores/focusStore'
-import { SwipeStack } from '@/components/SwipeStack'
+import { SwipeDeck } from '@/components/SwipeDeck'
 import { UndoButton } from '@/components/UndoButton'
 import { DiscardWarning } from '@/components/DiscardWarning'
 import type { Movie, SwipeDirection } from '@/types'
@@ -64,18 +64,17 @@ export function LibraryBuildPage() {
         ))}
       </div>
 
-      <div className="relative flex-1">
-        <DiscardWarning visible={showWarning} onDismiss={() => setShowWarning(false)} />
-        <SwipeStack
-          deck={deck}
-          feedType="library_build"
-          hearts={new Set()}
-          isFocused={focusStore.isActive}
-          onSwipe={handleSwipe}
-          onDoubleTap={() => {}}
-          onHold={handleHold}
-        />
-      </div>
+      <DiscardWarning visible={showWarning} onDismiss={() => setShowWarning(false)} />
+      <SwipeDeck
+        deck={deck}
+        feedType="library_build"
+        hearts={new Set()}
+        isFocused={focusStore.isActive}
+        onSwipe={handleSwipe}
+        onDoubleTap={() => {}}
+        onHold={handleHold}
+        onHeart={() => {}}
+      />
 
       <UndoButton />
     </div>

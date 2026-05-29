@@ -64,12 +64,21 @@ function AppShell() {
   )
 }
 
+/** Phone-first frame: caps width and centers on desktop; deck surfaces get a
+ *  wider cap so the poster card + side content fit without stretching. */
+function Frame({ children }: { children: ReactNode }) {
+  const { pathname } = useLocation()
+  const wide = pathname === '/discover' || pathname === '/build'
+  return <div className={`app-frame${wide ? ' app-frame--wide' : ''}`}>{children}</div>
+}
+
 export function App() {
   return (
     <BrowserRouter>
-      <UpdatePrompt />
-      <Routes>
-        <Route path="/auth" element={<AuthPage />} />
+      <Frame>
+        <UpdatePrompt />
+        <Routes>
+          <Route path="/auth" element={<AuthPage />} />
         <Route
           path="/onboarding"
           element={
@@ -86,7 +95,8 @@ export function App() {
             </RequireOnboarded>
           }
         />
-      </Routes>
+        </Routes>
+      </Frame>
     </BrowserRouter>
   )
 }

@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { MoreVertical, Heart } from 'lucide-react'
 import { useDiscoveryStore } from '@/stores/discoveryStore'
 import { useFocusStore, shouldShowDiscardWarning } from '@/stores/focusStore'
-import { SwipeStack } from '@/components/SwipeStack'
+import { SwipeDeck } from '@/components/SwipeDeck'
 import { UndoButton } from '@/components/UndoButton'
 import { DiscardWarning } from '@/components/DiscardWarning'
 import type { Movie, SwipeDirection } from '@/types'
@@ -66,18 +66,17 @@ export function DiscoveryPage() {
       )}
 
       {/* Card area */}
-      <div className="relative flex-1 mx-0">
-        <DiscardWarning visible={showWarning} onDismiss={() => setShowWarning(false)} />
-        <SwipeStack
-          deck={deck}
-          feedType="discovery"
-          hearts={hearts}
-          isFocused={focusStore.isActive}
-          onSwipe={handleSwipe}
-          onDoubleTap={handleDoubleTap}
-          onHold={handleHold}
-        />
-      </div>
+      <DiscardWarning visible={showWarning} onDismiss={() => setShowWarning(false)} />
+      <SwipeDeck
+        deck={deck}
+        feedType="discovery"
+        hearts={hearts}
+        isFocused={focusStore.isActive}
+        onSwipe={handleSwipe}
+        onDoubleTap={handleDoubleTap}
+        onHold={handleHold}
+        onHeart={() => deck[0] && toggleHeart(deck[0].id)}
+      />
 
       <UndoButton />
     </div>

@@ -12,7 +12,7 @@ const LINKS = [
 
 export function NavBar() {
   return (
-    <nav className="fixed bottom-0 inset-x-0 z-40 bg-[#0a0a0a]/90 backdrop-blur-md border-t border-white/5 safe-bottom">
+    <nav className="absolute bottom-0 inset-x-0 z-40 bg-[#0a0a0a]/90 backdrop-blur-md border-t border-white/5 safe-bottom">
       <div className="flex items-center justify-around h-16">
         {LINKS.map(({ to, icon: Icon, label }) => (
           <NavLink

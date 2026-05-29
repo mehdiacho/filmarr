@@ -1,4 +1,4 @@
-import { useRef, useCallback } from 'react'
+import { useRef, useCallback, forwardRef, useImperativeHandle } from 'react'
 import {
   motion,
   useMotionValue,
@@ -31,7 +31,11 @@ interface Props {
   onHold: () => void
 }
 
-export function SwipeCard({
+export interface SwipeCardHandle {
+  swipe: (direction: SwipeDirection) => void
+}
+
+export const SwipeCard = forwardRef<SwipeCardHandle, Props>(function SwipeCard({
   movie,
   stackIndex,
   feedType,
@@ -40,7 +44,7 @@ export function SwipeCard({
   onSwipe,
   onDoubleTap,
   onHold,
-}: Props) {
+}: Props, ref) {
   const controls = useAnimation()
   const reduceMotion = useReducedMotion()
   const x = useMotionValue(0)
@@ -78,6 +82,16 @@ export function SwipeCard({
       onSwipe(movie, dir)
     },
     [controls, x, y, movie, onSwipe, reduceMotion],
+  )
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      swipe: (dir: SwipeDirection) => {
+        if (isTop) triggerSwipe(dir)
+      },
+    }),
+    [isTop, triggerSwipe],
   )
 
   const snapBack = useCallback(() => {
@@ -157,7 +171,7 @@ export function SwipeCard({
       style={isTop ? { x, y, rotate, zIndex: 30 - stackIndex } : { zIndex: 30 - stackIndex }}
       onClick={handleClick}
       className={cn(
-        'absolute inset-x-4 top-2 bottom-0 rounded-card overflow-hidden',
+        'absolute inset-0 rounded-card overflow-hidden',
         'bg-zinc-900 shadow-[0_8px_40px_rgba(0,0,0,0.6)]',
         isTop ? 'cursor-grab active:cursor-grabbing touch-none' : 'pointer-events-none',
       )}
@@ -219,4 +233,4 @@ export function SwipeCard({
       </AnimatePresence>
     </motion.div>
   )
-}
+})

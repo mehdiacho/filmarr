@@ -1,5 +1,6 @@
 import { AnimatePresence } from 'framer-motion'
-import { SwipeCard } from './SwipeCard'
+import type { Ref } from 'react'
+import { SwipeCard, type SwipeCardHandle } from './SwipeCard'
 import type { Movie, SwipeDirection, FeedType } from '@/types'
 
 interface Props {
@@ -10,16 +11,26 @@ interface Props {
   onSwipe: (movie: Movie, direction: SwipeDirection) => void
   onDoubleTap: (movie: Movie) => void
   onHold: () => void
+  topCardRef?: Ref<SwipeCardHandle>
 }
 
 const VISIBLE_STACK = 3
 
-export function SwipeStack({ deck, feedType, hearts, isFocused, onSwipe, onDoubleTap, onHold }: Props) {
+export function SwipeStack({
+  deck,
+  feedType,
+  hearts,
+  isFocused,
+  onSwipe,
+  onDoubleTap,
+  onHold,
+  topCardRef,
+}: Props) {
   const visible = deck.slice(0, VISIBLE_STACK)
 
   if (visible.length === 0) {
     return (
-      <div className="absolute inset-x-4 top-2 bottom-0 rounded-card bg-zinc-900/40 border border-white/5 flex items-center justify-center">
+      <div className="absolute inset-0 rounded-card bg-zinc-900/40 border border-white/5 flex items-center justify-center">
         <p className="text-white/30 text-sm">No more cards right now</p>
       </div>
     )
@@ -32,6 +43,7 @@ export function SwipeStack({ deck, feedType, hearts, isFocused, onSwipe, onDoubl
         return (
           <SwipeCard
             key={movie.id}
+            ref={stackIndex === 0 ? topCardRef : undefined}
             movie={movie}
             stackIndex={stackIndex}
             feedType={feedType}

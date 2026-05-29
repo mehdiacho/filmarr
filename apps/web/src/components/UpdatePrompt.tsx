@@ -16,7 +16,7 @@ export function UpdatePrompt() {
   if (!reload) return null
 
   return (
-    <div className="fixed inset-x-0 bottom-20 z-50 flex justify-center px-4 pointer-events-none">
+    <div className="absolute inset-x-0 bottom-20 z-50 flex justify-center px-4 pointer-events-none">
       <div className="pointer-events-auto flex items-center gap-3 bg-white text-black rounded-full pl-4 pr-1.5 py-1.5 shadow-lg max-w-sm w-full sm:w-auto">
         <span className="text-sm font-medium flex-1">New version available</span>
         <button

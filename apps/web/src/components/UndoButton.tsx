@@ -38,7 +38,7 @@ export function UndoButton() {
           exit={{ scale: 0, opacity: 0 }}
           whileTap={{ scale: 0.9 }}
           onClick={handleUndo}
-          className="fixed bottom-24 right-4 z-50 w-12 h-12 rounded-full bg-zinc-800/90 border border-white/10 shadow-xl flex items-center justify-center backdrop-blur-sm"
+          className="absolute bottom-24 right-4 z-50 w-12 h-12 rounded-full bg-zinc-800/90 border border-white/10 shadow-xl flex items-center justify-center backdrop-blur-sm"
           aria-label="Undo last swipe"
         >
           <Undo2 size={18} className="text-white/80" />
