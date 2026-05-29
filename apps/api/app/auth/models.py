@@ -24,5 +24,6 @@ class User(Base):
     display_name: Mapped[str | None] = mapped_column(String(80), nullable=True)
     bio: Mapped[str | None] = mapped_column(Text, nullable=True)
     avatar_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    phone: Mapped[str | None] = mapped_column(String(32), nullable=True)
     date_of_birth: Mapped[date | None] = mapped_column(Date, nullable=True)  # private
     favorite_film_ids: Mapped[list] = mapped_column(JSON, default=list)  # tmdb ids

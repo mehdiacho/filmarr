@@ -48,18 +48,23 @@ async def _build_public(
     )
 
 
+async def _build_mine(db: AsyncSession, user: User) -> schemas.MyProfile:
+    base = await _build_public(db, user, user)
+    return schemas.MyProfile(
+        **base.model_dump(),
+        email=user.email,
+        date_of_birth=user.date_of_birth,
+        phone=user.phone,
+        preferences=user.preferences or {},
+    )
+
+
 @router.get("/me", response_model=schemas.MyProfile)
 async def my_profile(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    base = await _build_public(db, current_user, current_user)
-    return schemas.MyProfile(
-        **base.model_dump(),
-        email=current_user.email,
-        date_of_birth=current_user.date_of_birth,
-        preferences=current_user.preferences or {},
-    )
+    return await _build_mine(db, current_user)
 
 
 @router.patch("/me", response_model=schemas.MyProfile)
@@ -93,19 +98,36 @@ async def update_profile(
         current_user.bio = body.bio.strip() or None
     if body.date_of_birth is not None:
         current_user.date_of_birth = body.date_of_birth
+    if body.phone is not None:
+        current_user.phone = body.phone.strip() or None
     if body.favorite_film_ids is not None:
         current_user.favorite_film_ids = body.favorite_film_ids
 
     await db.commit()
     await db.refresh(current_user)
 
-    base = await _build_public(db, current_user, current_user)
-    return schemas.MyProfile(
-        **base.model_dump(),
-        email=current_user.email,
-        date_of_birth=current_user.date_of_birth,
-        preferences=current_user.preferences or {},
+    return await _build_mine(db, current_user)
+
+
+@router.get("/username-available", response_model=schemas.UsernameAvailable)
+async def username_available(
+    u: str = Query(min_length=1),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    uname = u.strip().lower()
+    if current_user.username and uname == current_user.username:
+        return schemas.UsernameAvailable(available=True, reason="current")
+    if not _USERNAME_RE.match(uname):
+        return schemas.UsernameAvailable(available=False, reason="invalid")
+    if uname in _RESERVED:
+        return schemas.UsernameAvailable(available=False, reason="reserved")
+    existing = await db.execute(
+        select(User).where(User.username == uname, User.id != current_user.id)
     )
+    if existing.scalar_one_or_none():
+        return schemas.UsernameAvailable(available=False, reason="taken")
+    return schemas.UsernameAvailable(available=True)
 
 
 @router.post("/me/avatar", response_model=schemas.MyProfile)
@@ -148,13 +170,18 @@ async def upload_avatar(
     await db.commit()
     await db.refresh(current_user)
 
-    base = await _build_public(db, current_user, current_user)
-    return schemas.MyProfile(
-        **base.model_dump(),
-        email=current_user.email,
-        date_of_birth=current_user.date_of_birth,
-        preferences=current_user.preferences or {},
-    )
+    return await _build_mine(db, current_user)
+
+
+@router.delete("/me/avatar", response_model=schemas.MyProfile)
+async def remove_avatar(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    current_user.avatar_url = None
+    await db.commit()
+    await db.refresh(current_user)
+    return await _build_mine(db, current_user)
 
 
 @router.get("/search", response_model=list[schemas.UserCard])

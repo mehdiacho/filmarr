@@ -51,6 +51,7 @@ class PublicProfile(BaseModel):
 class MyProfile(PublicProfile):
     email: str
     date_of_birth: date | None
+    phone: str | None = None
     preferences: dict
 
 
@@ -59,4 +60,10 @@ class ProfileUpdate(BaseModel):
     display_name: str | None = Field(default=None, max_length=80)
     bio: str | None = Field(default=None, max_length=2000)
     date_of_birth: date | None = None
+    phone: str | None = Field(default=None, max_length=32)
     favorite_film_ids: list[int] | None = Field(default=None, max_length=8)
+
+
+class UsernameAvailable(BaseModel):
+    available: bool
+    reason: str | None = None
