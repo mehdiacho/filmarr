@@ -13,12 +13,17 @@ import { DiaryPage } from '@/pages/DiaryPage'
 import { FeedPage } from '@/pages/FeedPage'
 import { UserListPage } from '@/pages/UserListPage'
 import { NavBar } from '@/components/NavBar'
+import { UpdatePrompt } from '@/components/UpdatePrompt'
 import { useAuthStore } from '@/stores/authStore'
 
-/** Requires a token; sends unauthenticated users to /auth. */
+/** Requires a token; sends unauthenticated users to /auth, remembering where
+ *  they were headed so AuthPage can explain and redirect back after login. */
 function RequireToken({ children }: { children: ReactNode }) {
   const token = useAuthStore((s) => s.token)
-  if (!token) return <Navigate to="/auth" replace />
+  const location = useLocation()
+  if (!token) {
+    return <Navigate to="/auth" replace state={{ from: location.pathname + location.search }} />
+  }
   return <>{children}</>
 }
 
@@ -27,7 +32,9 @@ function RequireOnboarded({ children }: { children: ReactNode }) {
   const token = useAuthStore((s) => s.token)
   const user = useAuthStore((s) => s.user)
   const location = useLocation()
-  if (!token) return <Navigate to="/auth" replace />
+  if (!token) {
+    return <Navigate to="/auth" replace state={{ from: location.pathname + location.search }} />
+  }
   if (!user?.preferences?.onboarded && location.pathname !== '/onboarding') {
     return <Navigate to="/onboarding" replace />
   }
@@ -60,6 +67,7 @@ function AppShell() {
 export function App() {
   return (
     <BrowserRouter>
+      <UpdatePrompt />
       <Routes>
         <Route path="/auth" element={<AuthPage />} />
         <Route

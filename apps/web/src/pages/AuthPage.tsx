@@ -1,18 +1,23 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuthStore } from '@/stores/authStore'
 
 export function AuthPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { token, login, register, loading, error, clearError } = useAuthStore()
   const [mode, setMode] = useState<'login' | 'register'>('login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
+  // Where the user was trying to go before being bounced here (protected route)
+  const from = (location.state as { from?: string } | null)?.from
+  const dest = from && from !== '/auth' ? from : '/discover'
+
   // Already signed in → skip the auth screen
   useEffect(() => {
-    if (token) navigate('/discover', { replace: true })
-  }, [token, navigate])
+    if (token) navigate(dest, { replace: true })
+  }, [token, navigate, dest])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -20,7 +25,7 @@ export function AuthPage() {
       mode === 'login'
         ? await login(email, password)
         : await register(email, password)
-    if (ok) navigate('/discover', { replace: true })
+    if (ok) navigate(dest, { replace: true })
   }
 
   const switchMode = () => {
@@ -33,6 +38,15 @@ export function AuthPage() {
       <div className="w-full max-w-sm">
         <h1 className="text-white text-4xl font-black tracking-tighter mb-1">filmarr</h1>
         <p className="text-white/40 text-sm mb-8">Swipe films. Build your taste.</p>
+
+        {from && from !== '/auth' && (
+          <div className="mb-5 rounded-xl bg-white/5 border border-white/10 px-4 py-3">
+            <p className="text-white/80 text-sm">Sign in to continue</p>
+            <p className="text-white/40 text-xs mt-0.5">
+              That page needs an account — log in or sign up to view it.
+            </p>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <input

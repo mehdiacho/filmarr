@@ -7,7 +7,8 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
+      injectRegister: false, // we register + handle updates in main.tsx
       includeAssets: ['favicon.ico', 'favicon-32.png', 'apple-touch-icon.png'],
       manifest: {
         name: 'filmarr',
