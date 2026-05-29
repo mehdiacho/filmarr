@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Settings, Star, Film } from 'lucide-react'
+import { Settings, Star, Film, Users } from 'lucide-react'
 import { api } from '@/lib/api'
 import { Avatar } from '@/components/Avatar'
+import { cn } from '@/lib/utils'
 import type { PublicProfile, MyProfile } from '@/types'
 
 const IMG = 'https://image.tmdb.org/t/p'
@@ -14,15 +15,38 @@ export function ProfilePage() {
   const [profile, setProfile] = useState<PublicProfile | MyProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
+  const [following, setFollowing] = useState(false)
+  const [followerCount, setFollowerCount] = useState(0)
+  const [followBusy, setFollowBusy] = useState(false)
 
   useEffect(() => {
     setLoading(true)
     setNotFound(false)
     const p = isOwn ? api.myProfile() : api.profileByUsername(username!)
-    p.then(setProfile)
+    p.then((prof) => {
+      setProfile(prof)
+      setFollowing(prof.isFollowing)
+      setFollowerCount(prof.followerCount)
+    })
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false))
   }, [username, isOwn])
+
+  const toggleFollow = async () => {
+    if (!profile?.username || followBusy) return
+    setFollowBusy(true)
+    const next = !following
+    setFollowing(next)
+    setFollowerCount((c) => c + (next ? 1 : -1))
+    try {
+      next ? await api.follow(profile.username) : await api.unfollow(profile.username)
+    } catch {
+      setFollowing(!next)
+      setFollowerCount((c) => c + (next ? -1 : 1))
+    } finally {
+      setFollowBusy(false)
+    }
+  }
 
   if (loading) {
     return <div className="h-full flex items-center justify-center text-white/30">Loading…</div>
@@ -53,13 +77,22 @@ export function ProfilePage() {
             <p className="text-white/30 text-xs mt-0.5">Joined {joinedYear}</p>
           </div>
           {isOwn && (
-            <button
-              onClick={() => navigate('/settings')}
-              aria-label="Edit profile"
-              className="text-white/50 p-2 active:scale-95"
-            >
-              <Settings size={20} />
-            </button>
+            <div className="flex items-center">
+              <button
+                onClick={() => navigate('/feed')}
+                aria-label="Activity"
+                className="text-white/50 p-2 active:scale-95"
+              >
+                <Users size={20} />
+              </button>
+              <button
+                onClick={() => navigate('/settings')}
+                aria-label="Edit profile"
+                className="text-white/50 p-2 active:scale-95"
+              >
+                <Settings size={20} />
+              </button>
+            </div>
           )}
         </div>
 
@@ -77,6 +110,38 @@ export function ProfilePage() {
             Set a username to share your profile →
           </button>
         )}
+
+        {/* Followers / following + follow button */}
+        <div className="flex items-center gap-4 mt-4">
+          <button
+            onClick={() => profile.username && navigate(`/u/${profile.username}/followers`)}
+            disabled={!profile.username}
+            className="text-sm"
+          >
+            <span className="text-white font-semibold">{followerCount}</span>{' '}
+            <span className="text-white/40">followers</span>
+          </button>
+          <button
+            onClick={() => profile.username && navigate(`/u/${profile.username}/following`)}
+            disabled={!profile.username}
+            className="text-sm"
+          >
+            <span className="text-white font-semibold">{profile.followingCount}</span>{' '}
+            <span className="text-white/40">following</span>
+          </button>
+          {!isOwn && profile.username && (
+            <button
+              onClick={toggleFollow}
+              disabled={followBusy}
+              className={cn(
+                'ml-auto px-5 py-1.5 rounded-full text-sm font-medium transition-colors disabled:opacity-50',
+                following ? 'bg-zinc-800 text-white/70' : 'bg-white text-black',
+              )}
+            >
+              {following ? 'Following' : 'Follow'}
+            </button>
+          )}
+        </div>
 
         {/* Stats row */}
         <div className="grid grid-cols-3 gap-2 mt-5">

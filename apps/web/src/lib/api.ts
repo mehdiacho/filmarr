@@ -12,6 +12,8 @@ import type {
   PublicProfile,
   ProfileStats,
   ProfileUpdate,
+  UserCard,
+  FeedItem,
 } from '@/types'
 import { useAuthStore } from '@/stores/authStore'
 
@@ -127,6 +129,13 @@ interface StatsDTO {
   top_genres: { name: string; count: number }[]
   top_decades: { decade: number; count: number }[]
 }
+interface UserCardDTO {
+  id: number
+  username: string | null
+  display_name: string | null
+  avatar_url: string | null
+  is_following: boolean
+}
 interface PublicProfileDTO {
   id: number
   username: string | null
@@ -136,6 +145,28 @@ interface PublicProfileDTO {
   joined: string
   favorites: MovieDTO[]
   stats: StatsDTO
+  follower_count: number
+  following_count: number
+  is_following: boolean
+  is_self: boolean
+}
+interface FeedItemDTO {
+  user: UserCardDTO
+  movie: MovieDTO
+  status: 'watched' | 'watching' | 'plan'
+  rating: number | null
+  review: string | null
+  at: string
+}
+
+function mapUserCard(u: UserCardDTO): UserCard {
+  return {
+    id: u.id,
+    username: u.username,
+    displayName: u.display_name,
+    avatarUrl: u.avatar_url,
+    isFollowing: u.is_following,
+  }
 }
 interface MyProfileDTO extends PublicProfileDTO {
   email: string
@@ -163,6 +194,10 @@ function mapPublicProfile(d: PublicProfileDTO): PublicProfile {
     joined: d.joined,
     favorites: d.favorites.map(dtoToMovie),
     stats: mapStats(d.stats),
+    followerCount: d.follower_count,
+    followingCount: d.following_count,
+    isFollowing: d.is_following,
+    isSelf: d.is_self,
   }
 }
 function mapMyProfile(d: MyProfileDTO): MyProfile {
@@ -271,6 +306,39 @@ export const api = {
 
   profileByUsername: async (username: string): Promise<PublicProfile> =>
     mapPublicProfile(await request<PublicProfileDTO>(`/profile/u/${username}`)),
+
+  follow: (username: string) =>
+    request<void>(`/profile/u/${username}/follow`, { method: 'POST' }),
+
+  unfollow: (username: string) =>
+    request<void>(`/profile/u/${username}/follow`, { method: 'DELETE' }),
+
+  followers: async (username: string): Promise<UserCard[]> => {
+    const dtos = await request<UserCardDTO[]>(`/profile/u/${username}/followers`)
+    return dtos.map(mapUserCard)
+  },
+
+  followingList: async (username: string): Promise<UserCard[]> => {
+    const dtos = await request<UserCardDTO[]>(`/profile/u/${username}/following`)
+    return dtos.map(mapUserCard)
+  },
+
+  searchPeople: async (q: string): Promise<UserCard[]> => {
+    const dtos = await request<UserCardDTO[]>(`/profile/search?q=${encodeURIComponent(q)}`)
+    return dtos.map(mapUserCard)
+  },
+
+  feed: async (): Promise<FeedItem[]> => {
+    const dtos = await request<FeedItemDTO[]>('/feed')
+    return dtos.map((d) => ({
+      user: mapUserCard(d.user),
+      movie: dtoToMovie(d.movie),
+      status: d.status,
+      rating: d.rating,
+      review: d.review,
+      at: d.at,
+    }))
+  },
 
   updateProfile: async (patch: ProfileUpdate): Promise<MyProfile> => {
     const body: Record<string, unknown> = {}

@@ -81,6 +81,14 @@ export interface ProfileStats {
   topDecades: DecadeCount[]
 }
 
+export interface UserCard {
+  id: number
+  username: string | null
+  displayName: string | null
+  avatarUrl: string | null
+  isFollowing: boolean
+}
+
 export interface PublicProfile {
   id: number
   username: string | null
@@ -90,6 +98,19 @@ export interface PublicProfile {
   joined: string
   favorites: Movie[]
   stats: ProfileStats
+  followerCount: number
+  followingCount: number
+  isFollowing: boolean
+  isSelf: boolean
+}
+
+export interface FeedItem {
+  user: UserCard
+  movie: Movie
+  status: 'watched' | 'watching' | 'plan'
+  rating: number | null
+  review: string | null
+  at: string
 }
 
 export interface MyProfile extends PublicProfile {
