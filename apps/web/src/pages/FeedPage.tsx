@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Star, Users } from 'lucide-react'
 import { api } from '@/lib/api'
 import { Avatar } from '@/components/Avatar'
+import { Spinner } from '@/components/Loading'
 import type { FeedItem } from '@/types'
 
 const IMG = 'https://image.tmdb.org/t/p'
@@ -39,7 +40,7 @@ export function FeedPage() {
       </div>
 
       {loading ? (
-        <p className="text-white/30 text-sm text-center mt-16">Loading…</p>
+        <div className="flex justify-center mt-16"><Spinner /></div>
       ) : items.length === 0 ? (
         <div className="flex flex-col items-center justify-center mt-20 px-6 text-center">
           <Users size={40} className="text-white/15" />

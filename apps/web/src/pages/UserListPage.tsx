@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { api } from '@/lib/api'
 import { UserRow } from '@/components/UserRow'
+import { Spinner } from '@/components/Loading'
 import type { UserCard } from '@/types'
 
 /** Renders a follower or following list, chosen by the route suffix. */
@@ -38,7 +39,7 @@ export function UserListPage() {
 
       <div className="px-4 mt-2">
         {loading ? (
-          <p className="text-white/30 text-sm text-center mt-12">Loading…</p>
+          <div className="flex justify-center mt-12"><Spinner /></div>
         ) : users.length === 0 ? (
           <p className="text-white/30 text-sm text-center mt-12">
             {mode === 'followers' ? 'No followers yet.' : 'Not following anyone yet.'}

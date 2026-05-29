@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Camera, X, LogOut, Search as SearchIcon } from 'lucide-react'
 import { api } from '@/lib/api'
 import { Avatar } from '@/components/Avatar'
+import { PageLoader } from '@/components/Loading'
 import { useAuthStore } from '@/stores/authStore'
 import { cn } from '@/lib/utils'
 import type { Movie, MyProfile } from '@/types'
@@ -126,7 +127,7 @@ export function SettingsPage() {
   }
 
   if (!profile) {
-    return <div className="h-full flex items-center justify-center text-white/30">Loading…</div>
+    return <PageLoader />
   }
 
   const name = displayName || username || profile.email

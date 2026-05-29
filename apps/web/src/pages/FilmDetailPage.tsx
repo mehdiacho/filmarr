@@ -4,6 +4,7 @@ import { ArrowLeft, Star, Play, Check, Clock, Heart, Pencil, Trash2 } from 'luci
 import { api } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { StarRating } from '@/components/StarRating'
+import { PageLoader } from '@/components/Loading'
 import type { MovieDetail, ViewerFilmStatus } from '@/types'
 
 const IMG = 'https://image.tmdb.org/t/p'
@@ -100,7 +101,7 @@ export function FilmDetailPage() {
   }
 
   if (loading) {
-    return <div className="h-full flex items-center justify-center text-white/30">Loading…</div>
+    return <PageLoader />
   }
   if (!film) {
     return (

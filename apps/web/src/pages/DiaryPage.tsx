@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Star } from 'lucide-react'
 import { api } from '@/lib/api'
+import { Spinner } from '@/components/Loading'
 import type { WatchedEntry } from '@/types'
 
 const IMG = 'https://image.tmdb.org/t/p'
@@ -36,7 +37,7 @@ export function DiaryPage() {
       </div>
 
       {loading ? (
-        <p className="text-white/30 text-sm text-center mt-16">Loading…</p>
+        <div className="flex justify-center mt-16"><Spinner /></div>
       ) : entries.length === 0 ? (
         <p className="text-white/30 text-sm text-center mt-16">
           Nothing logged yet — swipe right in Build.

@@ -12,6 +12,7 @@ import { SettingsPage } from '@/pages/SettingsPage'
 import { DiaryPage } from '@/pages/DiaryPage'
 import { FeedPage } from '@/pages/FeedPage'
 import { UserListPage } from '@/pages/UserListPage'
+import { NotFoundPage } from '@/pages/NotFoundPage'
 import { NavBar } from '@/components/NavBar'
 import { UpdatePrompt } from '@/components/UpdatePrompt'
 import { useAuthStore } from '@/stores/authStore'
@@ -57,7 +58,7 @@ function AppShell() {
         <Route path="/u/:username/following"  element={<UserListPage />} />
         <Route path="/settings"     element={<SettingsPage />} />
         <Route path="/diary"        element={<DiaryPage />} />
-        <Route path="*"             element={<Navigate to="/discover" replace />} />
+        <Route path="*"             element={<NotFoundPage />} />
       </Routes>
       <NavBar />
     </div>

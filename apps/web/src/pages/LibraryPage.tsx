@@ -4,6 +4,7 @@ import { Star, LogOut, Download, Film } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 import { api } from '@/lib/api'
 import { cn } from '@/lib/utils'
+import { PosterGridSkeleton } from '@/components/Loading'
 import type { WatchedEntry } from '@/types'
 
 type Tab = 'watched' | 'watchlist'
@@ -89,7 +90,7 @@ export function LibraryPage() {
       )}
 
       {loading ? (
-        <p className="text-white/30 text-sm text-center mt-16">Loading…</p>
+        <PosterGridSkeleton />
       ) : entries.length === 0 ? (
         <div className="flex flex-col items-center justify-center mt-20 px-6 text-center">
           <Film size={40} className="text-white/15" />

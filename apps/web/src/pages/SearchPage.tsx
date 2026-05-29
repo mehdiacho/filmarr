@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Search as SearchIcon, Star } from 'lucide-react'
 import { api } from '@/lib/api'
 import { UserRow } from '@/components/UserRow'
+import { Spinner } from '@/components/Loading'
 import { cn } from '@/lib/utils'
 import type { Movie, UserCard } from '@/types'
 
@@ -77,7 +78,7 @@ export function SearchPage() {
       </div>
 
       <div className="flex-1 overflow-y-auto px-4">
-        {loading && <p className="text-white/30 text-sm mt-6 text-center">Searching…</p>}
+        {loading && <div className="flex justify-center mt-6"><Spinner /></div>}
 
         {mode === 'films' ? (
           <>

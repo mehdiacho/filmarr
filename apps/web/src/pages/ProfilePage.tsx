@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { Settings, Star, Film, Users } from 'lucide-react'
 import { api } from '@/lib/api'
 import { Avatar } from '@/components/Avatar'
+import { PageLoader } from '@/components/Loading'
 import { cn } from '@/lib/utils'
 import type { PublicProfile, MyProfile } from '@/types'
 
@@ -49,7 +50,7 @@ export function ProfilePage() {
   }
 
   if (loading) {
-    return <div className="h-full flex items-center justify-center text-white/30">Loading…</div>
+    return <PageLoader />
   }
   if (notFound || !profile) {
     return (
