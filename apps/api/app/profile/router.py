@@ -2,8 +2,8 @@ import re
 from uuid import uuid4
 
 import httpx
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
-from sqlalchemy import select
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
+from sqlalchemy import delete, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth.deps import get_current_user
@@ -12,6 +12,7 @@ from app.config import settings
 from app.db.session import get_db
 from app.movies.schemas import MovieOut
 from app.profile import schemas, service
+from app.social.models import Follow
 
 router = APIRouter(prefix="/profile", tags=["profile"])
 
@@ -22,9 +23,15 @@ _USERNAME_RE = re.compile(r"^[a-z0-9_]{3,30}$")
 _RESERVED = {"me", "admin", "auth", "profile", "settings", "api", "filmarr", "u"}
 
 
-async def _build_public(db: AsyncSession, user: User) -> schemas.PublicProfile:
+async def _build_public(
+    db: AsyncSession, user: User, viewer: User
+) -> schemas.PublicProfile:
     favorites = await service.resolve_favorites(db, user.favorite_film_ids or [])
     stats = await service.compute_stats(db, user.id)
+    is_self = user.id == viewer.id
+    is_following = False
+    if not is_self:
+        is_following = user.id in await service.following_ids(db, viewer.id)
     return schemas.PublicProfile(
         id=user.id,
         username=user.username,
@@ -34,6 +41,10 @@ async def _build_public(db: AsyncSession, user: User) -> schemas.PublicProfile:
         joined=user.created_at,
         favorites=[MovieOut.model_validate(m) for m in favorites],
         stats=stats,
+        follower_count=await service.follower_count(db, user.id),
+        following_count=await service.following_count(db, user.id),
+        is_following=is_following,
+        is_self=is_self,
     )
 
 
@@ -42,7 +53,7 @@ async def my_profile(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    base = await _build_public(db, current_user)
+    base = await _build_public(db, current_user, current_user)
     return schemas.MyProfile(
         **base.model_dump(),
         email=current_user.email,
@@ -88,7 +99,7 @@ async def update_profile(
     await db.commit()
     await db.refresh(current_user)
 
-    base = await _build_public(db, current_user)
+    base = await _build_public(db, current_user, current_user)
     return schemas.MyProfile(
         **base.model_dump(),
         email=current_user.email,
@@ -137,7 +148,7 @@ async def upload_avatar(
     await db.commit()
     await db.refresh(current_user)
 
-    base = await _build_public(db, current_user)
+    base = await _build_public(db, current_user, current_user)
     return schemas.MyProfile(
         **base.model_dump(),
         email=current_user.email,
@@ -146,16 +157,112 @@ async def upload_avatar(
     )
 
 
+@router.get("/search", response_model=list[schemas.UserCard])
+async def search_people(
+    q: str = Query(min_length=2),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    term = f"%{q.lower()}%"
+    result = await db.execute(
+        select(User)
+        .where(
+            User.username.isnot(None),
+            User.id != current_user.id,
+            or_(
+                func.lower(User.username).like(term),
+                func.lower(User.display_name).like(term),
+            ),
+        )
+        .limit(20)
+    )
+    users = list(result.scalars().all())
+    return await service.build_user_cards(db, users, current_user.id)
+
+
+async def _user_by_username(db: AsyncSession, username: str) -> User:
+    result = await db.execute(select(User).where(User.username == username.lower()))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="Profile not found")
+    return user
+
+
+@router.post("/u/{username}/follow", status_code=204)
+async def follow(
+    username: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> None:
+    target = await _user_by_username(db, username)
+    if target.id == current_user.id:
+        raise HTTPException(status_code=400, detail="You can't follow yourself.")
+    exists = await db.execute(
+        select(Follow).where(
+            Follow.follower_id == current_user.id,
+            Follow.followee_id == target.id,
+        )
+    )
+    if exists.scalar_one_or_none() is None:
+        db.add(Follow(follower_id=current_user.id, followee_id=target.id))
+        await db.commit()
+
+
+@router.delete("/u/{username}/follow", status_code=204)
+async def unfollow(
+    username: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> None:
+    target = await _user_by_username(db, username)
+    await db.execute(
+        delete(Follow).where(
+            Follow.follower_id == current_user.id,
+            Follow.followee_id == target.id,
+        )
+    )
+    await db.commit()
+
+
+@router.get("/u/{username}/followers", response_model=list[schemas.UserCard])
+async def followers(
+    username: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    target = await _user_by_username(db, username)
+    result = await db.execute(
+        select(User)
+        .join(Follow, Follow.follower_id == User.id)
+        .where(Follow.followee_id == target.id)
+        .order_by(Follow.created_at.desc())
+    )
+    users = list(result.scalars().all())
+    return await service.build_user_cards(db, users, current_user.id)
+
+
+@router.get("/u/{username}/following", response_model=list[schemas.UserCard])
+async def following(
+    username: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    target = await _user_by_username(db, username)
+    result = await db.execute(
+        select(User)
+        .join(Follow, Follow.followee_id == User.id)
+        .where(Follow.follower_id == target.id)
+        .order_by(Follow.created_at.desc())
+    )
+    users = list(result.scalars().all())
+    return await service.build_user_cards(db, users, current_user.id)
+
+
 @router.get("/u/{username}", response_model=schemas.PublicProfile)
 async def public_profile(
     username: str,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    result = await db.execute(
-        select(User).where(User.username == username.lower())
-    )
-    user = result.scalar_one_or_none()
-    if not user:
-        raise HTTPException(status_code=404, detail="Profile not found")
-    return await _build_public(db, user)
+    user = await _user_by_username(db, username)
+    return await _build_public(db, user, current_user)

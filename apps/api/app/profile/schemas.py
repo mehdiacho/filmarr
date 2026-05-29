@@ -24,6 +24,15 @@ class ProfileStats(BaseModel):
     top_decades: list[DecadeCount]
 
 
+class UserCard(BaseModel):
+    """Compact user for lists, search results, and feed authorship."""
+    id: int
+    username: str | None
+    display_name: str | None
+    avatar_url: str | None
+    is_following: bool = False
+
+
 class PublicProfile(BaseModel):
     id: int
     username: str | None
@@ -33,6 +42,10 @@ class PublicProfile(BaseModel):
     joined: datetime
     favorites: list[MovieOut]
     stats: ProfileStats
+    follower_count: int = 0
+    following_count: int = 0
+    is_following: bool = False
+    is_self: bool = False
 
 
 class MyProfile(PublicProfile):
