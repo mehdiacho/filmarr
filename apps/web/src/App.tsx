@@ -8,7 +8,8 @@ import { LibraryPage } from '@/pages/LibraryPage'
 import { SearchPage } from '@/pages/SearchPage'
 import { FilmDetailPage } from '@/pages/FilmDetailPage'
 import { ProfilePage } from '@/pages/ProfilePage'
-import { SettingsPage } from '@/pages/SettingsPage'
+import { EditProfilePage } from '@/pages/EditProfilePage'
+import { AccountSettingsPage } from '@/pages/AccountSettingsPage'
 import { DiaryPage } from '@/pages/DiaryPage'
 import { FeedPage } from '@/pages/FeedPage'
 import { UserListPage } from '@/pages/UserListPage'
@@ -56,7 +57,8 @@ function AppShell() {
         <Route path="/u/:username"            element={<ProfilePage />} />
         <Route path="/u/:username/followers"  element={<UserListPage />} />
         <Route path="/u/:username/following"  element={<UserListPage />} />
-        <Route path="/settings"     element={<SettingsPage />} />
+        <Route path="/edit-profile" element={<EditProfilePage />} />
+        <Route path="/settings"     element={<AccountSettingsPage />} />
         <Route path="/diary"        element={<DiaryPage />} />
         <Route path="*"             element={<NotFoundPage />} />
       </Routes>

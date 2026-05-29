@@ -144,6 +144,7 @@ interface PublicProfileDTO {
   avatar_url: string | null
   joined: string
   favorites: MovieDTO[]
+  favorite_genres: string[]
   stats: StatsDTO
   follower_count: number
   following_count: number
@@ -171,6 +172,7 @@ function mapUserCard(u: UserCardDTO): UserCard {
 interface MyProfileDTO extends PublicProfileDTO {
   email: string
   date_of_birth: string | null
+  phone: string | null
   preferences: { genres?: string[]; onboarded?: boolean }
 }
 
@@ -193,6 +195,7 @@ function mapPublicProfile(d: PublicProfileDTO): PublicProfile {
     avatarUrl: d.avatar_url,
     joined: d.joined,
     favorites: d.favorites.map(dtoToMovie),
+    favoriteGenres: d.favorite_genres ?? [],
     stats: mapStats(d.stats),
     followerCount: d.follower_count,
     followingCount: d.following_count,
@@ -205,6 +208,7 @@ function mapMyProfile(d: MyProfileDTO): MyProfile {
     ...mapPublicProfile(d),
     email: d.email,
     dateOfBirth: d.date_of_birth,
+    phone: d.phone,
     preferences: d.preferences,
   }
 }
@@ -356,13 +360,21 @@ export const api = {
     )
   },
 
-  uploadAvatar: async (file: File): Promise<MyProfile> => {
+  uploadAvatar: async (file: File | Blob): Promise<MyProfile> => {
     const form = new FormData()
-    form.append('file', file)
+    form.append('file', file, 'avatar.jpg')
     return mapMyProfile(
       await request<MyProfileDTO>('/profile/me/avatar', { method: 'POST', body: form }),
     )
   },
+
+  removeAvatar: async (): Promise<MyProfile> =>
+    mapMyProfile(await request<MyProfileDTO>('/profile/me/avatar', { method: 'DELETE' })),
+
+  usernameAvailable: (u: string): Promise<{ available: boolean; reason: string | null }> =>
+    request<{ available: boolean; reason: string | null }>(
+      `/profile/username-available?u=${encodeURIComponent(u)}`,
+    ),
 
   /** Fetches the Letterboxd CSV (auth-gated) and triggers a browser download. */
   exportCsv: async (): Promise<void> => {

@@ -97,6 +97,7 @@ export interface PublicProfile {
   avatarUrl: string | null
   joined: string
   favorites: Movie[]
+  favoriteGenres: string[]
   stats: ProfileStats
   followerCount: number
   followingCount: number
@@ -116,6 +117,7 @@ export interface FeedItem {
 export interface MyProfile extends PublicProfile {
   email: string
   dateOfBirth: string | null
+  phone: string | null
   preferences: { genres?: string[]; onboarded?: boolean }
 }
 
@@ -124,6 +126,7 @@ export interface ProfileUpdate {
   displayName?: string
   bio?: string
   dateOfBirth?: string | null
+  phone?: string
   favoriteFilmIds?: number[]
 }
 

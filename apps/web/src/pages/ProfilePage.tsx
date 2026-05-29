@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Settings, Star, Film, Users } from 'lucide-react'
+import { Settings, Star, Film, Users, Pencil } from 'lucide-react'
 import { api } from '@/lib/api'
 import { Avatar } from '@/components/Avatar'
 import { PageLoader } from '@/components/Loading'
 import { cn } from '@/lib/utils'
-import type { PublicProfile, MyProfile } from '@/types'
+import type { PublicProfile, MyProfile, WatchedEntry } from '@/types'
 
 const IMG = 'https://image.tmdb.org/t/p'
 
@@ -19,10 +19,13 @@ export function ProfilePage() {
   const [following, setFollowing] = useState(false)
   const [followerCount, setFollowerCount] = useState(0)
   const [followBusy, setFollowBusy] = useState(false)
+  const [knownGenres, setKnownGenres] = useState<string[]>([])
+  const [recentDiary, setRecentDiary] = useState<WatchedEntry[]>([])
 
   useEffect(() => {
     setLoading(true)
     setNotFound(false)
+    setRecentDiary([])
     const p = isOwn ? api.myProfile() : api.profileByUsername(username!)
     p.then((prof) => {
       setProfile(prof)
@@ -31,6 +34,8 @@ export function ProfilePage() {
     })
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false))
+    api.genres().then(setKnownGenres).catch(() => {})
+    if (isOwn) api.diary().then((d) => setRecentDiary(d.slice(0, 6))).catch(() => {})
   }, [username, isOwn])
 
   const toggleFollow = async () => {
@@ -105,7 +110,7 @@ export function ProfilePage() {
 
         {isOwn && !profile.username && (
           <button
-            onClick={() => navigate('/settings')}
+            onClick={() => navigate('/edit-profile')}
             className="mt-3 w-full py-2 rounded-lg bg-white/10 text-white text-sm"
           >
             Set a username to share your profile →
@@ -130,17 +135,26 @@ export function ProfilePage() {
             <span className="text-white font-semibold">{profile.followingCount}</span>{' '}
             <span className="text-white/40">following</span>
           </button>
-          {!isOwn && profile.username && (
+          {isOwn ? (
             <button
-              onClick={toggleFollow}
-              disabled={followBusy}
-              className={cn(
-                'ml-auto px-5 py-1.5 rounded-full text-sm font-medium transition-colors disabled:opacity-50',
-                following ? 'bg-zinc-800 text-white/70' : 'bg-white text-black',
-              )}
+              onClick={() => navigate('/edit-profile')}
+              className="ml-auto flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium bg-zinc-800 text-white/80 active:scale-95"
             >
-              {following ? 'Following' : 'Follow'}
+              <Pencil size={13} /> Edit profile
             </button>
+          ) : (
+            profile.username && (
+              <button
+                onClick={toggleFollow}
+                disabled={followBusy}
+                className={cn(
+                  'ml-auto px-5 py-1.5 rounded-full text-sm font-medium transition-colors disabled:opacity-50',
+                  following ? 'bg-zinc-800 text-white/70' : 'bg-white text-black',
+                )}
+              >
+                {following ? 'Following' : 'Follow'}
+              </button>
+            )
           )}
         </div>
 
@@ -156,7 +170,7 @@ export function ProfilePage() {
           <h2 className="text-white/90 text-sm font-semibold mb-2">Favorite films</h2>
           {profile.favorites.length === 0 ? (
             <p className="text-white/30 text-xs">
-              {isOwn ? 'Pick your favorites in settings.' : 'No favorites yet.'}
+              {isOwn ? 'Pick your favorites in Edit profile.' : 'No favorites yet.'}
             </p>
           ) : (
             <div className="grid grid-cols-4 gap-2">
@@ -201,10 +215,35 @@ export function ProfilePage() {
           </section>
         )}
 
-        {/* Top genres */}
+        {/* Favorite genres (incl. custom) */}
+        {profile.favoriteGenres.length > 0 && (
+          <section className="mt-6">
+            <h2 className="text-white/90 text-sm font-semibold mb-2">Favorite genres</h2>
+            <div className="flex flex-wrap gap-1.5">
+              {profile.favoriteGenres.map((g) => {
+                const custom = knownGenres.length > 0 && !knownGenres.includes(g)
+                return (
+                  <span
+                    key={g}
+                    className={cn(
+                      'px-2.5 py-1 rounded-full text-xs border',
+                      custom
+                        ? 'bg-amber-500/10 text-amber-300 border-amber-400/40'
+                        : 'bg-zinc-800 text-white/60 border-transparent',
+                    )}
+                  >
+                    {g}
+                  </span>
+                )
+              })}
+            </div>
+          </section>
+        )}
+
+        {/* Top genres (watch-derived) */}
         {s.topGenres.length > 0 && (
           <section className="mt-6">
-            <h2 className="text-white/90 text-sm font-semibold mb-2">Top genres</h2>
+            <h2 className="text-white/90 text-sm font-semibold mb-2">Most watched genres</h2>
             <div className="flex flex-wrap gap-1.5">
               {s.topGenres.map((g) => (
                 <span
@@ -218,13 +257,36 @@ export function ProfilePage() {
           </section>
         )}
 
-        {isOwn && (
-          <button
-            onClick={() => navigate('/diary')}
-            className="mt-6 flex items-center gap-2 text-white/50 text-sm"
-          >
-            <Film size={15} /> View your diary →
-          </button>
+        {/* Diary preview (own) */}
+        {isOwn && recentDiary.length > 0 && (
+          <section className="mt-6">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-white/90 text-sm font-semibold">Recent diary</h2>
+              <button onClick={() => navigate('/diary')} className="text-white/40 text-xs flex items-center gap-1">
+                <Film size={13} /> View all
+              </button>
+            </div>
+            <div className="flex gap-2 overflow-x-auto -mx-4 px-4 pb-1">
+              {recentDiary.map((e, i) => (
+                <button
+                  key={`${e.movie.id}-${i}`}
+                  onClick={() => navigate(`/film/${e.movie.tmdbId}`)}
+                  className="w-20 shrink-0 active:scale-95 transition-transform"
+                >
+                  <div className="aspect-[2/3] rounded-lg overflow-hidden bg-zinc-800">
+                    {e.movie.posterPath && (
+                      <img src={`${IMG}/w185${e.movie.posterPath}`} alt={e.movie.title} className="w-full h-full object-cover" />
+                    )}
+                  </div>
+                  {e.rating != null && (
+                    <span className="flex items-center gap-0.5 text-yellow-400 text-[10px] mt-1">
+                      <Star size={9} className="fill-yellow-400" />{e.rating}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </section>
         )}
       </div>
     </div>

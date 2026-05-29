@@ -41,6 +41,7 @@ class PublicProfile(BaseModel):
     avatar_url: str | None
     joined: datetime
     favorites: list[MovieOut]
+    favorite_genres: list[str] = []
     stats: ProfileStats
     follower_count: int = 0
     following_count: int = 0

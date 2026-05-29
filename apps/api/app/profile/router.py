@@ -40,6 +40,7 @@ async def _build_public(
         avatar_url=user.avatar_url,
         joined=user.created_at,
         favorites=[MovieOut.model_validate(m) for m in favorites],
+        favorite_genres=(user.preferences or {}).get("genres") or [],
         stats=stats,
         follower_count=await service.follower_count(db, user.id),
         following_count=await service.following_count(db, user.id),
