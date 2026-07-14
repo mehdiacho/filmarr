@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Rose film card -->
+    <path
+        android:fillColor="#F43F5E"
+        android:pathData="M46,34 L62,34 Q70,34 70,42 L70,66 Q70,74 62,74 L46,74 Q38,74 38,66 L38,42 Q38,34 46,34 Z" />
+    <!-- Play triangle -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M50,48 L50,60 L62,54 Z" />
+</vector>
