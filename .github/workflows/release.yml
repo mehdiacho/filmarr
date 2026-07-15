@@ -1,24 +1,52 @@
-name: Release
+# Build a signed AAB and upload it to a Google Play track. The track is chosen
+# by the branch that was pushed (mirrors the yap pipeline):
+#
+#   main             -> production   (status: draft — promote by hand in console)
+#   open-testing     -> beta         (open testing)
+#   closed-testing   -> alpha        (closed testing)
+#   internal-testing -> internal     (internal testing)
+#
+# Required repository secrets (Settings -> Secrets and variables -> Actions):
+#   KEYSTORE_BASE64              base64 of upload-keystore.jks
+#   STORE_PASSWORD               keystore store password
+#   KEY_ALIAS                    key alias (e.g. "upload")
+#   KEY_PASSWORD                 key password
+#   GOOGLE_SERVICES_JSON_BASE64  base64 of app/google-services.json (it's git-ignored)
+#   TMDB_READ_TOKEN              TMDB v4 read token (baked into BuildConfig at build)
+#   PLAY_SERVICE_ACCOUNT_JSON    JSON key of a GCP service account invited in
+#                                Play Console -> Users & permissions with release
+#                                permission. The Google Play Android Developer API
+#                                (androidpublisher.googleapis.com) must be enabled in
+#                                that account's GCP project.
+# Optional:
+#   RECOMMENDER_BASE_URL         deployed Cloud Run /recommend URL; empty -> app falls
+#                                back to TMDB feeds.
+name: Release to Play
 
-# Builds a signed Play AAB on a version tag (e.g. `v1.0.0`) or manual dispatch.
-# Signing key + Firebase config come from repo secrets (already set):
-#   KEYSTORE_BASE64, STORE_PASSWORD, KEY_PASSWORD, KEY_ALIAS, GOOGLE_SERVICES_JSON_BASE64
-# Add TMDB_READ_TOKEN and (for Play upload) PLAY_SERVICE_ACCOUNT_JSON when ready.
 on:
   push:
-    tags: ['v*']
-  workflow_dispatch:
+    branches: [main, open-testing, closed-testing, internal-testing]
+  workflow_dispatch: {}
+
+# One track at a time per branch; different tracks never block each other.
+concurrency:
+  group: play-release-${{ github.ref_name }}
+  cancel-in-progress: false
 
 jobs:
-  build:
+  build-and-upload:
     runs-on: ubuntu-latest
     steps:
+      # fetch-depth: 0 gives full history so `git rev-list --count HEAD`
+      # produces a real, monotonic versionCode (a shallow clone returns 1).
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: "21"
 
       - uses: android-actions/setup-android@v3
 
@@ -27,11 +55,34 @@ jobs:
           yes | sdkmanager --licenses > /dev/null || true
           sdkmanager "platforms;android-36" "build-tools;36.0.0" || true
 
-      - name: Decode secrets
+      - uses: gradle/actions/setup-gradle@v4
+
+      # Map the pushed branch to a Play track + rollout status.
+      - name: Select Play track
+        id: play
+        run: |
+          case "$GITHUB_REF_NAME" in
+            main)             track=production; status=draft ;;
+            open-testing)     track=beta;       status=completed ;;
+            closed-testing)   track=alpha;      status=completed ;;
+            internal-testing) track=internal;   status=completed ;;
+            *) echo "::error::No Play track mapping for branch '$GITHUB_REF_NAME'"; exit 1 ;;
+          esac
+          echo "track=$track"   >> "$GITHUB_OUTPUT"
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          echo "Deploying '$GITHUB_REF_NAME' -> Play '$track' track (status=$status)"
+
+      - name: Restore keystore, Firebase config, and .env
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > upload-keystore.jks
           echo "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 -d > app/google-services.json
           printf 'TMDB_READ_TOKEN=%s\n' "${{ secrets.TMDB_READ_TOKEN }}" > .env
+          printf 'RECOMMENDER_BASE_URL=%s\n' "${{ secrets.RECOMMENDER_BASE_URL }}" >> .env
+
+      # versionCode must be unique and increasing per upload — derive it from
+      # the commit count (requires the full history fetched above).
+      - name: Compute versionCode
+        run: echo "FILMARR_VERSION_CODE=$(git rev-list --count HEAD)" >> "$GITHUB_ENV"
 
       - name: Build signed AAB
         env:
@@ -39,19 +90,14 @@ jobs:
           STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-          FILMARR_VERSION_CODE: ${{ github.run_number }}
           FILMARR_VERSION_NAME: ${{ github.ref_name }}
         run: ./gradlew bundleRelease --no-daemon --no-configuration-cache
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload to Play (${{ steps.play.outputs.track }})
+        uses: r0adkll/upload-google-play@v1
         with:
-          name: filmarr-release-aab
-          path: app/build/outputs/bundle/release/app-release.aab
-
-      # Play upload — enable once a Play Console app + service account JSON exist.
-      # - uses: r0adkll/upload-google-play@v1
-      #   with:
-      #     serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
-      #     packageName: app.greenforrest.filmarr
-      #     releaseFiles: app/build/outputs/bundle/release/app-release.aab
-      #     track: internal
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: app.greenforrest.filmarr
+          releaseFiles: app/build/outputs/bundle/release/app-release.aab
+          track: ${{ steps.play.outputs.track }}
+          status: ${{ steps.play.outputs.status }}
