@@ -79,6 +79,8 @@ includes adult-rated titles). "Could the listing unintentionally appeal to child
   only for public film metadata; no user data is sent to it.
 - **Account creation methods:** **Email and password** *and* **Google (OAuth)**.
 - **Account deletion URL:** `https://filmarr-mehdiacho.web.app/delete-account.html`.
+  There is also an **in-app deletion path** (Settings → Delete account → backend `DELETE /account`
+  wipes all `users/{uid}` data + the auth user), which Data safety review prefers.
   "Delete some data without deleting the account?" → **Yes** (per-item removal in-app; same URL).
 
 **Data-types matrix** (Collected · not shared · stored):
@@ -153,5 +155,4 @@ N/A — Filmarr is free, no products.
 1. **Test account** for §2 (throwaway email/password Firebase user).
 2. **4+ phone screenshots** for §12.
 3. Confirm **developer display name** ("Green Forrest") matches your Play developer account.
-4. *(Recommended)* add an **in-app "Delete account"** flow so §6 has an on-device path, not just
-   the email request — stronger for Data-safety review.
+4. ~~In-app "Delete account" flow~~ — **done** (Settings → Delete account; backend `DELETE /account`).
