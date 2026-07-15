@@ -1,0 +1,4 @@
+# Deps for the one-off catalog seeding script (scripts/seed_catalog.py).
+# Run from backend/:  pip install -r scripts/requirements.txt
+requests>=2.31
+google-cloud-firestore>=2,<3
