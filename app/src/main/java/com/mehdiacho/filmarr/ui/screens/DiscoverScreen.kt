@@ -34,7 +34,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mehdiacho.filmarr.data.Film
 import com.mehdiacho.filmarr.data.FilmRepository
+import com.mehdiacho.filmarr.data.InteractionEvent
 import com.mehdiacho.filmarr.data.MockCatalog
+import com.mehdiacho.filmarr.data.recommender.RecommenderRepository
 import com.mehdiacho.filmarr.data.tmdb.TmdbRepository
 import com.mehdiacho.filmarr.ui.components.ActionCircle
 import com.mehdiacho.filmarr.ui.components.StarRow
@@ -48,7 +50,9 @@ import com.mehdiacho.filmarr.ui.theme.FilmarrType
 fun DiscoverScreen(onOpenFilm: (String) -> Unit, onOpenAsk: () -> Unit) {
     var deck by remember { mutableStateOf<List<Film>>(emptyList()) }
     LaunchedEffect(Unit) {
-        val live = TmdbRepository.discover()
+        // Prefer backend recs; fall back to TMDB trending (cold start / no backend), then mock.
+        val recs = RecommenderRepository.recommend("discover", 20)
+        val live = recs.ifEmpty { TmdbRepository.discover() }
         deck = live.ifEmpty { MockCatalog.discoverDeck }
     }
     val deckState = rememberSwipeDeckState()
@@ -89,9 +93,17 @@ fun DiscoverScreen(onOpenFilm: (String) -> Unit, onOpenAsk: () -> Unit) {
                     leftLabel = "SKIP",
                     heartedIds = heartedIds,
                     onSwipeRight = { film ->
-                        if (focusActive && rating > 0f) FilmRepository.logWatched(film, rating) else FilmRepository.markInterested(film)
+                        if (focusActive && rating > 0f) {
+                            FilmRepository.logWatched(film, rating)
+                            FilmRepository.logInteraction(film, InteractionEvent.RATED, rating)  // richest signal (§7)
+                        } else {
+                            FilmRepository.markInterested(film)
+                            FilmRepository.logInteraction(film, InteractionEvent.INTERESTED)
+                        }
                         oneShotFocus = false; rating = 0f
                     },
+                    // Discover left = "not interested"; base.py has no such event type, so it is
+                    // intentionally not logged (flagged in the handoff notes).
                     onSwipeLeft = { oneShotFocus = false; rating = 0f },
                     onTap = { onOpenFilm(it.id) },
                     onDoubleTap = { FilmRepository.toggleFavorite(it) },

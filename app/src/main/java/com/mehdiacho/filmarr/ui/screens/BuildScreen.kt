@@ -23,7 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mehdiacho.filmarr.data.Film
 import com.mehdiacho.filmarr.data.FilmRepository
+import com.mehdiacho.filmarr.data.InteractionEvent
 import com.mehdiacho.filmarr.data.MockCatalog
+import com.mehdiacho.filmarr.data.recommender.RecommenderRepository
 import com.mehdiacho.filmarr.data.tmdb.TmdbRepository
 import com.mehdiacho.filmarr.ui.components.ProgressTrack
 import com.mehdiacho.filmarr.ui.components.SwipeDeck
@@ -35,7 +37,9 @@ import com.mehdiacho.filmarr.ui.theme.FilmarrType
 fun BuildScreen(onOpenFilm: (String) -> Unit) {
     var films by remember { mutableStateOf<List<Film>>(emptyList()) }
     LaunchedEffect(Unit) {
-        val live = TmdbRepository.buildFeed()
+        // Prefer backend "library" recs (stuff you've probably seen); fall back to TMDB popular.
+        val recs = RecommenderRepository.recommend("library", 20)
+        val live = recs.ifEmpty { TmdbRepository.buildFeed() }
         films = live.ifEmpty { MockCatalog.buildFeed.map { it.film } }
     }
     val confidenceById = films.associate { it.id to "Likely seen · ${it.year}" }
@@ -73,8 +77,11 @@ fun BuildScreen(onOpenFilm: (String) -> Unit) {
                 state = deckState,
                 rightLabel = "SEEN",
                 leftLabel = "NOT SEEN",
-                onSwipeRight = { FilmRepository.logWatched(it) },
-                onSwipeLeft = {},
+                onSwipeRight = {
+                    FilmRepository.logWatched(it)
+                    FilmRepository.logInteraction(it, InteractionEvent.WATCHED)
+                },
+                onSwipeLeft = { FilmRepository.logInteraction(it, InteractionEvent.NOT_WATCHED) },
                 onTap = { onOpenFilm(it.id) },
                 pill = { confidenceById[it.id] },
                 modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp),
