@@ -45,7 +45,7 @@ import com.mehdiacho.filmarr.ui.theme.FilmarrType
 import kotlinx.coroutines.launch
 
 @Composable
-fun AuthScreen(onBack: () -> Unit, onAuthed: () -> Unit, onGuest: (() -> Unit)? = null) {
+fun AuthScreen(onBack: () -> Unit, onAuthed: (isNewUser: Boolean) -> Unit, onGuest: (() -> Unit)? = null) {
     var isSignUp by remember { mutableStateOf(false) }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -54,9 +54,9 @@ fun AuthScreen(onBack: () -> Unit, onAuthed: () -> Unit, onGuest: (() -> Unit)? 
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    fun handle(result: Result<Unit>) {
+    fun handle(result: Result<Boolean>) {
         busy = false
-        result.onSuccess { onAuthed() }.onFailure { error = it.message ?: "Something went wrong" }
+        result.onSuccess { isNewUser -> onAuthed(isNewUser) }.onFailure { error = it.message ?: "Something went wrong" }
     }
 
     fun submitEmail() {

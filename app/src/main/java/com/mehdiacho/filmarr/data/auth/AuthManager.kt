@@ -34,16 +34,18 @@ object AuthManager {
 
     val isSignedIn: Boolean get() = auth.currentUser != null
 
-    suspend fun signInEmail(email: String, password: String): Result<Unit> = runCatching {
-        auth.signInWithEmailAndPassword(email.trim(), password).await(); Unit
+    /** Result carries `isNewUser` so the caller can route first-time accounts through onboarding. */
+    suspend fun signInEmail(email: String, password: String): Result<Boolean> = runCatching {
+        auth.signInWithEmailAndPassword(email.trim(), password).await(); false
     }
 
-    suspend fun signUpEmail(email: String, password: String): Result<Unit> = runCatching {
-        auth.createUserWithEmailAndPassword(email.trim(), password).await(); Unit
+    suspend fun signUpEmail(email: String, password: String): Result<Boolean> = runCatching {
+        auth.createUserWithEmailAndPassword(email.trim(), password).await(); true
     }
 
-    suspend fun signInWithGoogleIdToken(idToken: String): Result<Unit> = runCatching {
-        auth.signInWithCredential(GoogleAuthProvider.getCredential(idToken, null)).await(); Unit
+    suspend fun signInWithGoogleIdToken(idToken: String): Result<Boolean> = runCatching {
+        val result = auth.signInWithCredential(GoogleAuthProvider.getCredential(idToken, null)).await()
+        result.additionalUserInfo?.isNewUser ?: false
     }
 
     fun signOut() = auth.signOut()
@@ -53,7 +55,7 @@ object AuthManager {
  * Launches the Credential Manager Google chooser and completes Firebase sign-in with the returned
  * ID token. [context] must be an Activity context so the system UI can attach.
  */
-suspend fun signInWithGoogle(context: Context): Result<Unit> = runCatching {
+suspend fun signInWithGoogle(context: Context): Result<Boolean> = runCatching {
     val credentialManager = CredentialManager.create(context)
     val webClientId = context.getString(R.string.default_web_client_id)
     val googleIdOption = GetGoogleIdOption.Builder()

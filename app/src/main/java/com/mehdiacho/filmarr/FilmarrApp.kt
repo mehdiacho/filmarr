@@ -87,7 +87,11 @@ fun FilmarrApp() {
             composable(Dest.AUTH) {
                 AuthScreen(
                     onBack = { if (!nav.popBackStack()) nav.navigate(Dest.SEARCH) },
-                    onAuthed = { nav.navigate(Dest.DISCOVER) { popUpTo(Dest.AUTH) { inclusive = true } } },
+                    // New accounts go through onboarding (seeds the graph); returning users skip it.
+                    onAuthed = { isNewUser ->
+                        val dest = if (isNewUser) Dest.ONBOARDING else Dest.DISCOVER
+                        nav.navigate(dest) { popUpTo(Dest.AUTH) { inclusive = true } }
+                    },
                     onGuest = { nav.navigate(Dest.SEARCH) { popUpTo(Dest.AUTH) { inclusive = true } } },
                 )
             }
