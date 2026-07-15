@@ -20,3 +20,10 @@ google-services.json
 
 # Kotlin
 .kotlin/
+
+# Python (backend recommender service)
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+venv/
