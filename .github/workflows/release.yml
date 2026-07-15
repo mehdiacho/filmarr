@@ -73,11 +73,17 @@ jobs:
           echo "Deploying '$GITHUB_REF_NAME' -> Play '$track' track (status=$status)"
 
       - name: Restore keystore, Firebase config, and .env
+        env:
+          TMDB_READ_TOKEN: ${{ secrets.TMDB_READ_TOKEN }}
+          RECOMMENDER_BASE_URL: ${{ secrets.RECOMMENDER_BASE_URL }}
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > upload-keystore.jks
           echo "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 -d > app/google-services.json
-          printf 'TMDB_READ_TOKEN=%s\n' "${{ secrets.TMDB_READ_TOKEN }}" > .env
-          printf 'RECOMMENDER_BASE_URL=%s\n' "${{ secrets.RECOMMENDER_BASE_URL }}" >> .env
+          # Only write non-empty values: the Secrets Gradle plugin emits invalid Java for a
+          # blank value, and missing keys fall back to .env.example's (non-empty) defaults.
+          : > .env
+          if [ -n "$TMDB_READ_TOKEN" ]; then printf 'TMDB_READ_TOKEN=%s\n' "$TMDB_READ_TOKEN" >> .env; fi
+          if [ -n "$RECOMMENDER_BASE_URL" ]; then printf 'RECOMMENDER_BASE_URL=%s\n' "$RECOMMENDER_BASE_URL" >> .env; fi
 
       # versionCode must be unique and increasing per upload — derive it from
       # the commit count (requires the full history fetched above).
