@@ -28,6 +28,9 @@ object FilmRepository {
     /** Append-only interaction log + hidden hearted list (the recommender's training substrate). */
     private var interactionLog: FirestoreInteractionLog? = null
 
+    /** Profile writer for onboarding (interest tags, age bracket, onboarded marker). */
+    private var profile: FirestoreUserProfile? = null
+
     /** Attach the signed-in user's cloud library; the snapshot listener becomes the source of truth. */
     fun bind(uid: String) {
         store?.stop()
@@ -36,6 +39,7 @@ object FilmRepository {
         val s = FirestoreLibraryStore(uid)
         store = s
         interactionLog = FirestoreInteractionLog(uid)
+        profile = FirestoreUserProfile(uid)
         s.listen { entries -> _library.value = entries }
     }
 
@@ -44,8 +48,19 @@ object FilmRepository {
         store?.stop()
         store = null
         interactionLog = null
+        profile = null
         undoStack.clear()
         _library.value = MockCatalog.library
+    }
+
+    /**
+     * Persist onboarding: interest tags + optional age bracket to the profile, and each chosen
+     * "loved" film as an INTERESTED seed interaction — the cold-start seed set the recommender
+     * propagates from on a brand-new account (GRAPH_RECOMMENDER.md §10).
+     */
+    fun completeOnboarding(genres: List<String>, lovedFilms: List<Film>, ageBracket: String? = null) {
+        profile?.completeOnboarding(genres, ageBracket)
+        lovedFilms.forEach { logInteraction(it, InteractionEvent.INTERESTED) }
     }
 
     /**
