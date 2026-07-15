@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.mehdiacho.filmarr.data.auth.AuthManager
 import com.mehdiacho.filmarr.data.auth.signInWithGoogle
+import com.mehdiacho.filmarr.ui.components.GoogleGradientButton
 import com.mehdiacho.filmarr.ui.components.PrimaryCta
 import com.mehdiacho.filmarr.ui.theme.Dimens
 import com.mehdiacho.filmarr.ui.theme.FilmarrColors
@@ -42,7 +45,7 @@ import com.mehdiacho.filmarr.ui.theme.FilmarrType
 import kotlinx.coroutines.launch
 
 @Composable
-fun AuthScreen(onBack: () -> Unit, onAuthed: () -> Unit) {
+fun AuthScreen(onBack: () -> Unit, onAuthed: () -> Unit, onGuest: (() -> Unit)? = null) {
     var isSignUp by remember { mutableStateOf(false) }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -81,17 +84,6 @@ fun AuthScreen(onBack: () -> Unit, onAuthed: () -> Unit) {
         Text("Sync your library across devices.", style = FilmarrType.body, color = FilmarrColors.TextTertiary)
         Spacer(Modifier.height(26.dp))
 
-        // Google button
-        Box(
-            Modifier.fillMaxWidth().height(52.dp).clip(RoundedCornerShape(Dimens.rLg)).background(Color.White)
-                .clickable(enabled = !busy) { submitGoogle() },
-            contentAlignment = Alignment.Center,
-        ) { Text("Continue with Google", style = FilmarrType.labelStrong, color = Color(0xFF1A1A1A)) }
-
-        Spacer(Modifier.height(18.dp))
-        Text("or", style = FilmarrType.meta, color = FilmarrColors.TextMuted)
-        Spacer(Modifier.height(18.dp))
-
         AuthField("Email", email, { email = it })
         Spacer(Modifier.height(10.dp))
         AuthField("Password", password, { password = it }, isPassword = true)
@@ -103,13 +95,30 @@ fun AuthScreen(onBack: () -> Unit, onAuthed: () -> Unit) {
 
         Spacer(Modifier.height(20.dp))
         PrimaryCta(if (busy) "Please wait…" else if (isSignUp) "Sign up" else "Sign in", onClick = { if (!busy) submitEmail() })
-
-        Spacer(Modifier.weight(1f))
         Text(
             if (isSignUp) "Already have an account? Sign in" else "New here? Create an account",
             style = FilmarrType.meta, color = FilmarrColors.Rose,
             modifier = Modifier.clickable { isSignUp = !isSignUp }.padding(12.dp),
         )
+
+        // Docked bottom: "or" divider → animated-gradient Google button → guest link.
+        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.height(20.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            HorizontalDivider(Modifier.weight(1f), color = FilmarrColors.Hairline)
+            Text("  or  ", style = FilmarrType.meta, color = FilmarrColors.TextMuted)
+            HorizontalDivider(Modifier.weight(1f), color = FilmarrColors.Hairline)
+        }
+        Spacer(Modifier.height(14.dp))
+        GoogleGradientButton(busy = busy) { if (!busy) submitGoogle() }
+        if (onGuest != null) {
+            Text(
+                "Browse films without an account",
+                style = FilmarrType.meta, color = FilmarrColors.TextTertiary,
+                modifier = Modifier.clickable { onGuest() }.padding(top = 10.dp, bottom = 4.dp),
+            )
+        }
+        Spacer(Modifier.height(8.dp))
     }
 }
 

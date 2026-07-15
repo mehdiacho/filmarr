@@ -46,6 +46,7 @@ fun ProfileScreen(
     onOpenOverlap: () -> Unit,
     onOpenLetterboxd: () -> Unit,
     onOpenAuth: () -> Unit,
+    onSignedOut: () -> Unit = {},
 ) {
     val stats = MockCatalog.profileStats
     val user by AuthManager.user.collectAsStateWithLifecycle()
@@ -118,7 +119,7 @@ fun ProfileScreen(
 
         Box(Modifier.fillMaxWidth().padding(20.dp)) {
             if (user != null) {
-                Text("Sign out", style = FilmarrType.meta, color = FilmarrColors.Rose, modifier = Modifier.clickable { AuthManager.signOut() })
+                Text("Sign out", style = FilmarrType.meta, color = FilmarrColors.Rose, modifier = Modifier.clickable { AuthManager.signOut(); onSignedOut() })
             } else {
                 Text("Sign in to sync →", style = FilmarrType.meta, color = FilmarrColors.TextMuted, modifier = Modifier.clickable(onClick = onOpenAuth))
             }

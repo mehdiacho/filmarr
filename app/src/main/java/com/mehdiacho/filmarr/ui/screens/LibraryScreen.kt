@@ -30,12 +30,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.mehdiacho.filmarr.data.FilmRepository
 import com.mehdiacho.filmarr.data.LibraryEntry
 import com.mehdiacho.filmarr.data.WatchStatus
+import com.mehdiacho.filmarr.data.tmdb.posterUrl
 import com.mehdiacho.filmarr.ui.components.Eyebrow
 import com.mehdiacho.filmarr.ui.components.SegmentedControl
 import com.mehdiacho.filmarr.ui.components.StarRow
@@ -78,6 +81,9 @@ private fun GridView(entries: List<LibraryEntry>, onOpenFilm: (String) -> Unit) 
                     .background(PosterGradients.forKey(e.film.gradientKey).brush)
                     .clickable { onOpenFilm(e.film.id) }
             ) {
+                e.film.posterUrl("w342")?.let { url ->
+                    AsyncImage(url, e.film.title, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
+                }
                 if (e.userRating != null) {
                     Row(
                         Modifier.align(Alignment.BottomStart).padding(6.dp)
@@ -115,7 +121,11 @@ private fun DiaryRow(e: LibraryEntry, onOpenFilm: (String) -> Unit) {
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(e.loggedLabel ?: "", style = FilmarrType.statNumeral.copy(fontSize = androidx.compose.ui.unit.TextUnit(18f, androidx.compose.ui.unit.TextUnitType.Sp)), color = FilmarrColors.TextMuted, modifier = Modifier.size(width = 30.dp, height = 30.dp))
-        Box(Modifier.size(width = 38.dp, height = 54.dp).clip(RoundedCornerShape(Dimens.rSm)).background(PosterGradients.forKey(e.film.gradientKey).brush))
+        Box(Modifier.size(width = 38.dp, height = 54.dp).clip(RoundedCornerShape(Dimens.rSm)).background(PosterGradients.forKey(e.film.gradientKey).brush)) {
+            e.film.posterUrl("w185")?.let { url ->
+                AsyncImage(url, e.film.title, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
+            }
+        }
         Column(Modifier.weight(1f)) {
             Text(e.film.title, style = FilmarrType.labelStrong, color = FilmarrColors.TextPrimary)
             StarRow(rating = e.userRating ?: 0f, star = 12.dp, modifier = Modifier.padding(vertical = 3.dp))

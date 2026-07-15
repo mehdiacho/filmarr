@@ -48,7 +48,13 @@ import com.mehdiacho.filmarr.ui.theme.FilmarrColors
 import com.mehdiacho.filmarr.ui.theme.FilmarrType
 
 @Composable
-fun SearchScreen(onBack: () -> Unit, onOpenFilm: (String) -> Unit, onOpenAsk: () -> Unit) {
+fun SearchScreen(
+    onBack: () -> Unit,
+    onOpenFilm: (String) -> Unit,
+    onOpenAsk: () -> Unit,
+    canLog: Boolean = true,
+    onRequireAuth: () -> Unit = {},
+) {
     var query by remember { mutableStateOf(TextFieldValue("")) }
     val library by FilmRepository.library.collectAsStateWithLifecycle()
     val loggedIds = library.filter { it.status == com.mehdiacho.filmarr.data.WatchStatus.WATCHED }.map { it.film.id }.toSet()
@@ -100,8 +106,8 @@ fun SearchScreen(onBack: () -> Unit, onOpenFilm: (String) -> Unit, onOpenAsk: ()
                         film = film,
                         logged = film.id in loggedIds,
                         onClick = { onOpenFilm(film.id) },
-                        onAdd = { FilmRepository.logWatched(film) },
-                        onLongPress = { quickAdd = film },
+                        onAdd = { if (canLog) FilmRepository.logWatched(film) else onRequireAuth() },
+                        onLongPress = { if (canLog) quickAdd = film else onRequireAuth() },
                     )
                 }
                 item {

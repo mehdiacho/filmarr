@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialException
+import androidx.credentials.exceptions.NoCredentialException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.mehdiacho.filmarr.R
@@ -61,7 +63,15 @@ suspend fun signInWithGoogle(context: Context): Result<Unit> = runCatching {
         .build()
     val request = GetCredentialRequest.Builder().addCredentialOption(googleIdOption).build()
 
-    val response = credentialManager.getCredential(context, request)
+    val response = try {
+        credentialManager.getCredential(context, request)
+    } catch (e: NoCredentialException) {
+        // No matching Google account (or Play services still fetching its credentials module on a
+        // fresh install). Config-correct devices recover on retry.
+        error("No Google account is available yet — add one in Settings or try again in a moment, or use email.")
+    } catch (e: GetCredentialException) {
+        error(e.message ?: "Google sign-in was cancelled.")
+    }
     val credential = response.credential
     if (credential is CustomCredential &&
         credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL

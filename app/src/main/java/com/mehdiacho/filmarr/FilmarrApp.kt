@@ -45,6 +45,16 @@ private val NAV_ROUTES = setOf(
     Dest.FILM_DETAIL, Dest.BLITZ, Dest.TONIGHT, Dest.TASTE_GRAPH, Dest.OVERLAP, Dest.SEARCH,
 )
 
+/**
+ * Routes that require an account. Guests may browse Search + Film detail (ratings, recommendations)
+ * but everything personal — the swipe feeds, the library, the profile — prompts sign-in. A local
+ * guest profile with on-device logging is a later addition.
+ */
+private val AUTH_REQUIRED = setOf(
+    Dest.DISCOVER, Dest.BUILD, Dest.LIBRARY, Dest.PROFILE,
+    Dest.BLITZ, Dest.TONIGHT, Dest.TASTE_GRAPH, Dest.OVERLAP, Dest.ASK, Dest.LETTERBOXD,
+)
+
 @Composable
 fun FilmarrApp() {
     val nav = rememberNavController()
@@ -53,21 +63,34 @@ fun FilmarrApp() {
 
     // Bind the library to the signed-in user's cloud data; fall back to local preview when signed out.
     val user by AuthManager.user.collectAsStateWithLifecycle()
+    val signedIn = user != null
     LaunchedEffect(user?.uid) {
         val uid = user?.uid
         if (uid != null) FilmRepository.bind(uid) else FilmRepository.unbind()
     }
 
+    // Guarded tab switch: gated destinations bounce a guest to the auth gate.
+    fun guardedTab(route: String) {
+        if (route in AUTH_REQUIRED && !signedIn) nav.navigate(Dest.AUTH) else nav.switchTab(route)
+    }
+
     Box(Modifier.fillMaxSize().background(FilmarrColors.Bg)) {
         NavHost(
             navController = nav,
-            startDestination = Dest.DISCOVER,
+            // Signed-out users land on the gate; Search is reachable from there as a guest.
+            startDestination = if (signedIn) Dest.DISCOVER else Dest.AUTH,
             modifier = Modifier.fillMaxSize(),
         ) {
             composable(Dest.ONBOARDING) {
                 OnboardingScreen(onDone = { nav.navigate(Dest.DISCOVER) { popUpTo(Dest.ONBOARDING) { inclusive = true } } })
             }
-            composable(Dest.AUTH) { AuthScreen(onBack = { nav.popBackStack() }, onAuthed = { nav.popBackStack() }) }
+            composable(Dest.AUTH) {
+                AuthScreen(
+                    onBack = { if (!nav.popBackStack()) nav.navigate(Dest.SEARCH) },
+                    onAuthed = { nav.navigate(Dest.DISCOVER) { popUpTo(Dest.AUTH) { inclusive = true } } },
+                    onGuest = { nav.navigate(Dest.SEARCH) { popUpTo(Dest.AUTH) { inclusive = true } } },
+                )
+            }
 
             composable(Dest.DISCOVER) {
                 DiscoverScreen(onOpenFilm = { nav.pushFilm(it) }, onOpenAsk = { nav.navigate(Dest.ASK) })
@@ -81,14 +104,21 @@ fun FilmarrApp() {
                     onOpenOverlap = { nav.navigate(Dest.OVERLAP) },
                     onOpenLetterboxd = { nav.navigate(Dest.LETTERBOXD) },
                     onOpenAuth = { nav.navigate(Dest.AUTH) },
+                    onSignedOut = { nav.navigate(Dest.AUTH) { popUpTo(nav.graph.startDestinationId) { inclusive = true } } },
                 )
             }
             composable(Dest.FILM_DETAIL) { entry ->
                 val id = entry.arguments?.getString("filmId") ?: return@composable
-                FilmDetailScreen(filmId = id, onBack = { nav.popBackStack() }, onOpenFilm = { nav.pushFilm(it) })
+                FilmDetailScreen(
+                    filmId = id, onBack = { nav.popBackStack() }, onOpenFilm = { nav.pushFilm(it) },
+                    canLog = signedIn, onRequireAuth = { nav.navigate(Dest.AUTH) },
+                )
             }
             composable(Dest.SEARCH) {
-                SearchScreen(onBack = { nav.popBackStack() }, onOpenFilm = { nav.pushFilm(it) }, onOpenAsk = { nav.navigate(Dest.ASK) })
+                SearchScreen(
+                    onBack = { nav.popBackStack() }, onOpenFilm = { nav.pushFilm(it) }, onOpenAsk = { nav.navigate(Dest.ASK) },
+                    canLog = signedIn, onRequireAuth = { nav.navigate(Dest.AUTH) },
+                )
             }
             composable(Dest.BLITZ) { BlitzScreen(onBack = { nav.popBackStack() }) }
             composable(Dest.TONIGHT) { TonightScreen(onBack = { nav.popBackStack() }, onOpenFilm = { nav.pushFilm(it) }) }
@@ -109,9 +139,9 @@ fun FilmarrApp() {
             Box(Modifier.align(Alignment.BottomCenter)) {
                 FilmarrBottomNav(
                     current = current,
-                    onNavigate = { nav.switchTab(it) },
+                    onNavigate = { guardedTab(it) },
                     onQuickLog = { nav.navigate(Dest.SEARCH) },
-                    onQuickLogLongPress = { nav.navigate(Dest.TONIGHT) },
+                    onQuickLogLongPress = { guardedTab(Dest.TONIGHT) },
                 )
             }
         }

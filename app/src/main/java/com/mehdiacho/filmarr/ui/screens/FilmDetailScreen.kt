@@ -57,7 +57,13 @@ import com.mehdiacho.filmarr.ui.theme.FilmarrType
 import com.mehdiacho.filmarr.ui.theme.PosterGradients
 
 @Composable
-fun FilmDetailScreen(filmId: String, onBack: () -> Unit, onOpenFilm: (String) -> Unit) {
+fun FilmDetailScreen(
+    filmId: String,
+    onBack: () -> Unit,
+    onOpenFilm: (String) -> Unit,
+    canLog: Boolean = true,
+    onRequireAuth: () -> Unit = {},
+) {
     val fallback = remember(filmId) {
         TmdbRepository.cached(filmId) ?: runCatching { MockCatalog.byId(filmId) }.getOrDefault(MockCatalog.films.first())
     }
@@ -113,16 +119,16 @@ fun FilmDetailScreen(filmId: String, onBack: () -> Unit, onOpenFilm: (String) ->
                 Row(Modifier.padding(top = 18.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     ConfirmButton(
                         text = if (watched) "Watched" else "Watched",
-                        onClick = { FilmRepository.logWatched(film) },
+                        onClick = { if (canLog) FilmRepository.logWatched(film) else onRequireAuth() },
                         modifier = Modifier.weight(1f),
                     ) {
                         Icon(Icons.Filled.Check, null, tint = FilmarrColors.OnGreen, modifier = Modifier.size(15.dp).padding(end = 0.dp))
                         Box(Modifier.width(6.dp))
                     }
-                    IconSquareButton(onClick = { FilmRepository.toggleFavorite(film) }) {
+                    IconSquareButton(onClick = { if (canLog) FilmRepository.toggleFavorite(film) else onRequireAuth() }) {
                         Icon(Icons.Filled.Favorite, "Favorite", tint = if (entry?.favorite == true) FilmarrColors.Rose else FilmarrColors.Rose, modifier = Modifier.size(18.dp))
                     }
-                    IconSquareButton(onClick = { FilmRepository.addToWatchlist(film) }) {
+                    IconSquareButton(onClick = { if (canLog) FilmRepository.addToWatchlist(film) else onRequireAuth() }) {
                         Icon(Icons.Filled.Bookmark, "Watchlist", tint = FilmarrColors.TextPrimary, modifier = Modifier.size(18.dp))
                     }
                 }
