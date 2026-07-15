@@ -131,7 +131,14 @@ fun FilmarrApp() {
             composable(Dest.TASTE_GRAPH) { TasteGraphScreen(onBack = { nav.popBackStack() }, onOpenFilm = { nav.pushFilm(it) }) }
             composable(Dest.LETTERBOXD) { LetterboxdImportScreen(onBack = { nav.popBackStack() }) }
             composable(Dest.SETTINGS) {
-                SettingsScreen(onBack = { nav.popBackStack() }, onOpenLetterboxd = { nav.navigate(Dest.LETTERBOXD) }, onOpenAuth = { nav.navigate(Dest.AUTH) })
+                SettingsScreen(
+                    onBack = { nav.popBackStack() },
+                    onOpenLetterboxd = { nav.navigate(Dest.LETTERBOXD) },
+                    onOpenAuth = { nav.navigate(Dest.AUTH) },
+                    onAccountDeleted = {
+                        nav.navigate(Dest.AUTH) { popUpTo(nav.graph.startDestinationId) { inclusive = true } }
+                    },
+                )
             }
         }
 
