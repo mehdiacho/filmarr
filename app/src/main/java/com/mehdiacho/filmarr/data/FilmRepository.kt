@@ -25,6 +25,9 @@ object FilmRepository {
     /** Firestore mirror — non-null while a user is signed in. */
     private var store: FirestoreLibraryStore? = null
 
+    /** Append-only interaction log + hidden hearted list (the recommender's training substrate). */
+    private var interactionLog: FirestoreInteractionLog? = null
+
     /** Attach the signed-in user's cloud library; the snapshot listener becomes the source of truth. */
     fun bind(uid: String) {
         store?.stop()
@@ -32,6 +35,7 @@ object FilmRepository {
         _library.value = emptyList()
         val s = FirestoreLibraryStore(uid)
         store = s
+        interactionLog = FirestoreInteractionLog(uid)
         s.listen { entries -> _library.value = entries }
     }
 
@@ -39,8 +43,19 @@ object FilmRepository {
     fun unbind() {
         store?.stop()
         store = null
+        interactionLog = null
         undoStack.clear()
         _library.value = MockCatalog.library
+    }
+
+    /**
+     * Append a swipe/gesture event to the interaction log. The caller resolves the
+     * feed-dependent meaning (right = INTERESTED in discover vs WATCHED in build) before
+     * this point, per base.py. No-op for mock films whose id isn't a TMDB numeric id.
+     */
+    fun logInteraction(film: Film, eventType: String, rating: Float? = null) {
+        val id = film.id.toLongOrNull() ?: return
+        interactionLog?.log(id, eventType, rating)
     }
 
     val watched: List<LibraryEntry> get() = _library.value.filter { it.status == WatchStatus.WATCHED }
@@ -87,8 +102,18 @@ object FilmRepository {
     }
 
     fun toggleFavorite(film: Film) {
+        val nowFavorite = !(_library.value.firstOrNull { it.film.id == film.id }?.favorite ?: false)
         upsert(film) { existing ->
-            (existing ?: LibraryEntry(film, WatchStatus.NONE)).let { it.copy(favorite = !it.favorite) }
+            (existing ?: LibraryEntry(film, WatchStatus.NONE)).copy(favorite = nowFavorite)
+        }
+        // Double-tap "heart" — mirror into the hidden hearted list + log the event (§7).
+        film.id.toLongOrNull()?.let { id ->
+            if (nowFavorite) {
+                interactionLog?.heart(id)
+                interactionLog?.log(id, InteractionEvent.HEARTED)
+            } else {
+                interactionLog?.unheart(id)
+            }
         }
     }
 
