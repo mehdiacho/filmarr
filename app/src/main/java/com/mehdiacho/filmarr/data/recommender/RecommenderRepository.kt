@@ -74,4 +74,21 @@ object RecommenderRepository {
                 .filterNotNull()
         }
     }
+
+    /**
+     * Permanently delete the signed-in user's account and all their data (server-side, via the
+     * backend's Admin credentials). The caller is responsible for signing out locally on success.
+     * Fails if no backend is configured — deletion must be total, so we never silently no-op.
+     */
+    suspend fun deleteAccount(): Result<Unit> {
+        val svc = service ?: return Result.failure(
+            IllegalStateException("Account deletion needs the backend, which isn't configured."),
+        )
+        return runCatching {
+            withContext(Dispatchers.IO) {
+                val resp = svc.deleteAccount()
+                if (!resp.isSuccessful) error("Server returned ${resp.code()}")
+            }
+        }
+    }
 }
