@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,19 +29,43 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.mehdiacho.filmarr.data.auth.AuthManager
+import com.mehdiacho.filmarr.data.auth.signInWithGoogle
 import com.mehdiacho.filmarr.ui.components.PrimaryCta
 import com.mehdiacho.filmarr.ui.theme.Dimens
 import com.mehdiacho.filmarr.ui.theme.FilmarrColors
 import com.mehdiacho.filmarr.ui.theme.FilmarrType
+import kotlinx.coroutines.launch
 
 @Composable
 fun AuthScreen(onBack: () -> Unit, onAuthed: () -> Unit) {
     var isSignUp by remember { mutableStateOf(false) }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var busy by remember { mutableStateOf(false) }
+    var error by remember { mutableStateOf<String?>(null) }
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    fun handle(result: Result<Unit>) {
+        busy = false
+        result.onSuccess { onAuthed() }.onFailure { error = it.message ?: "Something went wrong" }
+    }
+
+    fun submitEmail() {
+        if (email.isBlank() || password.length < 6) { error = "Enter an email and a 6+ character password"; return }
+        error = null; busy = true
+        scope.launch { handle(if (isSignUp) AuthManager.signUpEmail(email, password) else AuthManager.signInEmail(email, password)) }
+    }
+
+    fun submitGoogle() {
+        error = null; busy = true
+        scope.launch { handle(signInWithGoogle(context)) }
+    }
 
     Column(
         Modifier.fillMaxSize().background(FilmarrColors.Bg).statusBarsPadding().navigationBarsPadding()
@@ -58,7 +83,8 @@ fun AuthScreen(onBack: () -> Unit, onAuthed: () -> Unit) {
 
         // Google button
         Box(
-            Modifier.fillMaxWidth().height(52.dp).clip(RoundedCornerShape(Dimens.rLg)).background(Color.White).clickable { onAuthed() },
+            Modifier.fillMaxWidth().height(52.dp).clip(RoundedCornerShape(Dimens.rLg)).background(Color.White)
+                .clickable(enabled = !busy) { submitGoogle() },
             contentAlignment = Alignment.Center,
         ) { Text("Continue with Google", style = FilmarrType.labelStrong, color = Color(0xFF1A1A1A)) }
 
@@ -69,8 +95,14 @@ fun AuthScreen(onBack: () -> Unit, onAuthed: () -> Unit) {
         AuthField("Email", email, { email = it })
         Spacer(Modifier.height(10.dp))
         AuthField("Password", password, { password = it }, isPassword = true)
+
+        if (error != null) {
+            Spacer(Modifier.height(12.dp))
+            Text(error!!, style = FilmarrType.meta, color = FilmarrColors.Rose, textAlign = TextAlign.Center)
+        }
+
         Spacer(Modifier.height(20.dp))
-        PrimaryCta(if (isSignUp) "Sign up" else "Sign in", onClick = onAuthed)
+        PrimaryCta(if (busy) "Please wait…" else if (isSignUp) "Sign up" else "Sign in", onClick = { if (!busy) submitEmail() })
 
         Spacer(Modifier.weight(1f))
         Text(

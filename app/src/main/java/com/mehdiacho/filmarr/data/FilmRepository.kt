@@ -22,6 +22,27 @@ object FilmRepository {
 
     private val undoStack = ArrayDeque<List<LibraryEntry>>()
 
+    /** Firestore mirror — non-null while a user is signed in. */
+    private var store: FirestoreLibraryStore? = null
+
+    /** Attach the signed-in user's cloud library; the snapshot listener becomes the source of truth. */
+    fun bind(uid: String) {
+        store?.stop()
+        undoStack.clear()
+        _library.value = emptyList()
+        val s = FirestoreLibraryStore(uid)
+        store = s
+        s.listen { entries -> _library.value = entries }
+    }
+
+    /** Detach on sign-out; fall back to the local preview catalog. */
+    fun unbind() {
+        store?.stop()
+        store = null
+        undoStack.clear()
+        _library.value = MockCatalog.library
+    }
+
     val watched: List<LibraryEntry> get() = _library.value.filter { it.status == WatchStatus.WATCHED }
     val watchlist: List<LibraryEntry> get() = _library.value.filter { it.status == WatchStatus.WATCHLIST }
 
@@ -39,6 +60,7 @@ object FilmRepository {
         val updated = transform(if (idx >= 0) current[idx] else null)
         if (idx >= 0) current[idx] = updated else current.add(0, updated)
         _library.value = current
+        store?.put(updated)   // write-through; snapshot listener echoes it back
     }
 
     fun logWatched(film: Film, rating: Float? = null, review: String? = null) {
@@ -75,7 +97,13 @@ object FilmRepository {
 
     fun undo() {
         val prev = undoStack.removeLastOrNull() ?: return
+        val current = _library.value
         _library.value = prev
+        store?.let { s ->
+            val removed = current.map { it.film.id }.toSet() - prev.map { it.film.id }.toSet()
+            removed.forEach { s.delete(it) }
+            s.reconcile(prev)
+        }
         emit("Undone")
     }
 

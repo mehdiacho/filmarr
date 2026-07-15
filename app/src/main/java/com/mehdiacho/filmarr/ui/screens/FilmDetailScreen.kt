@@ -24,20 +24,29 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
+import com.mehdiacho.filmarr.data.Film
 import com.mehdiacho.filmarr.data.FilmRepository
 import com.mehdiacho.filmarr.data.MockCatalog
 import com.mehdiacho.filmarr.data.WatchStatus
+import com.mehdiacho.filmarr.data.tmdb.TmdbRepository
+import com.mehdiacho.filmarr.data.tmdb.backdropUrl
+import com.mehdiacho.filmarr.data.tmdb.posterUrl
 import com.mehdiacho.filmarr.ui.components.ConfirmButton
 import com.mehdiacho.filmarr.ui.components.Eyebrow
 import com.mehdiacho.filmarr.ui.components.IconSquareButton
@@ -49,7 +58,15 @@ import com.mehdiacho.filmarr.ui.theme.PosterGradients
 
 @Composable
 fun FilmDetailScreen(filmId: String, onBack: () -> Unit, onOpenFilm: (String) -> Unit) {
-    val film = remember(filmId) { runCatching { MockCatalog.byId(filmId) }.getOrDefault(MockCatalog.films.first()) }
+    val fallback = remember(filmId) {
+        TmdbRepository.cached(filmId) ?: runCatching { MockCatalog.byId(filmId) }.getOrDefault(MockCatalog.films.first())
+    }
+    var film by remember(filmId) { mutableStateOf(fallback) }
+    var moreLikeThis by remember(filmId) { mutableStateOf<List<Film>>(emptyList()) }
+    LaunchedEffect(filmId) {
+        TmdbRepository.detail(filmId)?.let { film = it }
+        moreLikeThis = TmdbRepository.recommendations(filmId)
+    }
     val library by FilmRepository.library.collectAsStateWithLifecycle()
     val entry = library.firstOrNull { it.film.id == film.id }
     val watched = entry?.status == WatchStatus.WATCHED
@@ -59,6 +76,12 @@ fun FilmDetailScreen(filmId: String, onBack: () -> Unit, onOpenFilm: (String) ->
             // Backdrop
             Box(Modifier.fillMaxWidth().height(300.dp)) {
                 Box(Modifier.fillMaxSize().background(PosterGradients.forKey(film.gradientKey).brush))
+                (film.backdropUrl() ?: film.posterUrl("w780"))?.let { art ->
+                    AsyncImage(
+                        model = art, contentDescription = film.title,
+                        contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize(),
+                    )
+                }
                 Box(
                     Modifier.fillMaxSize().background(
                         Brush.verticalGradient(0f to Color.Transparent, 0.55f to Color.Transparent, 1f to FilmarrColors.Bg)
@@ -119,13 +142,21 @@ fun FilmDetailScreen(filmId: String, onBack: () -> Unit, onOpenFilm: (String) ->
                 }
 
                 Eyebrow("More like this", modifier = Modifier.padding(top = 18.dp, bottom = 10.dp))
+                val similar = (moreLikeThis.ifEmpty { MockCatalog.films }).filter { it.id != film.id }.take(4)
                 Row(horizontalArrangement = Arrangement.spacedBy(9.dp)) {
-                    MockCatalog.films.filter { it.id != film.id }.take(4).forEach { m ->
+                    similar.forEach { m ->
                         Box(
                             Modifier.size(width = 58.dp, height = 84.dp).clip(RoundedCornerShape(9.dp))
                                 .background(PosterGradients.forKey(m.gradientKey).brush)
                                 .clickable { onOpenFilm(m.id) }
-                        )
+                        ) {
+                            m.posterUrl("w185")?.let { url ->
+                                AsyncImage(
+                                    model = url, contentDescription = m.title,
+                                    contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize(),
+                                )
+                            }
+                        }
                     }
                 }
             }

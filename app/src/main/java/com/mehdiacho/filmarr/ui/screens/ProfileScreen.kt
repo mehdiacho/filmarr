@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,7 +30,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mehdiacho.filmarr.data.MockCatalog
+import com.mehdiacho.filmarr.data.auth.AuthManager
 import com.mehdiacho.filmarr.ui.components.ActionCircle
 import com.mehdiacho.filmarr.ui.components.Eyebrow
 import com.mehdiacho.filmarr.ui.theme.Dimens
@@ -45,6 +48,9 @@ fun ProfileScreen(
     onOpenAuth: () -> Unit,
 ) {
     val stats = MockCatalog.profileStats
+    val user by AuthManager.user.collectAsStateWithLifecycle()
+    val displayName = user?.displayName?.takeIf { it.isNotBlank() } ?: user?.email?.substringBefore("@") ?: "Guest"
+    val handle = user?.email ?: "Not signed in · tap to sync"
     Column(
         Modifier.fillMaxSize().background(FilmarrColors.Bg).verticalScroll(rememberScrollState())
             .padding(bottom = 100.dp),
@@ -57,8 +63,8 @@ fun ProfileScreen(
         ) {
             Box(Modifier.size(58.dp).clip(RoundedCornerShape(Dimens.rFull)).background(Brush.linearGradient(listOf(FilmarrColors.Rose, Color(0xFF9F1239)))))
             Column(Modifier.weight(1f)) {
-                Text("Mehdi", style = FilmarrType.screenTitle, color = FilmarrColors.TextPrimary)
-                Text("@mehdiacho", style = FilmarrType.meta, color = FilmarrColors.TextTertiary)
+                Text(displayName, style = FilmarrType.screenTitle, color = FilmarrColors.TextPrimary)
+                Text(handle, style = FilmarrType.meta, color = FilmarrColors.TextTertiary)
             }
             ActionCircle(onClick = onOpenSettings) {
                 Icon(Icons.Filled.Settings, "Settings", tint = FilmarrColors.TextPrimary, modifier = Modifier.size(18.dp))
@@ -111,7 +117,11 @@ fun ProfileScreen(
         }
 
         Box(Modifier.fillMaxWidth().padding(20.dp)) {
-            Text("Sign in to sync →", style = FilmarrType.meta, color = FilmarrColors.TextMuted, modifier = Modifier.clickable(onClick = onOpenAuth))
+            if (user != null) {
+                Text("Sign out", style = FilmarrType.meta, color = FilmarrColors.Rose, modifier = Modifier.clickable { AuthManager.signOut() })
+            } else {
+                Text("Sign in to sync →", style = FilmarrType.meta, color = FilmarrColors.TextMuted, modifier = Modifier.clickable(onClick = onOpenAuth))
+            }
         }
     }
 }

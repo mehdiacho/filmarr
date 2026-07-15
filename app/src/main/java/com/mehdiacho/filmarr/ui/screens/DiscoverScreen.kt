@@ -15,9 +15,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Undo
 import androidx.compose.material.icons.filled.HelpOutline
 import androidx.compose.material.icons.filled.TrackChanges
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -30,8 +32,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.mehdiacho.filmarr.data.Film
 import com.mehdiacho.filmarr.data.FilmRepository
 import com.mehdiacho.filmarr.data.MockCatalog
+import com.mehdiacho.filmarr.data.tmdb.TmdbRepository
 import com.mehdiacho.filmarr.ui.components.ActionCircle
 import com.mehdiacho.filmarr.ui.components.StarRow
 import com.mehdiacho.filmarr.ui.components.SwipeDeck
@@ -42,7 +46,11 @@ import com.mehdiacho.filmarr.ui.theme.FilmarrType
 
 @Composable
 fun DiscoverScreen(onOpenFilm: (String) -> Unit, onOpenAsk: () -> Unit) {
-    val deck = remember { MockCatalog.discoverDeck }
+    var deck by remember { mutableStateOf<List<Film>>(emptyList()) }
+    LaunchedEffect(Unit) {
+        val live = TmdbRepository.discover()
+        deck = live.ifEmpty { MockCatalog.discoverDeck }
+    }
     val deckState = rememberSwipeDeckState()
     val library by FilmRepository.library.collectAsStateWithLifecycle()
     val heartedIds = library.filter { it.favorite }.map { it.film.id }.toSet()
@@ -71,22 +79,26 @@ fun DiscoverScreen(onOpenFilm: (String) -> Unit, onOpenAsk: () -> Unit) {
         )
 
         Box(Modifier.weight(1f).fillMaxWidth().padding(start = 18.dp, end = 18.dp, top = 12.dp, bottom = 78.dp)) {
-            SwipeDeck(
-                films = deck,
-                state = deckState,
-                rightLabel = "INTERESTED",
-                leftLabel = "SKIP",
-                heartedIds = heartedIds,
-                onSwipeRight = { film ->
-                    if (focusActive && rating > 0f) FilmRepository.logWatched(film, rating) else FilmRepository.markInterested(film)
-                    oneShotFocus = false; rating = 0f
-                },
-                onSwipeLeft = { oneShotFocus = false; rating = 0f },
-                onTap = { onOpenFilm(it.id) },
-                onDoubleTap = { FilmRepository.toggleFavorite(it) },
-                onLongPress = { if (!persistentFocus) oneShotFocus = !oneShotFocus },
-                modifier = Modifier.fillMaxSize(),
-            )
+            if (deck.isEmpty()) {
+                CircularProgressIndicator(color = FilmarrColors.Rose, modifier = Modifier.align(Alignment.Center).size(34.dp))
+            } else {
+                SwipeDeck(
+                    films = deck,
+                    state = deckState,
+                    rightLabel = "INTERESTED",
+                    leftLabel = "SKIP",
+                    heartedIds = heartedIds,
+                    onSwipeRight = { film ->
+                        if (focusActive && rating > 0f) FilmRepository.logWatched(film, rating) else FilmRepository.markInterested(film)
+                        oneShotFocus = false; rating = 0f
+                    },
+                    onSwipeLeft = { oneShotFocus = false; rating = 0f },
+                    onTap = { onOpenFilm(it.id) },
+                    onDoubleTap = { FilmRepository.toggleFavorite(it) },
+                    onLongPress = { if (!persistentFocus) oneShotFocus = !oneShotFocus },
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
 
             // Focus review panel over the lower part of the card.
             if (focusActive) {

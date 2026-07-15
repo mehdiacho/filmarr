@@ -29,10 +29,14 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.mehdiacho.filmarr.data.Film
+import com.mehdiacho.filmarr.data.tmdb.backdropUrl
+import com.mehdiacho.filmarr.data.tmdb.posterUrl
 import com.mehdiacho.filmarr.ui.theme.PosterGradients
 import com.mehdiacho.filmarr.ui.theme.Dimens
 import com.mehdiacho.filmarr.ui.theme.FilmarrColors
@@ -74,18 +78,29 @@ fun PosterSurface(
     scrimFraction: Float = 0.62f,
 ) {
     val grad = PosterGradients.forKey(film.gradientKey)
+    val art = film.posterUrl("w780") ?: film.backdropUrl("w780")
     Box(modifier.background(grad.brush)) {
-        // top highlight radial
-        Box(
-            Modifier.fillMaxSize().background(
-                Brush.radialGradient(
-                    colors = listOf(Color.White.copy(alpha = 0.22f), Color.Transparent),
-                    center = Offset(120f, 70f),
-                    radius = 520f,
+        if (art != null) {
+            // Real TMDB art over the gradient fallback.
+            AsyncImage(
+                model = art,
+                contentDescription = film.title,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize(),
+            )
+        } else {
+            // Gradient-card treatment: top highlight + dot texture.
+            Box(
+                Modifier.fillMaxSize().background(
+                    Brush.radialGradient(
+                        colors = listOf(Color.White.copy(alpha = 0.22f), Color.Transparent),
+                        center = Offset(120f, 70f),
+                        radius = 520f,
+                    )
                 )
             )
-        )
-        Box(Modifier.fillMaxSize().dotGrid())
+            Box(Modifier.fillMaxSize().dotGrid())
+        }
         // bottom scrim
         Box(
             Modifier.fillMaxSize().background(
@@ -96,7 +111,7 @@ fun PosterSurface(
                 )
             )
         )
-        if (ghostTitle) {
+        if (ghostTitle && art == null) {
             Text(
                 film.title.uppercase(),
                 style = FilmarrType.posterTitle,

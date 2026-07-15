@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -15,6 +17,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.mehdiacho.filmarr.data.FilmRepository
+import com.mehdiacho.filmarr.data.auth.AuthManager
 import com.mehdiacho.filmarr.navigation.Dest
 import com.mehdiacho.filmarr.ui.components.FilmarrBottomNav
 import com.mehdiacho.filmarr.ui.components.UndoSnackbarHost
@@ -46,6 +50,13 @@ fun FilmarrApp() {
     val nav = rememberNavController()
     val backEntry by nav.currentBackStackEntryAsState()
     val current = backEntry?.destination?.route
+
+    // Bind the library to the signed-in user's cloud data; fall back to local preview when signed out.
+    val user by AuthManager.user.collectAsStateWithLifecycle()
+    LaunchedEffect(user?.uid) {
+        val uid = user?.uid
+        if (uid != null) FilmRepository.bind(uid) else FilmRepository.unbind()
+    }
 
     Box(Modifier.fillMaxSize().background(FilmarrColors.Bg)) {
         NavHost(

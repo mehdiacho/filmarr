@@ -10,16 +10,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.mehdiacho.filmarr.data.Film
 import com.mehdiacho.filmarr.data.FilmRepository
 import com.mehdiacho.filmarr.data.MockCatalog
+import com.mehdiacho.filmarr.data.tmdb.TmdbRepository
 import com.mehdiacho.filmarr.ui.components.ProgressTrack
 import com.mehdiacho.filmarr.ui.components.SwipeDeck
 import com.mehdiacho.filmarr.ui.components.rememberSwipeDeckState
@@ -28,9 +33,12 @@ import com.mehdiacho.filmarr.ui.theme.FilmarrType
 
 @Composable
 fun BuildScreen(onOpenFilm: (String) -> Unit) {
-    val candidates = remember { MockCatalog.buildFeed }
-    val films = remember { candidates.map { it.film } }
-    val confidenceById = remember { candidates.associate { it.film.id to it.confidence } }
+    var films by remember { mutableStateOf<List<Film>>(emptyList()) }
+    LaunchedEffect(Unit) {
+        val live = TmdbRepository.buildFeed()
+        films = live.ifEmpty { MockCatalog.buildFeed.map { it.film } }
+    }
+    val confidenceById = films.associate { it.id to "Likely seen · ${it.year}" }
     val deckState = rememberSwipeDeckState()
     val logged by FilmRepository.library.collectAsStateWithLifecycle()
     val loggedCount = 142 + logged.count { it.status == com.mehdiacho.filmarr.data.WatchStatus.WATCHED } - MockCatalog.library.count { it.status == com.mehdiacho.filmarr.data.WatchStatus.WATCHED }

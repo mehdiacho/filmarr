@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,6 +38,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mehdiacho.filmarr.data.Film
 import com.mehdiacho.filmarr.data.FilmRepository
 import com.mehdiacho.filmarr.data.MockCatalog
+import com.mehdiacho.filmarr.data.tmdb.TmdbRepository
 import com.mehdiacho.filmarr.ui.components.ConfirmButton
 import com.mehdiacho.filmarr.ui.components.Eyebrow
 import com.mehdiacho.filmarr.ui.components.ResultRow
@@ -50,9 +52,16 @@ fun SearchScreen(onBack: () -> Unit, onOpenFilm: (String) -> Unit, onOpenAsk: ()
     var query by remember { mutableStateOf(TextFieldValue("")) }
     val library by FilmRepository.library.collectAsStateWithLifecycle()
     val loggedIds = library.filter { it.status == com.mehdiacho.filmarr.data.WatchStatus.WATCHED }.map { it.film.id }.toSet()
-    val results = remember(query.text) {
-        if (query.text.isBlank()) MockCatalog.films
-        else MockCatalog.films.filter { it.title.contains(query.text, ignoreCase = true) }
+    var results by remember { mutableStateOf<List<Film>>(emptyList()) }
+    LaunchedEffect(query.text) {
+        val q = query.text.trim()
+        if (q.isBlank()) {
+            results = TmdbRepository.discover().ifEmpty { MockCatalog.films }
+        } else {
+            kotlinx.coroutines.delay(280) // debounce keystrokes
+            val live = TmdbRepository.search(q)
+            results = live.ifEmpty { MockCatalog.films.filter { it.title.contains(q, ignoreCase = true) } }
+        }
     }
     var quickAdd by remember { mutableStateOf<Film?>(null) }
 
