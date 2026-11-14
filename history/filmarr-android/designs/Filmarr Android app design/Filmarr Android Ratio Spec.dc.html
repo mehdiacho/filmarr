@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  .sp code, .sp .m { font-family:'JetBrains Mono',monospace; background:#15171d; color:#EAB308; padding:1px 6px; border-radius:5px; font-size:.86em; white-space:nowrap; }
+  .sp table { width:100%; border-collapse:collapse; margin:2px 0 4px; }
+  .sp th { text-align:left; font:700 11px 'Hanken Grotesk'; letter-spacing:.06em; text-transform:uppercase; color:#8E8E93; padding:9px 12px; border-bottom:1px solid rgba(255,255,255,.12); }
+  .sp td { font:400 13px 'Hanken Grotesk'; color:#cbd0d6; padding:9px 12px; border-bottom:1px solid rgba(255,255,255,.055); vertical-align:top; }
+  .sp tr:last-child td { border-bottom:0; }
+  .sp .sw { display:inline-block; width:13px; height:13px; border-radius:3px; vertical-align:-2px; margin-right:7px; border:1px solid rgba(255,255,255,.15); }
+</style>
+</helmet>
+
+<div class="sp" style="min-height:100vh;background:#0b0c10;font-family:'Hanken Grotesk',sans-serif;color:#e6e8eb;padding:64px 0 120px;-webkit-font-smoothing:antialiased">
+  <div style="max-width:940px;margin:0 auto;padding:0 40px">
+
+    <!-- title -->
+    <div style="display:flex;align-items:center;gap:13px">
+      <div style="width:38px;height:38px;border-radius:11px;background:linear-gradient(150deg,#F43F5E,#9f1239);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 4h16v16H4z" stroke="#fff" stroke-width="1.6" opacity=".3"/><path d="M13.5 12L10 9.8v4.4z" fill="#fff"/></svg></div>
+      <div>
+        <div style="font:800 30px 'Bricolage Grotesque';letter-spacing:-.02em;line-height:1">Filmarr Android — Ratio Spec</div>
+        <div style="font:500 13px 'Hanken Grotesk';color:#8E8E93;margin-top:3px">Engineer-facing build companion to <b style="color:#cbd0d6">Filmarr Android.dc.html</b> · Jetpack Compose (Material 3, dark)</div>
+      </div>
+    </div>
+
+    <!-- §0 -->
+    <div style="margin-top:44px">
+      <div style="font:800 20px 'Bricolage Grotesque';letter-spacing:-.01em;color:#fff">§0 · How to read this spec</div>
+      <div style="font:400 14px 'Hanken Grotesk';color:#aeb3ba;line-height:1.6;margin-top:12px">Every dimension is classified as one of three kinds. Implement each by its kind — do not eyeball pixels off the mockup.</div>
+      <table style="margin-top:16px">
+        <tr><th style="width:150px">Kind</th><th>Rule</th></tr>
+        <tr><td><b style="color:#fff">(a) Density</b></td><td>Type, radius, stroke, icon size, elevation, padding, gaps, fixed row/chip/bar heights. <b style="color:#fff">Fixed <span class="m">dp</span>/<span class="m">sp</span> token, never scaled by width.</b> When unsure → density.</td></tr>
+        <tr><td><b style="color:#fff">(b) Width-class</b></td><td>Screen edge margin, card width, primary button, avatar, FAB, hero art. <b style="color:#fff">% of screen width with <span class="m">clamp(min, %, max)</span>.</b> Short whitelist — see §1.6.</td></tr>
+        <tr><td><b style="color:#fff">(c) Vertical</b></td><td>Where blocks sit down the screen. <b style="color:#fff">Ordered <span class="m">Column</span> of fixed/intrinsic-height blocks + exactly one <span class="m">Modifier.weight(1f)</span> spacer.</b> Never a coordinate table.</td></tr>
+      </table>
+      <div style="margin-top:14px;padding:13px 16px;border-radius:12px;background:#12141a;border-left:3px solid #F43F5E;font:400 13px 'Hanken Grotesk';color:#cbd0d6;line-height:1.55"><b style="color:#fff">Baseline reference size:</b> <span class="m">411 × 891 dp</span> (Pixel 8, density 2.625, the mockup's frame). Every % in §1.6 is computed against <span class="m">411 dp</span> width. All <span class="m">dp</span>/<span class="m">sp</span> values are final on any density.</div>
+      <div style="margin-top:12px;padding:13px 16px;border-radius:12px;background:#12141a;border-left:3px solid #3B82F6;font:400 13px 'Hanken Grotesk';color:#cbd0d6;line-height:1.55"><b style="color:#fff">Division of labor:</b> this doc is the frontend engineer's complete intent — every element's <i>purpose</i> and <i>behavior</i> is stated (see the ⚙ rows in §2, the flows in §3, and the full navigation map in §5). The implementing agent owns everything behind it: data fetching (TMDB), persistence, auth, sync, the recommender, and AI calls. If a behavior is ambiguous, §5 wins; if a dimension is ambiguous, §1 wins.</div>
+    </div>
+
+    <!-- §1 -->
+    <div style="margin-top:48px">
+      <div style="font:800 20px 'Bricolage Grotesque';letter-spacing:-.01em;color:#fff">§1 · Foundation tokens</div>
+
+      <!-- 1.1 color -->
+      <div style="font:700 15px 'Hanken Grotesk';color:#fff;margin-top:22px">§1.1 · Color — dark scheme (only scheme)</div>
+      <table>
+        <tr><th style="width:210px">Token</th><th style="width:120px">Hex</th><th>Where used</th></tr>
+        <tr><td><span class="sw" style="background:#0A0A0A"></span><span class="m">bg / surface.base</span></td><td><span class="m">#0A0A0A</span></td><td>App background, nav bar, sheets base</td></tr>
+        <tr><td><span class="sw" style="background:#0f1014"></span><span class="m">surface.raised</span></td><td><span class="m">#0F1014</span></td><td>Stat cards, list containers, spec panels</td></tr>
+        <tr><td><span class="sw" style="background:#161616"></span><span class="m">surface.card</span></td><td><span class="m">#161616</span></td><td>Chips, search field, secondary buttons, rows</td></tr>
+        <tr><td><span class="sw" style="background:#1c1c1c"></span><span class="m">surface.lifted</span></td><td><span class="m">#1C1C1C</span></td><td>Pressed/lifted card in quick-add, snackbar</td></tr>
+        <tr><td><span class="sw" style="background:#F43F5E"></span><span class="m">accent.rose</span></td><td><span class="m">#F43F5E</span></td><td>Brand, primary CTA, skip, ♥, FAB, active nav</td></tr>
+        <tr><td><span class="sw" style="background:#EAB308"></span><span class="m">accent.gold</span></td><td><span class="m">#EAB308</span></td><td>Ratings/stars, "maybe" swipe, review flag</td></tr>
+        <tr><td><span class="sw" style="background:#3B82F6"></span><span class="m">accent.blue</span></td><td><span class="m">#3B82F6</span></td><td>"Watching" swipe, watchlist, AI user bubble</td></tr>
+        <tr><td><span class="sw" style="background:#22C55E"></span><span class="m">accent.green</span></td><td><span class="m">#22C55E</span></td><td>"Interested"/watched, confirm, add buttons</td></tr>
+        <tr><td><span class="sw" style="background:#D946EF"></span><span class="m">accent.violet</span></td><td><span class="m">#D946EF</span></td><td>Graph "A24 core" node, poster gradient</td></tr>
+        <tr><td><span class="sw" style="background:#FFFFFF"></span><span class="m">text.primary</span></td><td><span class="m">#FFFFFF</span></td><td>Titles, active labels, primary copy</td></tr>
+        <tr><td><span class="sw" style="background:#cbd0d6"></span><span class="m">text.secondary</span></td><td><span class="m">#CBD0D6</span></td><td>Body, review text, list subtitles</td></tr>
+        <tr><td><span class="sw" style="background:#8E8E93"></span><span class="m">text.tertiary</span></td><td><span class="m">#8E8E93</span></td><td>Meta rows, captions, inactive nav</td></tr>
+        <tr><td><span class="sw" style="background:#5c5f66"></span><span class="m">text.muted</span></td><td><span class="m">#5C5F66</span></td><td>Section eyebrows, disabled, hints</td></tr>
+        <tr><td><span class="sw" style="background:#2a2a2a"></span><span class="m">border.hairline</span></td><td><span class="m">#FFFFFF @ 6–12%</span></td><td>Card borders, dividers, nav top border</td></tr>
+      </table>
+
+      <!-- 1.2 gradients -->
+      <div style="font:700 15px 'Hanken Grotesk';color:#fff;margin-top:22px">§1.2 · Poster gradients (placeholder art)</div>
+      <div style="font:400 13px 'Hanken Grotesk';color:#8E8E93;margin:6px 0 10px;line-height:1.5">All at <span class="m">150deg</span>, two-stop. Real posters (TMDB) replace these; keep the bottom scrim overlay regardless.</div>
+      <table>
+        <tr><th style="width:230px">Title</th><th>Stops</th></tr>
+        <tr><td>Neon Harbor</td><td><span class="m">#F43F5E → #7C1D3A</span></td></tr>
+        <tr><td>Saltwater</td><td><span class="m">#3B82F6 → #1E1B4B</span></td></tr>
+        <tr><td>Ember &amp; Ash</td><td><span class="m">#F59E0B → #7C2D12</span></td></tr>
+        <tr><td>Velvet Static</td><td><span class="m">#D946EF → #2E1065</span></td></tr>
+        <tr><td>The Quiet Year</td><td><span class="m">#0EA5A4 → #0A1F22</span></td></tr>
+        <tr><td>Low Tide</td><td><span class="m">#22C55E → #052E16</span></td></tr>
+        <tr><td>Scrim overlay</td><td><span class="m">linear(transparent → rgba(0,0,0,.92))</span>, bottom 55–62% of card</td></tr>
+        <tr><td><b style="color:#fff">Dot-grid texture</b></td><td><span class="m">radial-gradient(rgba(255,255,255,.07) 1px, transparent 1px)</span> at <span class="m">4×4dp</span> on cards · <span class="m">5×5dp @ 4.5% alpha</span> as ambient screen background. <b style="color:#fff">This is the brand texture — it stays when real TMDB posters replace the gradients</b> (layered between poster and scrim at reduced alpha), and it is the background of utility surfaces: Tonight, Overlap, empty states, loading skeletons.</td></tr>
+      </table>
+
+      <!-- 1.3 type -->
+      <div style="font:700 15px 'Hanken Grotesk';color:#fff;margin-top:22px">§1.3 · Type scale</div>
+      <div style="font:400 13px 'Hanken Grotesk';color:#8E8E93;margin:6px 0 10px;line-height:1.5"><b style="color:#cbd0d6">Bricolage Grotesque</b> = display/titles/numerals · <b style="color:#cbd0d6">Hanken Grotesk</b> = all UI/body. Sizes are fixed <span class="m">sp</span>.</div>
+      <table>
+        <tr><th>Style</th><th>Family</th><th>Wt</th><th>Size / LH</th><th>Tracking</th><th>Usage</th></tr>
+        <tr><td>display</td><td>Bricolage</td><td>800</td><td><span class="m">32/34</span></td><td><span class="m">-.03em</span></td><td>Onboarding headline, detail title</td></tr>
+        <tr><td>screen-title</td><td>Bricolage</td><td>800</td><td><span class="m">26/26</span></td><td><span class="m">-.02em</span></td><td>Discover/Build/Library/Search headers</td></tr>
+        <tr><td>poster-title</td><td>Bricolage</td><td>800</td><td><span class="m">34/31</span></td><td><span class="m">-.02em</span></td><td>Uppercase ghost title on card art</td></tr>
+        <tr><td>card-title</td><td>Bricolage</td><td>800</td><td><span class="m">22/24</span></td><td><span class="m">-.01em</span></td><td>Card meta title, film name in rows</td></tr>
+        <tr><td>stat-numeral</td><td>Bricolage</td><td>800</td><td><span class="m">24–28/1</span></td><td><span class="m">0</span></td><td>Profile stats, counters</td></tr>
+        <tr><td>body</td><td>Hanken</td><td>400</td><td><span class="m">13/1.45</span></td><td><span class="m">0</span></td><td>Descriptions, reviews, AI answers</td></tr>
+        <tr><td>label-strong</td><td>Hanken</td><td>700</td><td><span class="m">13–15/1.1</span></td><td><span class="m">0</span></td><td>Buttons, row titles, quick-add actions</td></tr>
+        <tr><td>meta</td><td>Hanken</td><td>500</td><td><span class="m">11–13/1.4</span></td><td><span class="m">0</span></td><td>Year · genre · rating rows, subtitles</td></tr>
+        <tr><td>eyebrow</td><td>Hanken</td><td>700</td><td><span class="m">10/1</span></td><td><span class="m">.10em</span> upper</td><td>Section labels ("RESULTS", "CAST")</td></tr>
+        <tr><td>nav-label</td><td>Hanken</td><td>600</td><td><span class="m">9/1</span></td><td><span class="m">0</span></td><td>Bottom-nav item labels</td></tr>
+        <tr><td>badge</td><td>Hanken</td><td>800</td><td><span class="m">14/1</span></td><td><span class="m">.08em</span></td><td>Swipe directional badges (SKIP etc.)</td></tr>
+      </table>
+
+      <!-- 1.4 spacing -->
+      <div style="font:700 15px 'Hanken Grotesk';color:#fff;margin-top:22px">§1.4 · Spacing scale <span style="font:400 12px 'Hanken Grotesk';color:#8E8E93">(fixed dp)</span></div>
+      <table>
+        <tr><th>Token</th><th>Value</th><th>Usage</th></tr>
+        <tr><td><span class="m">xs</span></td><td><span class="m">6 dp</span></td><td>Icon-to-label, chip inner, meta gaps</td></tr>
+        <tr><td><span class="m">sm</span></td><td><span class="m">9 dp</span></td><td>Grid gaps, chip row gaps, stacked actions</td></tr>
+        <tr><td><span class="m">md</span></td><td><span class="m">12–14 dp</span></td><td>Row internal gap, list item vertical rhythm</td></tr>
+        <tr><td><span class="m">base</span></td><td><span class="m">20 dp</span></td><td>Screen edge margin (see §1.6), header pad</td></tr>
+        <tr><td><span class="m">lg</span></td><td><span class="m">22 dp</span></td><td>Section-to-section vertical gap</td></tr>
+        <tr><td><span class="m">xl</span></td><td><span class="m">44 dp</span></td><td>Major group separation on gallery/spec</td></tr>
+      </table>
+
+      <!-- 1.5 radius -->
+      <div style="font:700 15px 'Hanken Grotesk';color:#fff;margin-top:22px">§1.5 · Corner-radius scale <span style="font:400 12px 'Hanken Grotesk';color:#8E8E93">(fixed dp)</span></div>
+      <table>
+        <tr><th>Token</th><th>Value</th><th>Usage</th></tr>
+        <tr><td><span class="m">sm</span></td><td><span class="m">8 dp</span></td><td>Poster thumbs in rows/grid, avatars-square</td></tr>
+        <tr><td><span class="m">md</span></td><td><span class="m">12–14 dp</span></td><td>Chips, buttons, search field, list rows</td></tr>
+        <tr><td><span class="m">lg</span></td><td><span class="m">16 dp</span></td><td>Sheets, stat cards, input bar, AI bubbles</td></tr>
+        <tr><td><span class="m">xl</span></td><td><span class="m">24 dp</span></td><td>Swipe cards (Discover/Build)</td></tr>
+        <tr><td><span class="m">full</span></td><td><span class="m">999 dp</span></td><td>Pills, toggles, FAB, avatar circles, nav dots</td></tr>
+        <tr><td><span class="m">device</span></td><td><span class="m">35 dp</span></td><td>Phone-frame inner screen (mockup only)</td></tr>
+      </table>
+
+      <!-- 1.6 width-class -->
+      <div style="font:700 15px 'Hanken Grotesk';color:#fff;margin-top:22px">§1.6 · Width-class ratios <span style="font:400 12px 'Hanken Grotesk';color:#8E8E93">— the adaptive table</span></div>
+      <div style="margin:8px 0 10px;padding:12px 15px;border-radius:11px;background:#12141a;border-left:3px solid #EAB308;font:400 12.5px 'Hanken Grotesk';color:#cbd0d6;line-height:1.5"><b style="color:#fff">Everything not in this table is fixed density (§1.4/§1.5).</b> Only these track screen width.</div>
+      <table>
+        <tr><th>Element</th><th>% of width</th><th>@411dp · clamp</th></tr>
+        <tr><td>Screen edge margin</td><td><span class="m">4.9%</span></td><td><span class="m">20dp · clamp(16, 4.9%, 28)</span></td></tr>
+        <tr><td>Swipe card (deck inset)</td><td><span class="m">width − 2×18dp</span></td><td><span class="m">~375dp · clamp(300, …, 560)</span></td></tr>
+        <tr><td>Detail backdrop height</td><td><span class="m">72% of width</span></td><td><span class="m">300dp · clamp(260, 72%, 420)</span></td></tr>
+        <tr><td>Library grid column</td><td><span class="m">3-up, gap 9dp</span></td><td><span class="m">≥360dp→3, ≥600dp→4, ≥840dp→6</span></td></tr>
+        <tr><td>Blitz grid column</td><td><span class="m">2-up, gap 10dp</span></td><td><span class="m">≥600dp→3, ≥840dp→4</span></td></tr>
+        <tr><td>Profile avatar</td><td><span class="m">14.1%</span></td><td><span class="m">58dp · clamp(52, 14.1%, 72)</span></td></tr>
+        <tr><td>Primary CTA button</td><td><span class="m">100% − 2×margin</span></td><td><span class="m">full-bleed · max 480dp, then center</span></td></tr>
+        <tr><td>FAB (center nav)</td><td>fixed</td><td><span class="m">44dp</span> (density — listed to say: NOT scaled)</td></tr>
+        <tr><td>AI chat bubble max</td><td><span class="m">80%</span></td><td><span class="m">of chat column width</span></td></tr>
+      </table>
+    </div>
+
+    <!-- §2 -->
+    <div style="margin-top:48px">
+      <div style="font:800 20px 'Bricolage Grotesque';letter-spacing:-.01em;color:#fff">§2 · Shared components</div>
+      <div style="font:400 13px 'Hanken Grotesk';color:#8E8E93;margin-top:6px;line-height:1.5">Each specified once. Screen recipes (§3) reference these by number.</div>
+
+      <div style="font:700 15px 'Hanken Grotesk';color:#fff;margin-top:22px">§2.1 · Bottom navigation bar</div>
+      <table>
+        <tr><th style="width:150px">Property</th><th>Value</th></tr>
+        <tr><td>Height</td><td><span class="m">64dp</span> + 6dp bottom safe-pad · <span class="m">surface.base</span> · top border <span class="m">hairline</span></td></tr>
+        <tr><td>Items</td><td>4 — Discover · Build · Library · Profile, equal <span class="m">weight(1f)</span> — plus center Quick-Log FAB</td></tr>
+        <tr><td>Item</td><td>icon <span class="m">22dp</span> + nav-label, gap <span class="m">3dp</span>, column centered</td></tr>
+        <tr><td>Active</td><td><span class="m">text.primary</span> + icon fill @25% under stroke · Inactive <span class="m">text.muted</span></td></tr>
+        <tr><td style="color:#EAB308">⚙ Purpose</td><td>Persistent root navigation. The FAB is the product thesis — logging must never be more than one tap away. <b style="color:#fff">Tap FAB</b> → quick-log sheet (§3 Search). <b style="color:#fff">Long-press FAB (450ms)</b> → Tonight picker (§3 Tonight). Tab tap switches root screens with no transition stack; re-tap active tab scrolls to top.</td></tr>
+        <tr><td>Center Quick-Log FAB</td><td><span class="m">46dp</span> rose circle, raised <span class="m">-18dp</span>, glow <span class="m">0 8 20 -6 rose@.7</span> · ＋ icon <span class="m">22dp</span> · opens quick-log search sheet from any tab (DECIDED — no top-tab or rail variants)</td></tr>
+      </table>
+
+      <div style="font:700 15px 'Hanken Grotesk';color:#fff;margin-top:22px">§2.2 · Status bar (mockup chrome)</div>
+      <table>
+        <tr><th style="width:150px">Property</th><th>Value</th></tr>
+        <tr><td>Height</td><td><span class="m">38dp</span>, pad-x <span class="m">22dp</span>, z above content, non-interactive</td></tr>
+        <tr><td>Content</td><td>Left <span class="m">9:41</span> (label-strong 12) · right signal bars + battery glyph</td></tr>
+      </table>
+
+      <div style="font:700 15px 'Hanken Grotesk';color:#fff;margin-top:22px">§2.3 · Screen header</div>
+      <table>
+        <tr><th style="width:150px">Property</th><th>Value</th></tr>
+        <tr><td>Layout</td><td>Row: title block (screen-title + optional meta line) · trailing actions (34dp circles)</td></tr>
+        <tr><td>Position</td><td>Top offset <span class="m">46dp</span> (below status bar), pad-x <span class="m">base</span></td></tr>
+        <tr><td>Action circle</td><td><span class="m">34dp</span> · <span class="m">surface.card</span> · hairline border · icon <span class="m">17–18dp</span></td></tr>
+      </table>
+
+      <div style="font:700 15px 'Hanken Grotesk';color:#fff;margin-top:22px">§2.4 · Swipe card</div>
+      <table>
+        <tr><th style="width:150px">Property</th><th>Value</th></tr>
+        <tr><td>Size</td><td>Fills deck inset (§1.6) · radius <span class="m">xl (24)</span> · shadow <span class="m">0 24 50 -16 rgba(0,0,0,.7)</span></td></tr>
+        <tr><td>Layers</td><td>3rd card <span class="m">scale .90 / +26dp Y</span> · next <span class="m">scale .95 / +13dp Y</span> · top draggable</td></tr>
+        <tr><td>Art overlay</td><td>Top highlight radial + 4dp dot texture + bottom scrim (§1.2)</td></tr>
+        <tr><td>Ghost title</td><td>poster-title, uppercase, top <span class="m">20dp</span>, opacity <span class="m">.92</span></td></tr>
+        <tr><td>Meta block</td><td>bottom <span class="m">20dp</span>: card-title + meta row (year · genre · ★rating)</td></tr>
+        <tr><td>Heart</td><td>top-right <span class="m">30dp</span> circle, <span class="m">rgba(0,0,0,.35)</span> + blur</td></tr>
+        <tr><td>Directional badge</td><td>badge type, 2.5dp border in swipe-color, radius <span class="m">9dp</span>, opacity = drag progress. <b style="color:#fff">Horizontal only:</b> R=INTERESTED/green · L=SKIP/rose. Watchlist/rating happen in quick-log or detail — never by swipe direction</td></tr>
+        <tr><td style="color:#EAB308">⚙ Purpose</td><td>The lean-back curation surface. <b style="color:#fff">Swipe right</b> = interested → adds to watchlist, feeds the taste graph positively. <b style="color:#fff">Swipe left</b> = skip → never resurfaces, mild negative signal. <b style="color:#fff">Double-tap</b> = ♥ favorite (implies interested, strong signal). <b style="color:#fff">Tap</b> = push Film detail. <b style="color:#fff">Long-press</b> = focus-review panel (rate + note without leaving the deck). In Build mode the same card means seen (R) / not seen (L) and logs to library instead of watchlist.</td></tr>
+        <tr><td>Transform</td><td><span class="m">translate(dx, dy×0.25) rotate(dx/300 × 16°)</span> — vertical damped, never committed · release <span class="m">|dx| &gt; 80dp</span> commits, else spring back <span class="m">.42s cubic-bezier(.2,.8,.2,1)</span></td></tr>
+      </table>
+
+      <div style="font:700 15px 'Hanken Grotesk';color:#fff;margin-top:22px">§2.5 · Result row (search / diary / list)</div>
+      <table>
+        <tr><th style="width:150px">Property</th><th>Value</th></tr>
+        <tr><td>Layout</td><td>Row, gap <span class="m">12dp</span>: poster <span class="m">42×60dp</span> r<span class="m">sm</span> · title+meta (fills) · trailing 32dp action circle</td></tr>
+        <tr><td>Trailing action</td><td>＋ on <span class="m">surface.card</span>+hairline (add) → morphs to ✓ on <span class="m">accent.green</span> when logged</td></tr>
+        <tr><td>Rhythm</td><td><span class="m">14dp</span> between rows</td></tr>
+        <tr><td style="color:#EAB308">⚙ Purpose</td><td>The universal film row. <b style="color:#fff">Tap row</b> → Film detail. <b style="color:#fff">Tap ＋</b> → instant "watched" log, today's date, no rating (＋ morphs to green ✓; snackbar §2.9 with Undo). <b style="color:#fff">Long-press</b> → quick-add §2.6. Tap ✓ (already logged) → opens its diary entry for editing.</td></tr>
+      </table>
+
+      <div style="font:700 15px 'Hanken Grotesk';color:#fff;margin-top:22px">§2.6 · Quick-add radial (signature)</div>
+      <table>
+        <tr><th style="width:150px">Property</th><th>Value</th></tr>
+        <tr><td>Trigger</td><td>Long-press <span class="m">280ms</span> on any §2.5 row → scrim <span class="m">rgba(0,0,0,.55)</span>+blur, row lifts <span class="m">scale 1.04</span></td></tr>
+        <tr><td>Actions</td><td>Stacked (9dp): <b style="color:#22C55E">Mark watched</b> (green, primary, "release ↑") · <b style="color:#3B82F6">Add to watchlist</b> (card) · <b style="color:#EAB308">rate</b> row (5 stars, "slide to rate — optional")</td></tr>
+        <tr><td>Resolve</td><td>Slide finger to action + release. No detail page. Snackbar §2.9 confirms + Undo</td></tr>
+        <tr><td style="color:#EAB308">⚙ Purpose</td><td>The signature backlog-clearing gesture: log in one continuous press without opening anything. Releasing on <b style="color:#22C55E">Mark watched</b> logs with today's date; on <b style="color:#3B82F6">Watchlist</b> adds to plan-to-watch; sliding across the <b style="color:#EAB308">stars</b> and releasing logs watched + that rating. Releasing outside any action cancels. A "When?" link in the sheet opens the Confidence-log sheet (§3) for films seen long ago.</td></tr>
+        <tr><td>Height</td><td>Each action <span class="m">50dp</span> · radius <span class="m">md(14)</span></td></tr>
+      </table>
+
+      <div style="font:700 15px 'Hanken Grotesk';color:#fff;margin-top:22px">§2.7 · Buttons · chips · toggle</div>
+      <table>
+        <tr><th style="width:150px">Component</th><th>Value</th></tr>
+        <tr><td>Primary CTA</td><td>Height <span class="m">52dp</span> · radius <span class="m">16</span> · <span class="m">accent.rose</span> · label-strong 15 · glow <span class="m">0 10 28 -8 rose@.6</span></td></tr>
+        <tr><td>Confirm button</td><td>Height <span class="m">44dp</span> · radius <span class="m">13</span> · <span class="m">accent.green</span>, text <span class="m">#06250F</span></td></tr>
+        <tr><td>Icon button</td><td><span class="m">46×44dp</span> · <span class="m">surface.card</span> + hairline · radius <span class="m">13</span></td></tr>
+        <tr><td>Genre chip</td><td>Pad <span class="m">9×14dp</span> · radius <span class="m">full</span> · selected=rose/white, idle=card+hairline</td></tr>
+        <tr><td>Segmented control</td><td><span class="m">surface.card</span> track, 3dp pad · active pill white w/ <span class="m">#0A0A0A</span> text</td></tr>
+        <tr><td>Toggle</td><td><span class="m">42×25dp</span> track r<span class="m">full</span> · knob <span class="m">20dp</span> · on=<span class="m">accent.green</span>, off=<span class="m">#2A2A2A</span></td></tr>
+        <tr><td style="color:#EAB308">⚙ Purpose</td><td>Color = meaning, always: <b style="color:#F43F5E">rose</b> commits the primary intent of a screen · <b style="color:#22C55E">green</b> confirms "watched/logged" · <b style="color:#3B82F6">blue</b> is watchlist/plan · <b style="color:#EAB308">gold</b> is rating. Genre chips toggle on tap (multi-select). Segmented controls switch views in place, no navigation.</td></tr>
+      </table>
+
+      <div style="font:700 15px 'Hanken Grotesk';color:#fff;margin-top:22px">§2.8 · Progress bar</div>
+      <table>
+        <tr><th style="width:150px">Property</th><th>Value</th></tr>
+        <tr><td>Track</td><td>Height <span class="m">4–8dp</span> · radius <span class="m">full</span> · <span class="m">#FFFFFF @ 8–10%</span></td></tr>
+        <tr><td>Fill</td><td>Onboarding=<span class="m">rose</span> · Build=<span class="m">green→blue</span> · Import=<span class="m">#00E054→green</span></td></tr>
+      </table>
+
+      <div style="font:700 15px 'Hanken Grotesk';color:#fff;margin-top:22px">§2.9 · Snackbar / undo bar</div>
+      <table>
+        <tr><th style="width:150px">Property</th><th>Value</th></tr>
+        <tr><td>Layout</td><td>Height <span class="m">40dp</span> · <span class="m">surface.lifted</span> + hairline · radius <span class="m">12</span> · pad-x <span class="m">14dp</span></td></tr>
+        <tr><td>Content</td><td>"Logged <b>Title</b>" (meta) · trailing <b style="color:#F43F5E">Undo</b> (label-strong 12, rose)</td></tr>
+        <tr><td>Timing</td><td>Auto-dismiss <span class="m">4s</span>, slide up <span class="m">220ms</span></td></tr>
+        <tr><td style="color:#EAB308">⚙ Purpose</td><td>Every log action is instantly reversible — this is what makes one-tap logging safe. <b style="color:#F43F5E">Undo</b> reverts the last log and restores the row/tile to idle. Never block with a confirm dialog.</td></tr>
+      </table>
+
+      <div style="font:700 15px 'Hanken Grotesk';color:#fff;margin-top:22px">§2.10 · AI chat surface</div>
+      <table>
+        <tr><th style="width:150px">Property</th><th>Value</th></tr>
+        <tr><td>User bubble</td><td><span class="m">accent.blue</span> · radius <span class="m">16/16/4/16</span> · max <span class="m">80%</span> · right-aligned</td></tr>
+        <tr><td>AI answer</td><td>24dp rose-glyph avatar + body text, gap <span class="m">9dp</span>, left-aligned; result §2.5 indented <span class="m">33dp</span></td></tr>
+        <tr><td>Suggestion chip</td><td>Full-width, pad <span class="m">11×14dp</span> · <span class="m">surface.card</span>+hairline · radius <span class="m">12</span></td></tr>
+        <tr><td>Input bar</td><td>Height <span class="m">48dp</span> · card+hairline · radius <span class="m">16</span> · trailing <span class="m">36dp</span> rose send (r<span class="m">11</span>)</td></tr>
+        <tr><td style="color:#EAB308">⚙ Purpose</td><td>Natural-language recall + recommendation ("that submarine thriller from the 90s"). AI answers identify films; each identified film renders as a §2.5 row with the same one-tap log behavior. Suggestion chips send their text as a prompt. Reached from the Discover header <span class="m">?</span> icon and from a quick-log empty state ("can't find it? ask filmarr").</td></tr>
+      </table>
+    </div>
+
+    <!-- §3 -->
+    <div style="margin-top:48px">
+      <div style="font:800 20px 'Bricolage Grotesque';letter-spacing:-.01em;color:#fff">§3 · Screen recipes</div>
+      <div style="font:400 13px 'Hanken Grotesk';color:#8E8E93;margin-top:6px;line-height:1.5">Each screen is a vertical <span class="m">Column</span> under status bar §2.2 + above nav §2.1. Exactly one <span style="color:#EAB308">◆ weighted spacer</span> per screen absorbs slack.</div>
+
+      <div style="margin-top:18px;display:flex;flex-direction:column;gap:18px">
+
+        <div style="background:#0f1014;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:16px 18px">
+          <div style="font:700 14px 'Hanken Grotesk';color:#fff">Onboarding · taste</div>
+          <div style="font:400 13px 'Hanken Grotesk';color:#aeb3ba;line-height:1.7;margin-top:8px">display headline → body sub (12dp) → chip wrap (genre chips §2.7, gap sm, 22dp top) → <span style="color:#EAB308">◆ spacer</span> → progress §2.8 + "5/5" → primary CTA §2.7 "Build my deck" → "Skip — surprise me" (meta, centered, 14dp)</div>
+        </div>
+
+        <div style="background:#0f1014;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:16px 18px">
+          <div style="font:700 14px 'Hanken Grotesk';color:#fff">Discover <span style="font:500 11px 'Hanken Grotesk';color:#22C55E">· live</span></div>
+          <div style="font:400 13px 'Hanken Grotesk';color:#aeb3ba;line-height:1.7;margin-top:8px">header §2.3 ("Discover" + "Swipe to curate" + 2 action circles) → deck §2.4 filling <span style="color:#EAB308">◆ the flex region</span> (inset 18dp x / 108dp top / 74dp bottom) → undo FAB (50dp, bottom-right, over deck) → nav §2.1. <b style="color:#cbd0d6">Focus variant:</b> add review panel over lower card (stars + note field), toggled by focus action.</div>
+        </div>
+
+        <div style="background:#0f1014;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:16px 18px">
+          <div style="font:700 14px 'Hanken Grotesk';color:#fff">Build</div>
+          <div style="font:400 13px 'Hanken Grotesk';color:#aeb3ba;line-height:1.7;margin-top:8px">header §2.3 + progress §2.8 ("142 logged") → vertical edge labels (← NOT SEEN · SEEN →) beside → single card §2.4 w/ "Likely seen" pill filling <span style="color:#EAB308">◆</span> → nav §2.1</div>
+        </div>
+
+        <div style="background:#0f1014;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:16px 18px">
+          <div style="font:700 14px 'Hanken Grotesk';color:#fff">Film detail</div>
+          <div style="font:400 13px 'Hanken Grotesk';color:#aeb3ba;line-height:1.7;margin-top:8px">backdrop §1.6 (72% width, bottom fade to bg) w/ back circle → <span style="color:#EAB308">◆ scroll body</span>: display title → meta row → rating row (TMDB numeral + your-stars) → action row (Watched §2.7 + ♥ + bookmark icon buttons) → synopsis body → "CAST" eyebrow + avatar row (46dp circles + "+9") → nav §2.1</div>
+        </div>
+
+        <div style="background:#0f1014;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:16px 18px">
+          <div style="font:700 14px 'Hanken Grotesk';color:#fff">Library · Grid / Diary / Lists</div>
+          <div style="font:400 13px 'Hanken Grotesk';color:#aeb3ba;line-height:1.7;margin-top:8px">header §2.3 ("Library" + count) → segmented §2.7 → <span style="color:#EAB308">◆ scroll area</span>. <b style="color:#cbd0d6">Grid:</b> 3-col §1.6, 2:3 posters r<span class="m">sm</span>, ★rating badge bottom-left. <b style="color:#cbd0d6">Diary diff:</b> month eyebrow + entries = date col (30dp) + 38×54 poster + title/stars/review. → nav §2.1</div>
+        </div>
+
+        <div style="background:#0f1014;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:16px 18px">
+          <div style="font:700 14px 'Hanken Grotesk';color:#fff">Search + Quick-add <span style="font:500 11px 'Hanken Grotesk';color:#F43F5E">· signature · opened via center FAB</span></div>
+          <div style="font:400 13px 'Hanken Grotesk';color:#aeb3ba;line-height:1.7;margin-top:8px">header §2.3 + search field (46dp, card+hairline, leading magnifier) → <span style="color:#EAB308">◆ results</span>: "RESULTS" eyebrow + §2.5 rows, then "Because you searched" graph-match group → nav §2.1. <b style="color:#cbd0d6">Quick-add overlay:</b> §2.6 radial on long-press.</div>
+        </div>
+
+        <div style="background:#0f1014;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:16px 18px">
+          <div style="font:700 14px 'Hanken Grotesk';color:#fff">Backlog Blitz <span style="font:500 11px 'Hanken Grotesk';color:#F43F5E">· catch-up</span></div>
+          <div style="font:400 13px 'Hanken Grotesk';color:#aeb3ba;line-height:1.7;margin-top:8px">header row (title+sub · "LOGGED TODAY" green counter) + search field → <span style="color:#EAB308">◆ grid</span>: "Popular you likely saw" eyebrow + 2-col §1.6 landscape tiles (16:10), tapped=dim+green ✓ badge top-right → snackbar §2.9 (above nav) → nav §2.1. Header carries the <b style="color:#F43F5E">streak chip</b> (flame + "6-day streak", rose @15% pill): streaks count consecutive days with ≥1 log — gamify the <i>logging</i>, not the watching. <b style="color:#cbd0d6">Tile behavior:</b> tap = instant watched log (toggle) · long-press = Confidence-log sheet for fuzzy dating.</div>
+        </div>
+
+        <div style="background:#0f1014;border:1px solid rgba(244,63,94,.2);border-radius:14px;padding:16px 18px">
+          <div style="font:700 14px 'Hanken Grotesk';color:#fff">Tonight <span style="font:500 11px 'Hanken Grotesk';color:#F43F5E">· long-press the FAB</span></div>
+          <div style="font:400 13px 'Hanken Grotesk';color:#aeb3ba;line-height:1.7;margin-top:8px">Ambient dot-grid background (§1.2) → display headline "What's the mood tonight?" → "MOOD" eyebrow + single-select chips (<span class="m">Cozy · Tense · Weird · Big &amp; loud</span>) → "TIME YOU'VE GOT" slider (<span class="m">60–240min</span>, thumb 18dp) → "WATCHING WITH" segmented (<span class="m">Solo · Date · Group</span>) → <span style="color:#EAB308">◆ spacer</span> → the pick: one §2.4-style card (150dp, "YOUR PICK" pill, match %) → action row: <b style="color:#F43F5E">Watch this</b> (marks watching + opens detail) · <b style="color:#cbd0d6">Reroll</b> (crossfades in the next-best match, never repeats a session's rejects) → nav §2.1. <b style="color:#cbd0d6">Purpose: kill scroll paralysis — the engine returns exactly one answer, filtered to runtime ≤ time slider, ranked by mood-tag match against the taste graph.</b></div>
+        </div>
+
+        <div style="background:#0f1014;border:1px solid rgba(244,63,94,.2);border-radius:14px;padding:16px 18px">
+          <div style="font:700 14px 'Hanken Grotesk';color:#fff">Confidence log <span style="font:500 11px 'Hanken Grotesk';color:#F43F5E">· fuzzy memories are valid data</span></div>
+          <div style="font:400 13px 'Hanken Grotesk';color:#aeb3ba;line-height:1.7;margin-top:8px">Bottom sheet (§1.5 r24 top, <span class="m">surface #141519</span>, drag handle 36×4dp) over dimmed parent → film identity row (46×66 poster + title/meta) → "WHEN DID YOU SEE IT?" chips (<span class="m">This year · A few years back · 2010s · Long ago · No idea</span> — single-select, blue) → "HOW DO YOU REMEMBER IT?" 4-up sentiment tiles (<span class="m">Loved · Liked · Meh · Nope</span> — Bricolage 15, selected = green @14% fill) → AI note (rose @8% pill): "Fuzzy is fine. filmarr refines dates &amp; ratings later as your taste graph grows." → CTA <b style="color:#F43F5E">"Log it — fuzzy and all"</b>. <b style="color:#cbd0d6">Purpose: Letterboxd forces precision; real memories aren't precise. Entries store a date-range + sentiment instead of date + stars; the AI layer may later propose refinements the user confirms. Opened from: Blitz tile long-press, quick-add "When?" link, Build card long-press.</b></div>
+        </div>
+
+        <div style="background:#0f1014;border:1px solid rgba(244,63,94,.2);border-radius:14px;padding:16px 18px">
+          <div style="font:700 14px 'Hanken Grotesk';color:#fff">Overlap <span style="font:500 11px 'Hanken Grotesk';color:#F43F5E">· taste graph as a social object</span></div>
+          <div style="font:400 13px 'Hanken Grotesk';color:#aeb3ba;line-height:1.7;margin-top:8px">Ambient dot-grid background → identity row (two overlapping 34dp avatars, −10dp offset + "You × Ana" + "Taste overlap · 68%") → <span style="color:#EAB308">◆ venn canvas</span>: two 88r circles (yours rose @13%, theirs blue @13%, stroked @50%), solo nodes in each lobe, shared films in the intersection, labels <span class="m">YOURS / ANA'S / THE OVERLAP</span> → "IN THE OVERLAP — NEITHER OF YOU HAS SEEN" eyebrow + reco row (both-match % + <b style="color:#F43F5E">Watch together</b> button) → nav §2.1. <b style="color:#cbd0d6">Purpose: the overlap zone IS the recommendation — films both graphs point at that neither has logged. "Watch together" adds to both watchlists and notifies the friend. Node tap → Film detail. Reached from Profile → friends list, or a shared graph link.</b></div>
+        </div>
+
+        <div style="background:#0f1014;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:16px 18px">
+          <div style="font:700 14px 'Hanken Grotesk';color:#fff">Ask filmarr · AI</div>
+          <div style="font:400 13px 'Hanken Grotesk';color:#aeb3ba;line-height:1.7;margin-top:8px">rose-glyph title row → <span style="color:#EAB308">◆ conversation</span> §2.10: user bubble → AI answer → result card (add ✓) → "TRY ASKING" eyebrow + 3 suggestion chips → input bar §2.10 (bottom 12dp). <b style="color:#cbd0d6">No bottom nav</b> (modal-style surface).</div>
+        </div>
+
+        <div style="background:#0f1014;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:16px 18px">
+          <div style="font:700 14px 'Hanken Grotesk';color:#fff">Profile · stats</div>
+          <div style="font:400 13px 'Hanken Grotesk';color:#aeb3ba;line-height:1.7;margin-top:8px">identity row (avatar §1.6 + name/@handle + settings gear) → 3 stat cards (surface.raised, stat-numeral) → "RATINGS SPREAD" histogram (6 bars, gold/rose peaks) → "TOP GENRES" bars → <span style="color:#EAB308">◆ spacer</span> → nav §2.1</div>
+        </div>
+
+        <div style="background:#0f1014;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:16px 18px">
+          <div style="font:700 14px 'Hanken Grotesk';color:#fff">Letterboxd import</div>
+          <div style="font:400 13px 'Hanken Grotesk';color:#aeb3ba;line-height:1.7;margin-top:8px">back circle → centered hero (3-dot LBXD mark + title + body) → progress card §2.8 (862/1204 + matched/review/queued stats) → "ALSO SYNC" eyebrow + 3 toggle rows §2.7 → <span style="color:#EAB308">◆ spacer</span>. No nav (settings sub-page).</div>
+        </div>
+
+        <div style="background:#0f1014;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:16px 18px">
+          <div style="font:700 14px 'Hanken Grotesk';color:#fff">Taste graph</div>
+          <div style="font:400 13px 'Hanken Grotesk';color:#aeb3ba;line-height:1.7;margin-top:8px">title block ("Your taste graph" + sub) → <span style="color:#EAB308">◆ graph canvas</span>: central YOU node (22dp gradient) + 5 satellite nodes (12–16dp) with color-coded edges @40% + cluster labels → reco strip §2.5-style (92% match + add ＋) → nav §2.1</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- §4 -->
+    <div style="margin-top:48px">
+      <div style="font:800 20px 'Bricolage Grotesque';letter-spacing:-.01em;color:#fff">§4 · Motion quick-reference</div>
+      <table style="margin-top:14px">
+        <tr><th>Effect</th><th>Property</th><th>From → To</th><th>Duration / easing</th></tr>
+        <tr><td>Card drag</td><td>translate + rotate</td><td>follows finger, <span class="m">rot = dx/300×16°</span></td><td>realtime, none</td></tr>
+        <tr><td>Card spring-back</td><td>transform</td><td>offset → <span class="m">0,0</span></td><td><span class="m">.42s cubic-bezier(.2,.8,.2,1)</span></td></tr>
+        <tr><td>Card commit (fly-off)</td><td>translateX/Y + opacity</td><td>→ off-screen, <span class="m">1→0</span></td><td><span class="m">.30s ease-out</span>, then next card advances</td></tr>
+        <tr><td>Directional badge</td><td>opacity</td><td><span class="m">0 → 1</span> mapped to drag dist ÷90dp</td><td>realtime</td></tr>
+        <tr><td>Quick-add long-press</td><td>scale + scrim</td><td>row <span class="m">1 → 1.04</span>, scrim <span class="m">0 → .55</span></td><td><span class="m">280ms hold</span>, <span class="m">180ms</span> reveal</td></tr>
+        <tr><td>Result add</td><td>circle bg + icon</td><td>card ＋ → green ✓</td><td><span class="m">200ms</span> cross-fade + scale-pop</td></tr>
+        <tr><td>Blitz tile log</td><td>overlay + badge</td><td>dim <span class="m">0 → .5</span>, ✓ badge scale-in</td><td><span class="m">160ms</span></td></tr>
+        <tr><td>Snackbar</td><td>translateY + opacity</td><td>enter up, auto-exit</td><td>in <span class="m">220ms</span>, hold <span class="m">4s</span></td></tr>
+        <tr><td>Search caret</td><td>opacity</td><td><span class="m">.35 ⇄ .9</span></td><td><span class="m">1.1s</span> loop (pulseGlow)</td></tr>
+        <tr><td>Import progress</td><td>fill width</td><td>tracks count</td><td>eased per batch</td></tr>
+        <tr><td>FAB long-press → Tonight</td><td>radial fill on FAB + screen push</td><td>fill <span class="m">0 → 100%</span> during hold</td><td><span class="m">450ms</span> hold, push <span class="m">260ms ease-out</span></td></tr>
+        <tr><td>Bottom sheet (quick-log, confidence)</td><td>translateY</td><td>off-screen → rest</td><td><span class="m">260ms cubic-bezier(.2,.8,.2,1)</span>, scrim fades with it</td></tr>
+        <tr><td>Tonight reroll</td><td>crossfade + scale</td><td>old pick <span class="m">1→0 / .97</span>, new <span class="m">0→1 / 1</span></td><td><span class="m">240ms ease-in-out</span></td></tr>
+        <tr><td>Streak chip on new streak day</td><td>scale pop</td><td><span class="m">.8 → 1</span> overshoot</td><td><span class="m">300ms spring</span>, once per day</td></tr>
+      </table>
+    </div>
+
+    <!-- §5 -->
+    <div style="margin-top:48px">
+      <div style="font:800 20px 'Bricolage Grotesque';letter-spacing:-.01em;color:#fff">§5 · Navigation &amp; flow map</div>
+      <div style="font:400 13px 'Hanken Grotesk';color:#8E8E93;margin-top:6px;line-height:1.5">Every interactive element and where it leads. This is the UX contract — when in doubt, this table wins.</div>
+      <table style="margin-top:14px">
+        <tr><th style="width:130px">Where</th><th style="width:190px">Element / gesture</th><th>Result</th></tr>
+        <tr><td>First launch</td><td>Onboarding chips → "Build my deck"</td><td>Seeds taste graph with picked genres → lands on <b style="color:#fff">Discover</b> with a personalized deck</td></tr>
+        <tr><td>First launch</td><td>"Skip — surprise me"</td><td>Discover seeded by popularity; graph learns from swipes alone</td></tr>
+        <tr><td>Everywhere</td><td>Nav tab tap</td><td>Switch root screen (Discover / Build / Library / Profile), state preserved; re-tap = scroll to top</td></tr>
+        <tr><td>Everywhere</td><td><b style="color:#F43F5E">FAB tap</b></td><td>Quick-log sheet (search-first, keyboard up) over current screen</td></tr>
+        <tr><td>Everywhere</td><td><b style="color:#F43F5E">FAB long-press 450ms</b></td><td>Tonight picker</td></tr>
+        <tr><td>Discover</td><td>Swipe R / L</td><td>Interested (→ watchlist) / Skip. Card flies off, next advances</td></tr>
+        <tr><td>Discover</td><td>Double-tap card</td><td>♥ favorite + interested; heart pulses</td></tr>
+        <tr><td>Discover</td><td>Tap card</td><td>Push <b style="color:#fff">Film detail</b></td></tr>
+        <tr><td>Discover</td><td>Long-press card / ◎ icon</td><td>Focus-review panel over card (stars + note); swipe R logs review</td></tr>
+        <tr><td>Discover</td><td>? icon · Undo FAB</td><td>Ask filmarr · revert last swipe (restores card)</td></tr>
+        <tr><td>Build</td><td>Swipe R / L</td><td>Seen (logs, +1 counter, feeds Blitz streak) / Not seen (never re-asked)</td></tr>
+        <tr><td>Build</td><td>Long-press card</td><td>Confidence-log sheet (fuzzy date + sentiment)</td></tr>
+        <tr><td>Quick-log sheet</td><td>Type → result rows</td><td>§2.5 behavior: tap=detail · ＋=instant log · long-press=quick-add §2.6 · "When?"=confidence sheet · empty state links Ask filmarr</td></tr>
+        <tr><td>Blitz</td><td>Tile tap / long-press</td><td>Toggle watched log (✓ badge + snackbar) / Confidence-log sheet. Entry: Build header link or Profile streak</td></tr>
+        <tr><td>Film detail</td><td>Watched · ♥ · bookmark</td><td>Log watched (green fill) · favorite · watchlist — all instant, snackbar + Undo</td></tr>
+        <tr><td>Film detail</td><td>Cast +9 · More-like-this poster · back</td><td>Full cast list · that film's detail · pop</td></tr>
+        <tr><td>Library</td><td>Segmented Grid/Diary/Lists · poster tap · poster long-press</td><td>Switch view in place · Film detail · quick-add §2.6 (edit entry)</td></tr>
+        <tr><td>Ask filmarr</td><td>Chip · send · result ✓/＋</td><td>Sends prompt · AI reply with film rows · same one-tap log as everywhere</td></tr>
+        <tr><td>Profile</td><td>Stat card · gear · graph link · friend row</td><td>Filtered library · Settings (incl. Letterboxd import) · Taste graph · <b style="color:#fff">Overlap</b></td></tr>
+        <tr><td>Taste graph</td><td>Node tap · reco ＋</td><td>Film detail (center=your profile) · add to watchlist</td></tr>
+        <tr><td>Overlap</td><td>Node tap · "Watch together"</td><td>Film detail · adds to both watchlists + notifies friend</td></tr>
+        <tr><td>Tonight</td><td>Chips/slider/segmented · "Watch this" · "Reroll"</td><td>Re-rank pick live · mark watching + open detail · next-best pick (no session repeats)</td></tr>
+        <tr><td>Letterboxd import</td><td>Drop .zip · toggles · "14 review"</td><td>Batch import w/ live progress · sync prefs · review-queue of ambiguous matches (user confirms each)</td></tr>
+      </table>
+    </div>
+
+    <div style="margin-top:44px;padding-top:20px;border-top:1px solid rgba(255,255,255,.08);font:400 12px 'Hanken Grotesk';color:#5c5f66">Companion to <b style="color:#8E8E93">Filmarr Android.dc.html</b> · regenerate when the design changes materially · baseline <span class="m">411×891dp</span></div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1020,&quot;height&quot;:1400}}"></script>
+</body>
+</html>

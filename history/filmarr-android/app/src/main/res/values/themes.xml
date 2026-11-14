@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Cinema-dark, single scheme. Compose owns all in-app color; this is just the window shell. -->
+    <style name="Theme.Filmarr" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:windowBackground">@color/filmarr_bg</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
+</resources>

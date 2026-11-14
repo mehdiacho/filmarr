@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Filmarr — Privacy Policy</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { max-width: 720px; margin: 0 auto; padding: 40px 20px 80px;
+         font: 16px/1.6 -apple-system, "Segoe UI", Roboto, sans-serif; color: #1B1B21; background: #FCFBFF; }
+  @media (prefers-color-scheme: dark) { body { color: #E5E1E9; background: #0A0A0A; } }
+  h1 { font-size: 28px; letter-spacing: -0.02em; }
+  h2 { font-size: 19px; margin-top: 36px; }
+  .muted { opacity: 0.7; font-size: 14px; }
+  a { color: #F43F5E; } @media (prefers-color-scheme: dark) { a { color: #FB7185; } }
+  ul { padding-left: 22px; }
+</style>
+</head>
+<body>
+<h1>Filmarr — Privacy Policy</h1>
+<p class="muted">Effective: 15 July 2026 · Applies to the Filmarr Android app (package <code>app.greenforrest.filmarr</code>)</p>
+
+<p>Filmarr is a film-discovery app: you swipe through films, build a watchlist and a taste
+graph, and get recommendations tuned to what you love — no searching required. This policy
+explains what data the app handles, why, and the control you have over it. The short version:
+<b>your data is yours</b> — we process it only to provide the features you use, we don't sell
+data, and we don't show ads.</p>
+
+<h2>Data we collect and why</h2>
+<ul>
+  <li><b>Account information.</b> If you sign in: your email address, and (with Google Sign-In)
+  your name and profile photo from your Google account; or the email address you register with.
+  You can browse films as a guest without an account — personal features (your feeds, library,
+  and profile) require signing in.</li>
+  <li><b>Your taste and activity.</b> The signals you give the app: films you heart, add to your
+  library, or mark as watched / watching / plan-to-watch, your ratings, the swipe choices you
+  make, and the genres you pick during onboarding. This is what your recommendations are built
+  from.</li>
+  <li><b>Optional age bracket.</b> If you choose to provide it, a coarse age range (e.g. 25–34) —
+  used only to improve recommendations. It is optional and you can skip it.</li>
+</ul>
+
+<h2>How processing works</h2>
+<ul>
+  <li><b>Storage and sync.</b> Your account and taste data live in Google Firebase (Cloud
+  Firestore) in a per-user area only your signed-in account can access, in the
+  <code>europe-west1</code> region. Data is encrypted in transit.</li>
+  <li><b>Recommendations.</b> To generate your feeds, your interaction data is processed by our
+  recommender backend (Google Cloud Run), which acts as a service provider on our behalf. It is
+  used only to compute your recommendations, not to identify you, and is not shared with anyone
+  for their own purposes.</li>
+  <li><b>Film metadata.</b> Film details, posters, and artwork are fetched from
+  <a href="https://www.themoviedb.org/">TMDB (The Movie Database)</a>, a third-party content
+  provider. The app requests public catalogue data from TMDB; your account or taste data is not
+  sent to TMDB.</li>
+</ul>
+
+<h2>What we don't do</h2>
+<ul>
+  <li>No selling of personal data. No advertising, and no third-party advertising SDKs.</li>
+  <li>No in-app purchases — Filmarr is free, and we never handle payment details.</li>
+  <li>No access to your contacts, location, photos, microphone, or messages.</li>
+</ul>
+
+<h2>Your controls</h2>
+<ul>
+  <li><b>Delete your data / account.</b> You can permanently remove your account and all your
+  Filmarr data — see <a href="/delete-account.html">the deletion page</a>.</li>
+</ul>
+
+<h2>Retention</h2>
+<p>Your account and taste data are retained until you delete your account. Once deletion
+completes, nothing is retained by Filmarr.</p>
+
+<h2>Children</h2>
+<p>Filmarr is not directed at children under 13, and we do not knowingly collect data from them.</p>
+
+<h2>Changes</h2>
+<p>If this policy changes materially, the app will point to the updated version at this URL, with
+the effective date above revised.</p>
+
+<h2>Contact</h2>
+<p>Questions or requests: <a href="mailto:mehdiacho@gmail.com">mehdiacho@gmail.com</a></p>
+</body>
+</html>

@@ -1,0 +1,115 @@
+# Build a signed AAB and upload it to a Google Play track. The track is chosen
+# by the branch that was pushed (mirrors the yap pipeline):
+#
+#   main             -> production   (status: draft — promote by hand in console)
+#   open-testing     -> beta         (open testing)
+#   closed-testing   -> alpha        (closed testing)
+#   internal-testing -> internal     (internal testing)
+#
+# Required repository secrets (Settings -> Secrets and variables -> Actions):
+#   KEYSTORE_BASE64              base64 of upload-keystore.jks
+#   STORE_PASSWORD               keystore store password
+#   KEY_ALIAS                    key alias (e.g. "upload")
+#   KEY_PASSWORD                 key password
+#   GOOGLE_SERVICES_JSON_BASE64  base64 of app/google-services.json (it's git-ignored)
+#   TMDB_READ_TOKEN              TMDB v4 read token (baked into BuildConfig at build)
+#   PLAY_SERVICE_ACCOUNT_JSON    JSON key of a GCP service account invited in
+#                                Play Console -> Users & permissions with release
+#                                permission. The Google Play Android Developer API
+#                                (androidpublisher.googleapis.com) must be enabled in
+#                                that account's GCP project.
+# Optional:
+#   RECOMMENDER_BASE_URL         deployed Cloud Run /recommend URL; empty -> app falls
+#                                back to TMDB feeds.
+name: Release to Play
+
+on:
+  push:
+    branches: [main, open-testing, closed-testing, internal-testing]
+  workflow_dispatch: {}
+
+# One track at a time per branch; different tracks never block each other.
+concurrency:
+  group: play-release-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+    steps:
+      # fetch-depth: 0 gives full history so `git rev-list --count HEAD`
+      # produces a real, monotonic versionCode (a shallow clone returns 1).
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install SDK packages
+        run: |
+          yes | sdkmanager --licenses > /dev/null || true
+          sdkmanager "platforms;android-36" "build-tools;36.0.0" || true
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      # Map the pushed branch to a Play track + rollout status.
+      - name: Select Play track
+        id: play
+        run: |
+          # NOTE: while the Play Console app is still a "draft app" (no release has
+          # ever been published), Google rejects any non-draft release with
+          # "Only releases with status draft may be created on draft app". So every
+          # track uploads as `draft` for now — land the AAB, then publish the first
+          # release by hand in the console. Once that first release is live, flip the
+          # testing tracks back to `status=completed` so pushes auto-release to testers.
+          case "$GITHUB_REF_NAME" in
+            main)             track=production; status=draft ;;
+            open-testing)     track=beta;       status=draft ;;
+            closed-testing)   track=alpha;      status=draft ;;
+            internal-testing) track=internal;   status=draft ;;
+            *) echo "::error::No Play track mapping for branch '$GITHUB_REF_NAME'"; exit 1 ;;
+          esac
+          echo "track=$track"   >> "$GITHUB_OUTPUT"
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          echo "Deploying '$GITHUB_REF_NAME' -> Play '$track' track (status=$status)"
+
+      - name: Restore keystore, Firebase config, and .env
+        env:
+          TMDB_READ_TOKEN: ${{ secrets.TMDB_READ_TOKEN }}
+          RECOMMENDER_BASE_URL: ${{ secrets.RECOMMENDER_BASE_URL }}
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > upload-keystore.jks
+          echo "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 -d > app/google-services.json
+          # Only write non-empty values: the Secrets Gradle plugin emits invalid Java for a
+          # blank value, and missing keys fall back to .env.example's (non-empty) defaults.
+          : > .env
+          if [ -n "$TMDB_READ_TOKEN" ]; then printf 'TMDB_READ_TOKEN=%s\n' "$TMDB_READ_TOKEN" >> .env; fi
+          if [ -n "$RECOMMENDER_BASE_URL" ]; then printf 'RECOMMENDER_BASE_URL=%s\n' "$RECOMMENDER_BASE_URL" >> .env; fi
+
+      # versionCode must be unique and increasing per upload — derive it from
+      # the commit count (requires the full history fetched above).
+      - name: Compute versionCode
+        run: echo "FILMARR_VERSION_CODE=$(git rev-list --count HEAD)" >> "$GITHUB_ENV"
+
+      - name: Build signed AAB
+        env:
+          KEYSTORE_PATH: ${{ github.workspace }}/upload-keystore.jks
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          FILMARR_VERSION_NAME: ${{ github.ref_name }}
+        run: ./gradlew bundleRelease --no-daemon --no-configuration-cache
+
+      - name: Upload to Play (${{ steps.play.outputs.track }})
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: app.greenforrest.filmarr
+          releaseFiles: app/build/outputs/bundle/release/app-release.aab
+          track: ${{ steps.play.outputs.track }}
+          status: ${{ steps.play.outputs.status }}

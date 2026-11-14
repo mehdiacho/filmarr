@@ -1,0 +1,46 @@
+{
+  "//": "Composite indexes for non-vector queries. The KNN VECTOR index on movies.embedding is NOT defined here — it is created via gcloud (see SETUP.md), because vector index config is not expressible in this file.",
+  "indexes": [
+    {
+      "//": "GraphStore precomputed-edge reads: neighbors of a source, by type, best-weighted first.",
+      "collectionGroup": "edges",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "src_id", "order": "ASCENDING" },
+        { "fieldPath": "edge_type", "order": "ASCENDING" },
+        { "fieldPath": "weight", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "//": "age_transition reads are additionally filtered by bracket pair.",
+      "collectionGroup": "edges",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "edge_type", "order": "ASCENDING" },
+        { "fieldPath": "from_bracket", "order": "ASCENDING" },
+        { "fieldPath": "src_id", "order": "ASCENDING" },
+        { "fieldPath": "weight", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "//": "Only live-snapshot edges are read at serving time.",
+      "collectionGroup": "edges",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "snapshot_id", "order": "ASCENDING" },
+        { "fieldPath": "src_id", "order": "ASCENDING" },
+        { "fieldPath": "edge_type", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "//": "Assemble a user's recent positive signals as seeds.",
+      "collectionGroup": "interactions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "event_type", "order": "ASCENDING" },
+        { "fieldPath": "ts", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

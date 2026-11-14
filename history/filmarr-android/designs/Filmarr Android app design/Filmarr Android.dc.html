@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  @keyframes pulseGlow { 0%,100% { opacity:.35 } 50% { opacity:.9 } }
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:radial-gradient(1200px 800px at 70% -10%, #15171d 0%, #0b0c10 55%);font-family:'Hanken Grotesk',sans-serif;color:#fff;padding:72px 64px 120px;-webkit-font-smoothing:antialiased">
+
+  <!-- ===== HEADER ===== -->
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:24px;max-width:1400px;margin:0 auto 8px">
+    <div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="width:44px;height:44px;border-radius:13px;background:linear-gradient(150deg,#F43F5E,#9f1239);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 30px -6px rgba(244,63,94,.6)">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 4h16v16H4z" stroke="#fff" stroke-width="1.6" opacity=".25"/><path d="M4 9h16M9 4v16" stroke="#fff" stroke-width="1.6" opacity=".25"/><path d="M13.5 12L10 9.8v4.4z" fill="#fff"/></svg>
+        </div>
+        <div style="font:800 40px 'Bricolage Grotesque';letter-spacing:-.03em;color:#fff">filmarr</div>
+      </div>
+      <div style="margin-top:14px;font:400 16px 'Hanken Grotesk';color:#9aa0a8;max-width:560px">Android design exploration — a swipe-first film &amp; TV tracker. Drag the hero card; everything else is a flagship-grade mockup of the full app.</div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <div style="padding:8px 14px;border-radius:999px;background:#161616;border:1px solid rgba(255,255,255,.08);font:600 12px 'Hanken Grotesk';color:#cbd0d6">Material 3 · Dark</div>
+      <div style="padding:8px 14px;border-radius:999px;background:#161616;border:1px solid rgba(255,255,255,.08);font:600 12px 'Hanken Grotesk';color:#cbd0d6">Compose-ready</div>
+    </div>
+  </div>
+
+  <!-- ===== IDENTITY / SYSTEM ===== -->
+  <div style="max-width:1400px;margin:56px auto 0">
+    <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:8px">
+      <div style="font:700 13px 'Hanken Grotesk';letter-spacing:.18em;text-transform:uppercase;color:#F43F5E">01</div>
+      <div style="font:700 26px 'Bricolage Grotesque';letter-spacing:-.01em">Foundations</div>
+    </div>
+    <div style="font:400 14px 'Hanken Grotesk';color:#8E8E93;margin-bottom:28px">The cinema-dark palette and type system carried through every screen.</div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:20px">
+      <!-- color card -->
+      <div style="flex:1 1 360px;background:#0f1014;border:1px solid rgba(255,255,255,.07);border-radius:22px;padding:24px">
+        <div style="font:700 12px 'Hanken Grotesk';letter-spacing:.14em;text-transform:uppercase;color:#5c5f66;margin-bottom:16px">Palette</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+          <div><div style="height:56px;border-radius:12px;background:#0A0A0A;border:1px solid rgba(255,255,255,.1)"></div><div style="font:600 11px 'Hanken Grotesk';margin-top:7px">Carbon</div><div style="font:400 10px 'Hanken Grotesk';color:#5c5f66">#0A0A0A</div></div>
+          <div><div style="height:56px;border-radius:12px;background:#161616;border:1px solid rgba(255,255,255,.06)"></div><div style="font:600 11px 'Hanken Grotesk';margin-top:7px">Charcoal</div><div style="font:400 10px 'Hanken Grotesk';color:#5c5f66">#161616</div></div>
+          <div><div style="height:56px;border-radius:12px;background:#F43F5E"></div><div style="font:600 11px 'Hanken Grotesk';margin-top:7px">Rose</div><div style="font:400 10px 'Hanken Grotesk';color:#5c5f66">#F43F5E</div></div>
+          <div><div style="height:56px;border-radius:12px;background:#EAB308"></div><div style="font:600 11px 'Hanken Grotesk';margin-top:7px">Gold</div><div style="font:400 10px 'Hanken Grotesk';color:#5c5f66">#EAB308</div></div>
+          <div><div style="height:56px;border-radius:12px;background:#3B82F6"></div><div style="font:600 11px 'Hanken Grotesk';margin-top:7px">Blue</div><div style="font:400 10px 'Hanken Grotesk';color:#5c5f66">#3B82F6</div></div>
+          <div><div style="height:56px;border-radius:12px;background:#22C55E"></div><div style="font:600 11px 'Hanken Grotesk';margin-top:7px">Green</div><div style="font:400 10px 'Hanken Grotesk';color:#5c5f66">#22C55E</div></div>
+          <div><div style="height:56px;border-radius:12px;background:#8E8E93"></div><div style="font:600 11px 'Hanken Grotesk';margin-top:7px">Slate</div><div style="font:400 10px 'Hanken Grotesk';color:#5c5f66">#8E8E93</div></div>
+          <div><div style="height:56px;border-radius:12px;background:#fff"></div><div style="font:600 11px 'Hanken Grotesk';margin-top:7px">White</div><div style="font:400 10px 'Hanken Grotesk';color:#5c5f66">#FFFFFF</div></div>
+        </div>
+      </div>
+      <!-- type card -->
+      <div style="flex:1 1 360px;background:#0f1014;border:1px solid rgba(255,255,255,.07);border-radius:22px;padding:24px">
+        <div style="font:700 12px 'Hanken Grotesk';letter-spacing:.14em;text-transform:uppercase;color:#5c5f66;margin-bottom:16px">Type</div>
+        <div style="font:800 38px 'Bricolage Grotesque';letter-spacing:-.03em;line-height:1">Bricolage Grotesque</div>
+        <div style="font:400 13px 'Hanken Grotesk';color:#8E8E93;margin-top:2px">Display · titles · poster type · big numerals</div>
+        <div style="height:1px;background:rgba(255,255,255,.07);margin:18px 0"></div>
+        <div style="font:600 22px 'Hanken Grotesk'">Hanken Grotesk</div>
+        <div style="font:400 13px 'Hanken Grotesk';color:#8E8E93;margin-top:4px">UI · body · labels · everything else. Clean, legible, native.</div>
+        <div style="display:flex;gap:8px;margin-top:18px;flex-wrap:wrap">
+          <span style="font:400 13px 'Hanken Grotesk';color:#cbd0d6">Regular</span><span style="color:#3a3d44">·</span>
+          <span style="font:500 13px 'Hanken Grotesk';color:#cbd0d6">Medium</span><span style="color:#3a3d44">·</span>
+          <span style="font:600 13px 'Hanken Grotesk';color:#cbd0d6">Semibold</span><span style="color:#3a3d44">·</span>
+          <span style="font:800 13px 'Hanken Grotesk';color:#cbd0d6">Extrabold</span>
+        </div>
+      </div>
+      <!-- gesture compass card -->
+      <div style="flex:1 1 300px;background:#0f1014;border:1px solid rgba(255,255,255,.07);border-radius:22px;padding:24px">
+        <div style="font:700 12px 'Hanken Grotesk';letter-spacing:.14em;text-transform:uppercase;color:#5c5f66;margin-bottom:14px">The gesture grammar</div>
+        <div style="position:relative;height:200px;display:flex;align-items:center;justify-content:center">
+          <div style="position:absolute;left:0;top:50%;transform:translateY(-50%)"><div style="font:800 11px 'Hanken Grotesk';color:#F43F5E">SKIP ←</div></div>
+          <div style="position:absolute;right:0;top:50%;transform:translateY(-50%)"><div style="font:800 11px 'Hanken Grotesk';color:#22C55E">→ INTERESTED</div></div>
+          <div style="position:absolute;top:6px;left:50%;transform:translateX(-50%);font:600 10.5px 'Hanken Grotesk';color:#8E8E93">two directions. that's it.</div>
+          <div style="width:78px;height:104px;border-radius:14px;background:linear-gradient(150deg,#F43F5E,#7c1d3a);box-shadow:0 12px 30px -8px rgba(244,63,94,.5);display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+          </div>
+        </div>
+        <div style="font:400 11.5px 'Hanken Grotesk';color:#8E8E93;text-align:center;margin-top:6px">Double-tap to ♥ · tap for details · hold to review</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CORE SCREENS ===== -->
+  <div style="max-width:1400px;margin:72px auto 0">
+    <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:8px">
+      <div style="font:700 13px 'Hanken Grotesk';letter-spacing:.18em;text-transform:uppercase;color:#F43F5E">02</div>
+      <div style="font:700 26px 'Bricolage Grotesque';letter-spacing:-.01em">The app, screen by screen</div>
+    </div>
+    <div style="font:400 14px 'Hanken Grotesk';color:#8E8E93;margin-bottom:40px">From first launch to your logged library. The Discover deck is live — grab it and swipe.</div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:54px 44px;align-items:flex-start">
+
+      <!-- ============ FRAME 1 · ONBOARDING ============ -->
+      <div style="display:flex;flex-direction:column;gap:16px;align-items:flex-start">
+        <div style="font:600 12px 'Hanken Grotesk';letter-spacing:.12em;text-transform:uppercase;color:#5c5f66">Onboarding · taste</div>
+        <div style="position:relative;width:300px;height:640px;border-radius:42px;background:#000;padding:7px;box-shadow:0 40px 90px -20px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.06)">
+          <div style="position:relative;width:100%;height:100%;border-radius:35px;overflow:hidden;background:#0A0A0A">
+            <div style="position:absolute;top:0;left:0;right:0;height:38px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;z-index:60"><span style="font:600 12px 'Hanken Grotesk';color:#fff">9:41</span><div style="display:flex;gap:6px;align-items:center"><svg width="17" height="11" viewBox="0 0 17 11" fill="#fff"><rect y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" width="3" height="11" rx="1"/></svg><div style="width:20px;height:10px;border:1.4px solid #fff;border-radius:2.5px;padding:1.3px"><div style="width:75%;height:100%;background:#fff;border-radius:1px"></div></div></div></div>
+
+            <div style="position:absolute;inset:0;padding:58px 22px 22px;display:flex;flex-direction:column">
+              <div style="font:800 32px 'Bricolage Grotesque';line-height:1;letter-spacing:-.03em">Tune your<br>taste.</div>
+              <div style="margin-top:12px;font:400 13px 'Hanken Grotesk';color:#8E8E93;line-height:1.45">Pick the genres you love — we'll seed your very first deck. No searching required, ever.</div>
+              <div style="margin-top:22px;display:flex;flex-wrap:wrap;gap:9px">
+                <span style="padding:9px 14px;border-radius:999px;background:#F43F5E;color:#fff;font:600 13px 'Hanken Grotesk'">Sci-Fi ✓</span>
+                <span style="padding:9px 14px;border-radius:999px;background:#161616;color:#cfcfcf;border:1px solid rgba(255,255,255,.1);font:600 13px 'Hanken Grotesk'">Drama</span>
+                <span style="padding:9px 14px;border-radius:999px;background:#F43F5E;color:#fff;font:600 13px 'Hanken Grotesk'">Thriller ✓</span>
+                <span style="padding:9px 14px;border-radius:999px;background:#161616;color:#cfcfcf;border:1px solid rgba(255,255,255,.1);font:600 13px 'Hanken Grotesk'">Horror</span>
+                <span style="padding:9px 14px;border-radius:999px;background:#161616;color:#cfcfcf;border:1px solid rgba(255,255,255,.1);font:600 13px 'Hanken Grotesk'">Comedy</span>
+                <span style="padding:9px 14px;border-radius:999px;background:#F43F5E;color:#fff;font:600 13px 'Hanken Grotesk'">Indie ✓</span>
+                <span style="padding:9px 14px;border-radius:999px;background:#161616;color:#cfcfcf;border:1px solid rgba(255,255,255,.1);font:600 13px 'Hanken Grotesk'">Animation</span>
+                <span style="padding:9px 14px;border-radius:999px;background:#F43F5E;color:#fff;font:600 13px 'Hanken Grotesk'">Mystery ✓</span>
+                <span style="padding:9px 14px;border-radius:999px;background:#161616;color:#cfcfcf;border:1px solid rgba(255,255,255,.1);font:600 13px 'Hanken Grotesk'">Romance</span>
+                <span style="padding:9px 14px;border-radius:999px;background:#F43F5E;color:#fff;font:600 13px 'Hanken Grotesk'">A24 ✓</span>
+                <span style="padding:9px 14px;border-radius:999px;background:#161616;color:#cfcfcf;border:1px solid rgba(255,255,255,.1);font:600 13px 'Hanken Grotesk'">Noir</span>
+                <span style="padding:9px 14px;border-radius:999px;background:#161616;color:#cfcfcf;border:1px solid rgba(255,255,255,.1);font:600 13px 'Hanken Grotesk'">Crime</span>
+              </div>
+              <div style="margin-top:auto">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px">
+                  <div style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.1);overflow:hidden"><div style="width:66%;height:100%;background:#F43F5E"></div></div>
+                  <span style="font:600 11px 'Hanken Grotesk';color:#8E8E93">5 / 5</span>
+                </div>
+                <button style="width:100%;height:52px;border:0;border-radius:16px;background:#F43F5E;color:#fff;font:700 15px 'Hanken Grotesk';box-shadow:0 10px 28px -8px rgba(244,63,94,.6)">Build my deck</button>
+                <div style="text-align:center;margin-top:14px;font:500 12px 'Hanken Grotesk';color:#5c5f66">Skip — surprise me</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ FRAME 2 · DISCOVER (LIVE) ============ -->
+      <div style="display:flex;flex-direction:column;gap:16px;align-items:flex-start">
+        <div style="font:600 12px 'Hanken Grotesk';letter-spacing:.12em;text-transform:uppercase;color:#F43F5E">Discover · live · drag me ↔</div>
+        <div style="position:relative;width:300px;height:640px;border-radius:42px;background:#000;padding:7px;box-shadow:0 40px 90px -20px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.06)">
+          <div style="position:relative;width:100%;height:100%;border-radius:35px;overflow:hidden;background:#0A0A0A;touch-action:none">
+            <div style="position:absolute;top:0;left:0;right:0;height:38px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;z-index:60;pointer-events:none"><span style="font:600 12px 'Hanken Grotesk';color:#fff">9:41</span><div style="display:flex;gap:6px;align-items:center"><svg width="17" height="11" viewBox="0 0 17 11" fill="#fff"><rect y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" width="3" height="11" rx="1"/></svg><div style="width:20px;height:10px;border:1.4px solid #fff;border-radius:2.5px;padding:1.3px"><div style="width:75%;height:100%;background:#fff;border-radius:1px"></div></div></div></div>
+
+            <!-- header -->
+            <div style="position:absolute;top:46px;left:0;right:0;padding:6px 20px 0;display:flex;align-items:flex-start;justify-content:space-between;z-index:30">
+              <div>
+                <div style="font:800 26px 'Bricolage Grotesque';letter-spacing:-.02em;line-height:1">Discover</div>
+                <div style="font:400 12px 'Hanken Grotesk';color:#8E8E93;margin-top:2px">Swipe to curate films</div>
+              </div>
+              <div style="display:flex;gap:6px">
+                <div style="width:34px;height:34px;border-radius:50%;background:#161616;border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 015 .2c0 1.7-2.5 2-2.5 3.8M12 17h.01" stroke-linecap="round"/></svg></div>
+                <div onClick="{{ toggleFocus }}" style="width:34px;height:34px;border-radius:50%;background:#161616;border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="2"/><circle cx="12" cy="12" r="9" opacity=".5"/></svg></div>
+              </div>
+            </div>
+
+            <!-- deck -->
+            <div style="position:absolute;top:108px;left:18px;right:18px;bottom:74px">
+              <!-- third -->
+              <div style="position:absolute;inset:0;border-radius:24px;transform:scale(.9) translateY(26px);background:linear-gradient(150deg,#3B82F6,#1e1b4b);opacity:.5"></div>
+              <!-- next -->
+              <div style="position:absolute;inset:0;border-radius:24px;transform:scale(.95) translateY(13px);overflow:hidden;background:{{ nextPoster }}">
+                <div style="position:absolute;inset:0;background:linear-gradient(transparent 45%,rgba(0,0,0,.75))"></div>
+              </div>
+              <!-- TOP (draggable) -->
+              <div onPointerDown="{{ onDown }}" onPointerMove="{{ onMove }}" onPointerUp="{{ onUp }}" style="position:absolute;inset:0;border-radius:24px;overflow:hidden;background:{{ topPoster }};cursor:grab;transform:{{ topTransform }};transition:{{ topTransition }};box-shadow:0 24px 50px -16px rgba(0,0,0,.7);user-select:none;touch-action:none">
+                <div style="position:absolute;inset:0;background:radial-gradient(circle at 30% 18%,rgba(255,255,255,.22),transparent 55%)"></div>
+                <div style="position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.07) 1px,transparent 1px);background-size:4px 4px"></div>
+                <div style="position:absolute;left:0;right:0;bottom:0;height:62%;background:linear-gradient(transparent,rgba(0,0,0,.55) 45%,rgba(0,0,0,.92))"></div>
+                <!-- poster title (big, top) -->
+                <div style="position:absolute;top:20px;left:18px;right:18px;font:800 34px 'Bricolage Grotesque';line-height:.92;letter-spacing:-.02em;color:#fff;text-transform:uppercase;opacity:.92">{{ topTitle }}</div>
+                <!-- heart -->
+                <div style="position:absolute;top:18px;right:16px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,.35);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="#fff" opacity=".9"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></div>
+                <!-- meta -->
+                <div style="position:absolute;left:18px;right:18px;bottom:20px">
+                  <div style="font:800 23px 'Bricolage Grotesque';letter-spacing:-.01em;line-height:1">{{ topTitle }}</div>
+                  <div style="display:flex;align-items:center;gap:7px;margin-top:6px;font:500 13px 'Hanken Grotesk';color:rgba(255,255,255,.75)">
+                    <span>{{ topYear }}</span><span style="opacity:.4">·</span><span>{{ topGenres }}</span><span style="opacity:.4">·</span>
+                    <span style="display:inline-flex;align-items:center;gap:3px"><svg width="12" height="12" viewBox="0 0 24 24" fill="#EAB308"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.7 1.4 6.8L12 17.8 5.9 21.5l1.4-6.8L2.2 9l6.9-.7z"/></svg>{{ topRating }}</span>
+                  </div>
+                </div>
+                <!-- directional badges -->
+                <div style="position:absolute;top:78px;left:18px;transform:rotate(-12deg);opacity:{{ rightA }};border:2.5px solid #22C55E;border-radius:9px;padding:6px 12px;background:rgba(0,0,0,.55)"><span style="font:800 14px 'Hanken Grotesk';letter-spacing:.08em;color:#22C55E">INTERESTED</span></div>
+                <div style="position:absolute;top:78px;right:18px;transform:rotate(12deg);opacity:{{ leftA }};border:2.5px solid #F43F5E;border-radius:9px;padding:6px 12px;background:rgba(0,0,0,.55)"><span style="font:800 14px 'Hanken Grotesk';letter-spacing:.08em;color:#F43F5E">SKIP</span></div>
+
+              </div>
+
+              <!-- focus review panel -->
+              <sc-if value="{{ focus }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;left:0;right:0;bottom:0;border-radius:0 0 24px 24px;padding:22px 18px 18px;background:linear-gradient(transparent,rgba(0,0,0,.9) 30%,#000);z-index:20">
+                  <div style="text-align:center;font:800 9px 'Hanken Grotesk';letter-spacing:.14em;color:#8E8E93">SWIPE RIGHT TO LOG THIS REVIEW</div>
+                  <div style="display:flex;justify-content:center;gap:6px;margin:12px 0">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="#EAB308"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.7 1.4 6.8L12 17.8 5.9 21.5l1.4-6.8L2.2 9l6.9-.7z"/></svg>
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="#EAB308"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.7 1.4 6.8L12 17.8 5.9 21.5l1.4-6.8L2.2 9l6.9-.7z"/></svg>
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="#EAB308"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.7 1.4 6.8L12 17.8 5.9 21.5l1.4-6.8L2.2 9l6.9-.7z"/></svg>
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="#EAB308"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.7 1.4 6.8L12 17.8 5.9 21.5l1.4-6.8L2.2 9l6.9-.7z"/></svg>
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="1.6"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.7 1.4 6.8L12 17.8 5.9 21.5l1.4-6.8L2.2 9l6.9-.7z"/></svg>
+                  </div>
+                  <div style="background:#161616;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:11px 13px;font:400 12px 'Hanken Grotesk';color:#cbd0d6">A slow, gorgeous heartbreak. The harbor scene alone…</div>
+                </div>
+              </sc-if>
+            </div>
+
+            <!-- undo FAB -->
+            <div style="position:absolute;bottom:88px;right:18px;width:50px;height:50px;border-radius:50%;background:#161616;border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 24px -8px rgba(0,0,0,.7);z-index:40"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M3 13a9 9 0 103-7.7L3 7"/></svg></div>
+
+            <!-- bottom nav -->
+            <div style="position:absolute;bottom:0;left:0;right:0;height:64px;background:#0A0A0A;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-around;padding-bottom:6px">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#fff"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z" fill="currentColor" stroke="none"/></svg><span style="font:600 9px 'Hanken Grotesk'">Discover</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg><span style="font:600 9px 'Hanken Grotesk'">Build</span></div>
+              <div style="width:46px;height:46px;border-radius:50%;background:#F43F5E;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px -6px rgba(244,63,94,.7);margin-top:-18px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span style="font:600 9px 'Hanken Grotesk'">Library</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-4 3.5-6 7-6s7 2 7 6"/></svg><span style="font:600 9px 'Hanken Grotesk'">Profile</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+            <!-- ============ FRAME 3 · BUILD ============ -->
+      <div style="display:flex;flex-direction:column;gap:16px;align-items:flex-start">
+        <div style="font:600 12px 'Hanken Grotesk';letter-spacing:.12em;text-transform:uppercase;color:#5c5f66">Build · retro-log your history</div>
+        <div style="position:relative;width:300px;height:640px;border-radius:42px;background:#000;padding:7px;box-shadow:0 40px 90px -20px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.06)">
+          <div style="position:relative;width:100%;height:100%;border-radius:35px;overflow:hidden;background:#0A0A0A">
+            <div style="position:absolute;top:0;left:0;right:0;height:38px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;z-index:60"><span style="font:600 12px 'Hanken Grotesk';color:#fff">9:41</span><div style="display:flex;gap:6px;align-items:center"><svg width="17" height="11" viewBox="0 0 17 11" fill="#fff"><rect y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" width="3" height="11" rx="1"/></svg><div style="width:20px;height:10px;border:1.4px solid #fff;border-radius:2.5px;padding:1.3px"><div style="width:75%;height:100%;background:#fff;border-radius:1px"></div></div></div></div>
+
+            <div style="position:absolute;top:46px;left:0;right:0;padding:6px 20px 0">
+              <div style="font:800 26px 'Bricolage Grotesque';letter-spacing:-.02em;line-height:1">Build</div>
+              <div style="font:400 12px 'Hanken Grotesk';color:#8E8E93;margin-top:2px">Films we think you've already seen</div>
+              <div style="display:flex;align-items:center;gap:10px;margin-top:14px">
+                <div style="flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden"><div style="width:38%;height:100%;background:linear-gradient(90deg,#22C55E,#3B82F6)"></div></div>
+                <span style="font:700 11px 'Hanken Grotesk';color:#cbd0d6">142 logged</span>
+              </div>
+            </div>
+
+            <!-- card + edge semantics -->
+            <div style="position:absolute;top:140px;left:18px;right:18px;bottom:74px">
+              <div style="position:absolute;top:50%;left:1px;transform:translateY(-50%) rotate(180deg);writing-mode:vertical-rl;font:800 10px 'Hanken Grotesk';color:#F43F5E;letter-spacing:.08em;z-index:5">← NOT SEEN</div>
+              <div style="position:absolute;top:50%;right:1px;transform:translateY(-50%);writing-mode:vertical-rl;font:800 10px 'Hanken Grotesk';color:#22C55E;letter-spacing:.08em;z-index:5">SEEN →</div>
+
+              <div style="position:absolute;inset:18px 20px;border-radius:24px;overflow:hidden;background:linear-gradient(150deg,#F59E0B,#7c2d12);box-shadow:0 24px 50px -16px rgba(0,0,0,.7)">
+                <div style="position:absolute;inset:0;background:radial-gradient(circle at 30% 18%,rgba(255,255,255,.22),transparent 55%)"></div>
+                <div style="position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.07) 1px,transparent 1px);background-size:4px 4px"></div>
+                <div style="position:absolute;left:0;right:0;bottom:0;height:60%;background:linear-gradient(transparent,rgba(0,0,0,.55) 45%,rgba(0,0,0,.92))"></div>
+                <div style="position:absolute;top:18px;left:16px;right:16px;font:800 30px 'Bricolage Grotesque';line-height:.92;letter-spacing:-.02em;text-transform:uppercase;opacity:.92">Ember &amp; Ash</div>
+                <div style="position:absolute;left:16px;right:16px;bottom:18px">
+                  <div style="display:inline-flex;align-items:center;gap:5px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.15);padding:4px 9px;border-radius:999px;font:600 10px 'Hanken Grotesk';color:#fff;margin-bottom:10px;white-space:nowrap"><span style="width:5px;height:5px;border-radius:50%;background:#22C55E;flex-shrink:0"></span>Likely seen · 2018</div>
+                  <div style="font:800 22px 'Bricolage Grotesque';letter-spacing:-.01em;line-height:1">Ember &amp; Ash</div>
+                  <div style="font:500 12px 'Hanken Grotesk';color:rgba(255,255,255,.7);margin-top:4px">War · Drama · matched your 2018 era</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="position:absolute;bottom:0;left:0;right:0;height:64px;background:#0A0A0A;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-around;padding-bottom:6px">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg><span style="font:600 9px 'Hanken Grotesk'">Discover</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#fff"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5z" fill="currentColor" stroke="none" opacity=".25"/><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg><span style="font:600 9px 'Hanken Grotesk'">Build</span></div>
+              <div style="width:46px;height:46px;border-radius:50%;background:#F43F5E;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px -6px rgba(244,63,94,.7);margin-top:-18px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span style="font:600 9px 'Hanken Grotesk'">Library</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-4 3.5-6 7-6s7 2 7 6"/></svg><span style="font:600 9px 'Hanken Grotesk'">Profile</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ FRAME 4 · FILM DETAIL ============ -->
+      <div style="display:flex;flex-direction:column;gap:16px;align-items:flex-start">
+        <div style="font:600 12px 'Hanken Grotesk';letter-spacing:.12em;text-transform:uppercase;color:#5c5f66">Film detail</div>
+        <div style="position:relative;width:300px;height:640px;border-radius:42px;background:#000;padding:7px;box-shadow:0 40px 90px -20px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.06)">
+          <div style="position:relative;width:100%;height:100%;border-radius:35px;overflow:hidden;background:#0A0A0A">
+            <!-- backdrop -->
+            <div style="position:absolute;top:0;left:0;right:0;height:300px;background:linear-gradient(160deg,#D946EF,#2e1065)">
+              <div style="position:absolute;inset:0;background:radial-gradient(circle at 70% 20%,rgba(255,255,255,.25),transparent 55%)"></div>
+              <div style="position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.06) 1px,transparent 1px);background-size:4px 4px"></div>
+              <div style="position:absolute;left:0;right:0;bottom:0;height:70%;background:linear-gradient(transparent,rgba(10,10,10,.6) 55%,#0A0A0A)"></div>
+            </div>
+            <div style="position:absolute;top:0;left:0;right:0;height:38px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;z-index:60"><span style="font:600 12px 'Hanken Grotesk';color:#fff">9:41</span><div style="display:flex;gap:6px;align-items:center"><svg width="17" height="11" viewBox="0 0 17 11" fill="#fff"><rect y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" width="3" height="11" rx="1"/></svg><div style="width:20px;height:10px;border:1.4px solid #fff;border-radius:2.5px;padding:1.3px"><div style="width:75%;height:100%;background:#fff;border-radius:1px"></div></div></div></div>
+            <div style="position:absolute;top:48px;left:16px;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.35);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:30"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></div>
+
+            <div style="position:absolute;inset:0;overflow:hidden;padding:160px 20px 20px">
+              <div style="font:800 32px 'Bricolage Grotesque';letter-spacing:-.025em;line-height:.96">Velvet Static</div>
+              <div style="display:flex;align-items:center;gap:8px;margin-top:8px;font:500 13px 'Hanken Grotesk';color:#bfc4cb">
+                <span>2024</span><span style="opacity:.4">·</span><span>Mystery</span><span style="opacity:.4">·</span><span>1h 58m</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:14px;margin-top:16px">
+                <div style="display:flex;align-items:baseline;gap:5px"><span style="font:800 30px 'Bricolage Grotesque';color:#EAB308">8.4</span><span style="font:500 11px 'Hanken Grotesk';color:#5c5f66">TMDB</span></div>
+                <div style="width:1px;height:32px;background:rgba(255,255,255,.1)"></div>
+                <div>
+                  <div style="font:600 10px 'Hanken Grotesk';color:#5c5f66;letter-spacing:.08em;text-transform:uppercase">Your rating</div>
+                  <div style="display:flex;gap:2px;margin-top:3px">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#EAB308"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.7 1.4 6.8L12 17.8 5.9 21.5l1.4-6.8L2.2 9l6.9-.7z"/></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#EAB308"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.7 1.4 6.8L12 17.8 5.9 21.5l1.4-6.8L2.2 9l6.9-.7z"/></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#EAB308"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.7 1.4 6.8L12 17.8 5.9 21.5l1.4-6.8L2.2 9l6.9-.7z"/></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#EAB308"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.7 1.4 6.8L12 17.8 5.9 21.5l1.4-6.8L2.2 9l6.9-.7z"/></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5c5f66" stroke-width="1.6"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.7 1.4 6.8L12 17.8 5.9 21.5l1.4-6.8L2.2 9l6.9-.7z"/></svg>
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:18px">
+                <button style="flex:1;height:44px;border:0;border-radius:13px;background:#22C55E;color:#06250f;font:700 13px 'Hanken Grotesk';display:flex;align-items:center;justify-content:center;gap:6px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Watched</button>
+                <button style="width:46px;height:44px;border:1px solid rgba(255,255,255,.12);border-radius:13px;background:#161616;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="#F43F5E"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></button>
+                <button style="width:46px;height:44px;border:1px solid rgba(255,255,255,.12);border-radius:13px;background:#161616;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12v16l-6-4-6 4z"/></svg></button>
+              </div>
+              <div style="font:400 12.5px 'Hanken Grotesk';color:#9aa0a8;line-height:1.55;margin-top:18px">A radio engineer in a coastal town starts hearing a voice between stations — one that knows things it shouldn't. A slow-burn mystery about static, memory, and the people we tune out.</div>
+              <div style="font:600 10px 'Hanken Grotesk';letter-spacing:.1em;text-transform:uppercase;color:#5c5f66;margin-top:18px;margin-bottom:10px">Cast</div>
+              <div style="display:flex;gap:14px">
+                <div style="text-align:center"><div style="width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#475569,#1e293b)"></div><div style="font:500 9px 'Hanken Grotesk';color:#9aa0a8;margin-top:5px">M. Voss</div></div>
+                <div style="text-align:center"><div style="width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#7c2d54,#1e1b4b)"></div><div style="font:500 9px 'Hanken Grotesk';color:#9aa0a8;margin-top:5px">L. Reyes</div></div>
+                <div style="text-align:center"><div style="width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#0e7490,#052e16)"></div><div style="font:500 9px 'Hanken Grotesk';color:#9aa0a8;margin-top:5px">D. Okafor</div></div>
+                <div style="text-align:center"><div style="width:46px;height:46px;border-radius:50%;background:#161616;border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font:700 12px 'Hanken Grotesk';color:#8E8E93">+9</div></div>
+              </div>
+              <div style="font:600 10px 'Hanken Grotesk';letter-spacing:.1em;text-transform:uppercase;color:#5c5f66;margin-top:18px;margin-bottom:10px">More like this</div>
+              <div style="display:flex;gap:9px">
+                <div style="width:58px;height:84px;border-radius:9px;background:linear-gradient(150deg,#3B82F6,#1e1b4b)"></div>
+                <div style="width:58px;height:84px;border-radius:9px;background:linear-gradient(150deg,#0EA5A4,#0a1f22)"></div>
+                <div style="width:58px;height:84px;border-radius:9px;background:linear-gradient(150deg,#F43F5E,#7c1d3a)"></div>
+                <div style="width:58px;height:84px;border-radius:9px;background:linear-gradient(150deg,#22C55E,#052e16)"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ FRAME 5 · LIBRARY (GRID) ============ -->
+      <div style="display:flex;flex-direction:column;gap:16px;align-items:flex-start">
+        <div style="font:600 12px 'Hanken Grotesk';letter-spacing:.12em;text-transform:uppercase;color:#5c5f66">Library · grid</div>
+        <div style="position:relative;width:300px;height:640px;border-radius:42px;background:#000;padding:7px;box-shadow:0 40px 90px -20px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.06)">
+          <div style="position:relative;width:100%;height:100%;border-radius:35px;overflow:hidden;background:#0A0A0A">
+            <div style="position:absolute;top:0;left:0;right:0;height:38px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;z-index:60"><span style="font:600 12px 'Hanken Grotesk';color:#fff">9:41</span><div style="display:flex;gap:6px;align-items:center"><svg width="17" height="11" viewBox="0 0 17 11" fill="#fff"><rect y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" width="3" height="11" rx="1"/></svg><div style="width:20px;height:10px;border:1.4px solid #fff;border-radius:2.5px;padding:1.3px"><div style="width:75%;height:100%;background:#fff;border-radius:1px"></div></div></div></div>
+
+            <div style="position:absolute;top:46px;left:0;right:0;padding:6px 20px 0">
+              <div style="display:flex;align-items:baseline;justify-content:space-between">
+                <div style="font:800 26px 'Bricolage Grotesque';letter-spacing:-.02em">Library</div>
+                <div style="font:600 12px 'Hanken Grotesk';color:#8E8E93">142 films</div>
+              </div>
+              <div style="display:flex;background:#161616;border-radius:11px;padding:3px;margin-top:14px">
+                <div style="flex:1;text-align:center;padding:7px;border-radius:8px;background:#fff;color:#0A0A0A;font:700 12px 'Hanken Grotesk'">Grid</div>
+                <div style="flex:1;text-align:center;padding:7px;border-radius:8px;color:#8E8E93;font:700 12px 'Hanken Grotesk'">Diary</div>
+                <div style="flex:1;text-align:center;padding:7px;border-radius:8px;color:#8E8E93;font:700 12px 'Hanken Grotesk'">Lists</div>
+              </div>
+            </div>
+
+            <div style="position:absolute;top:148px;left:20px;right:20px;bottom:70px;overflow:hidden">
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px">
+                <div style="aspect-ratio:2/3;border-radius:10px;overflow:hidden;position:relative;background:linear-gradient(150deg,#F43F5E,#7c1d3a)"><div style="position:absolute;inset:0;background:linear-gradient(transparent 55%,rgba(0,0,0,.85))"></div><div style="position:absolute;bottom:5px;left:6px;right:4px;font:800 9px 'Hanken Grotesk';color:#EAB308">★★★★½</div></div>
+                <div style="aspect-ratio:2/3;border-radius:10px;overflow:hidden;position:relative;background:linear-gradient(150deg,#0EA5A4,#0a1f22)"><div style="position:absolute;inset:0;background:linear-gradient(transparent 55%,rgba(0,0,0,.85))"></div><div style="position:absolute;bottom:5px;left:6px;font:800 9px 'Hanken Grotesk';color:#EAB308">★★★★</div></div>
+                <div style="aspect-ratio:2/3;border-radius:10px;overflow:hidden;position:relative;background:linear-gradient(150deg,#3B82F6,#1e1b4b)"><div style="position:absolute;inset:0;background:linear-gradient(transparent 55%,rgba(0,0,0,.85))"></div><div style="position:absolute;bottom:5px;left:6px;font:800 9px 'Hanken Grotesk';color:#EAB308">★★★½</div></div>
+                <div style="aspect-ratio:2/3;border-radius:10px;overflow:hidden;position:relative;background:linear-gradient(150deg,#F59E0B,#7c2d12)"><div style="position:absolute;inset:0;background:linear-gradient(transparent 55%,rgba(0,0,0,.85))"></div><div style="position:absolute;bottom:5px;left:6px;font:800 9px 'Hanken Grotesk';color:#EAB308">★★★★½</div></div>
+                <div style="aspect-ratio:2/3;border-radius:10px;overflow:hidden;position:relative;background:linear-gradient(150deg,#D946EF,#2e1065)"><div style="position:absolute;inset:0;background:linear-gradient(transparent 55%,rgba(0,0,0,.85))"></div><div style="position:absolute;bottom:5px;left:6px;font:800 9px 'Hanken Grotesk';color:#EAB308">★★★★½</div></div>
+                <div style="aspect-ratio:2/3;border-radius:10px;overflow:hidden;position:relative;background:linear-gradient(150deg,#22C55E,#052e16)"><div style="position:absolute;inset:0;background:linear-gradient(transparent 55%,rgba(0,0,0,.85))"></div><div style="position:absolute;bottom:5px;left:6px;font:800 9px 'Hanken Grotesk';color:#EAB308">★★★★</div></div>
+                <div style="aspect-ratio:2/3;border-radius:10px;overflow:hidden;position:relative;background:linear-gradient(150deg,#64748B,#0e1a24)"><div style="position:absolute;inset:0;background:linear-gradient(transparent 55%,rgba(0,0,0,.85))"></div><div style="position:absolute;bottom:5px;left:6px;font:800 9px 'Hanken Grotesk';color:#EAB308">★★★½</div></div>
+                <div style="aspect-ratio:2/3;border-radius:10px;overflow:hidden;position:relative;background:linear-gradient(150deg,#0EA5A4,#052e2e)"><div style="position:absolute;inset:0;background:linear-gradient(transparent 55%,rgba(0,0,0,.85))"></div><div style="position:absolute;bottom:5px;left:6px;font:800 9px 'Hanken Grotesk';color:#EAB308">★★★★</div></div>
+                <div style="aspect-ratio:2/3;border-radius:10px;overflow:hidden;position:relative;background:linear-gradient(150deg,#EAB308,#422006)"><div style="position:absolute;inset:0;background:linear-gradient(transparent 55%,rgba(0,0,0,.85))"></div><div style="position:absolute;bottom:5px;left:6px;font:800 9px 'Hanken Grotesk';color:#EAB308">★★★</div></div>
+              </div>
+              <div style="position:absolute;bottom:0;left:0;right:0;height:56px;background:linear-gradient(transparent,#0A0A0A)"></div>
+            </div>
+
+            <div style="position:absolute;bottom:0;left:0;right:0;height:64px;background:#0A0A0A;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-around;padding-bottom:6px">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg><span style="font:600 9px 'Hanken Grotesk'">Discover</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg><span style="font:600 9px 'Hanken Grotesk'">Build</span></div>
+              <div style="width:46px;height:46px;border-radius:50%;background:#F43F5E;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px -6px rgba(244,63,94,.7);margin-top:-18px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#fff"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5" fill="currentColor" stroke="none" opacity=".25"/><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span style="font:600 9px 'Hanken Grotesk'">Library</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-4 3.5-6 7-6s7 2 7 6"/></svg><span style="font:600 9px 'Hanken Grotesk'">Profile</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ FRAME 6 · DIARY ============ -->
+      <div style="display:flex;flex-direction:column;gap:16px;align-items:flex-start">
+        <div style="font:600 12px 'Hanken Grotesk';letter-spacing:.12em;text-transform:uppercase;color:#5c5f66">Library · diary</div>
+        <div style="position:relative;width:300px;height:640px;border-radius:42px;background:#000;padding:7px;box-shadow:0 40px 90px -20px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.06)">
+          <div style="position:relative;width:100%;height:100%;border-radius:35px;overflow:hidden;background:#0A0A0A">
+            <div style="position:absolute;top:0;left:0;right:0;height:38px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;z-index:60"><span style="font:600 12px 'Hanken Grotesk';color:#fff">9:41</span><div style="display:flex;gap:6px;align-items:center"><svg width="17" height="11" viewBox="0 0 17 11" fill="#fff"><rect y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" width="3" height="11" rx="1"/></svg><div style="width:20px;height:10px;border:1.4px solid #fff;border-radius:2.5px;padding:1.3px"><div style="width:75%;height:100%;background:#fff;border-radius:1px"></div></div></div></div>
+
+            <div style="position:absolute;top:46px;left:0;right:0;padding:6px 20px 0">
+              <div style="font:800 26px 'Bricolage Grotesque';letter-spacing:-.02em">Diary</div>
+              <div style="display:flex;background:#161616;border-radius:11px;padding:3px;margin-top:14px">
+                <div style="flex:1;text-align:center;padding:7px;border-radius:8px;color:#8E8E93;font:700 12px 'Hanken Grotesk'">Grid</div>
+                <div style="flex:1;text-align:center;padding:7px;border-radius:8px;background:#fff;color:#0A0A0A;font:700 12px 'Hanken Grotesk'">Diary</div>
+                <div style="flex:1;text-align:center;padding:7px;border-radius:8px;color:#8E8E93;font:700 12px 'Hanken Grotesk'">Lists</div>
+              </div>
+            </div>
+
+            <div style="position:absolute;top:148px;left:20px;right:20px;bottom:70px;overflow:hidden">
+              <div style="font:700 10px 'Hanken Grotesk';letter-spacing:.1em;text-transform:uppercase;color:#5c5f66;margin-bottom:12px">June 2026</div>
+
+              <div style="display:flex;gap:12px;margin-bottom:16px">
+                <div style="text-align:center;flex-shrink:0;width:30px"><div style="font:800 18px 'Bricolage Grotesque';line-height:1">14</div><div style="font:600 9px 'Hanken Grotesk';color:#5c5f66">SAT</div></div>
+                <div style="width:38px;height:54px;border-radius:7px;flex-shrink:0;background:linear-gradient(150deg,#D946EF,#2e1065)"></div>
+                <div style="flex:1;min-width:0">
+                  <div style="font:700 14px 'Hanken Grotesk';line-height:1.1">Velvet Static <span style="font:500 12px 'Hanken Grotesk';color:#5c5f66">2024</span></div>
+                  <div style="display:flex;gap:1px;margin:3px 0;color:#EAB308;font:700 11px 'Hanken Grotesk'">★★★★½</div>
+                  <div style="font:400 11px 'Hanken Grotesk';color:#9aa0a8;line-height:1.4">A slow, gorgeous heartbreak. The harbor scene alone earns the rewatch.</div>
+                </div>
+              </div>
+
+              <div style="display:flex;gap:12px;margin-bottom:16px">
+                <div style="text-align:center;flex-shrink:0;width:30px"><div style="font:800 18px 'Bricolage Grotesque';line-height:1">11</div><div style="font:600 9px 'Hanken Grotesk';color:#5c5f66">WED</div></div>
+                <div style="width:38px;height:54px;border-radius:7px;flex-shrink:0;background:linear-gradient(150deg,#F43F5E,#7c1d3a)"></div>
+                <div style="flex:1;min-width:0">
+                  <div style="font:700 14px 'Hanken Grotesk';line-height:1.1">Neon Harbor <span style="font:500 12px 'Hanken Grotesk';color:#5c5f66">2021</span></div>
+                  <div style="display:flex;align-items:center;gap:6px;margin:3px 0"><span style="color:#EAB308;font:700 11px 'Hanken Grotesk'">★★★★½</span><svg width="12" height="12" viewBox="0 0 24 24" fill="#F43F5E"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span style="font:500 10px 'Hanken Grotesk';color:#5c5f66">rewatch</span></div>
+                </div>
+              </div>
+
+              <div style="display:flex;gap:12px;margin-bottom:16px">
+                <div style="text-align:center;flex-shrink:0;width:30px"><div style="font:800 18px 'Bricolage Grotesque';line-height:1">08</div><div style="font:600 9px 'Hanken Grotesk';color:#5c5f66">SUN</div></div>
+                <div style="width:38px;height:54px;border-radius:7px;flex-shrink:0;background:linear-gradient(150deg,#F59E0B,#7c2d12)"></div>
+                <div style="flex:1;min-width:0">
+                  <div style="font:700 14px 'Hanken Grotesk';line-height:1.1">Ember &amp; Ash <span style="font:500 12px 'Hanken Grotesk';color:#5c5f66">2018</span></div>
+                  <div style="display:flex;gap:1px;margin:3px 0;color:#EAB308;font:700 11px 'Hanken Grotesk'">★★★★½</div>
+                  <div style="font:400 11px 'Hanken Grotesk';color:#9aa0a8;line-height:1.4">Logged retroactively from Build. Held up better than I remembered.</div>
+                </div>
+              </div>
+
+              <div style="display:flex;gap:12px">
+                <div style="text-align:center;flex-shrink:0;width:30px"><div style="font:800 18px 'Bricolage Grotesque';line-height:1">03</div><div style="font:600 9px 'Hanken Grotesk';color:#5c5f66">TUE</div></div>
+                <div style="width:38px;height:54px;border-radius:7px;flex-shrink:0;background:linear-gradient(150deg,#0EA5A4,#0a1f22)"></div>
+                <div style="flex:1;min-width:0">
+                  <div style="font:700 14px 'Hanken Grotesk';line-height:1.1">The Quiet Year <span style="font:500 12px 'Hanken Grotesk';color:#5c5f66">2019</span></div>
+                  <div style="display:flex;gap:1px;margin:3px 0;color:#EAB308;font:700 11px 'Hanken Grotesk'">★★★★</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="position:absolute;bottom:0;left:0;right:0;height:64px;background:#0A0A0A;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-around;padding-bottom:6px">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg><span style="font:600 9px 'Hanken Grotesk'">Discover</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg><span style="font:600 9px 'Hanken Grotesk'">Build</span></div>
+              <div style="width:46px;height:46px;border-radius:50%;background:#F43F5E;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px -6px rgba(244,63,94,.7);margin-top:-18px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#fff"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5" fill="currentColor" stroke="none" opacity=".25"/><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span style="font:600 9px 'Hanken Grotesk'">Library</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-4 3.5-6 7-6s7 2 7 6"/></svg><span style="font:600 9px 'Hanken Grotesk'">Profile</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ FRAME 7 · SEARCH ============ -->
+      <div style="display:flex;flex-direction:column;gap:16px;align-items:flex-start">
+        <div style="font:600 12px 'Hanken Grotesk';letter-spacing:.12em;text-transform:uppercase;color:#5c5f66">Search · the escape hatch</div>
+        <div style="position:relative;width:300px;height:640px;border-radius:42px;background:#000;padding:7px;box-shadow:0 40px 90px -20px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.06)">
+          <div style="position:relative;width:100%;height:100%;border-radius:35px;overflow:hidden;background:#0A0A0A">
+            <div style="position:absolute;top:0;left:0;right:0;height:38px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;z-index:60"><span style="font:600 12px 'Hanken Grotesk';color:#fff">9:41</span><div style="display:flex;gap:6px;align-items:center"><svg width="17" height="11" viewBox="0 0 17 11" fill="#fff"><rect y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" width="3" height="11" rx="1"/></svg><div style="width:20px;height:10px;border:1.4px solid #fff;border-radius:2.5px;padding:1.3px"><div style="width:75%;height:100%;background:#fff;border-radius:1px"></div></div></div></div>
+
+            <div style="position:absolute;top:46px;left:0;right:0;padding:6px 20px 0">
+              <div style="font:800 26px 'Bricolage Grotesque';letter-spacing:-.02em;margin-bottom:14px">Search</div>
+              <div style="display:flex;align-items:center;gap:10px;height:46px;background:#161616;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:0 14px">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+                <span style="font:500 14px 'Hanken Grotesk';color:#fff">velvet</span><span style="width:1.5px;height:18px;background:#F43F5E;animation:pulseGlow 1.1s infinite"></span>
+              </div>
+            </div>
+
+            <div style="position:absolute;top:148px;left:20px;right:20px;bottom:70px;overflow:hidden">
+              <div style="font:700 10px 'Hanken Grotesk';letter-spacing:.1em;text-transform:uppercase;color:#5c5f66;margin-bottom:12px">Results</div>
+
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+                <div style="width:42px;height:60px;border-radius:8px;flex-shrink:0;background:linear-gradient(150deg,#D946EF,#2e1065)"></div>
+                <div style="flex:1;min-width:0"><div style="font:700 14px 'Hanken Grotesk'">Velvet Static</div><div style="font:500 11px 'Hanken Grotesk';color:#8E8E93">2024 · Mystery · ★ 8.4</div></div>
+                <div style="width:32px;height:32px;border-radius:50%;background:#161616;border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+                <div style="width:42px;height:60px;border-radius:8px;flex-shrink:0;background:linear-gradient(150deg,#7c3aed,#1e1b4b)"></div>
+                <div style="flex:1;min-width:0"><div style="font:700 14px 'Hanken Grotesk'">Velvet Underground</div><div style="font:500 11px 'Hanken Grotesk';color:#8E8E93">2021 · Documentary · ★ 7.5</div></div>
+                <div style="width:32px;height:32px;border-radius:50%;background:#22C55E;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#06250f" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+              </div>
+
+              <div style="font:700 10px 'Hanken Grotesk';letter-spacing:.1em;text-transform:uppercase;color:#5c5f66;margin:20px 0 12px;display:flex;align-items:center;gap:6px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#F43F5E" stroke-width="2"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="9" r="2.5"/><circle cx="9" cy="18" r="2.5"/><path d="M8 7l8 1.4M8 16l8-6"/></svg>Because you searched this</div>
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+                <div style="width:42px;height:60px;border-radius:8px;flex-shrink:0;background:linear-gradient(150deg,#3B82F6,#1e1b4b)"></div>
+                <div style="flex:1;min-width:0"><div style="font:700 14px 'Hanken Grotesk'">Saltwater</div><div style="font:500 11px 'Hanken Grotesk';color:#8E8E93">2023 · Thriller · graph match 92%</div></div>
+                <div style="width:32px;height:32px;border-radius:50%;background:#161616;border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+              </div>
+            </div>
+
+            <div style="position:absolute;bottom:0;left:0;right:0;height:64px;background:#0A0A0A;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-around;padding-bottom:6px">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg><span style="font:600 9px 'Hanken Grotesk'">Discover</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg><span style="font:600 9px 'Hanken Grotesk'">Build</span></div>
+              <div style="width:46px;height:46px;border-radius:50%;background:#F43F5E;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px -6px rgba(244,63,94,.7),0 0 0 3px rgba(244,63,94,.25);margin-top:-18px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span style="font:600 9px 'Hanken Grotesk'">Library</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-4 3.5-6 7-6s7 2 7 6"/></svg><span style="font:600 9px 'Hanken Grotesk'">Profile</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ FRAME 8 · QUICK-ADD (SIGNATURE) ============ -->
+      <div style="display:flex;flex-direction:column;gap:16px;align-items:flex-start">
+        <div style="font:600 12px 'Hanken Grotesk';letter-spacing:.12em;text-transform:uppercase;color:#F43F5E">Quick-add · press &amp; hold to log</div>
+        <div style="position:relative;width:300px;height:640px;border-radius:42px;background:#000;padding:7px;box-shadow:0 40px 90px -20px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.06)">
+          <div style="position:relative;width:100%;height:100%;border-radius:35px;overflow:hidden;background:#0A0A0A">
+            <div style="position:absolute;top:0;left:0;right:0;height:38px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;z-index:60"><span style="font:600 12px 'Hanken Grotesk';color:#fff">9:41</span><div style="display:flex;gap:6px;align-items:center"><svg width="17" height="11" viewBox="0 0 17 11" fill="#fff"><rect y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" width="3" height="11" rx="1"/></svg><div style="width:20px;height:10px;border:1.4px solid #fff;border-radius:2.5px;padding:1.3px"><div style="width:75%;height:100%;background:#fff;border-radius:1px"></div></div></div></div>
+
+            <div style="position:absolute;top:46px;left:0;right:0;padding:6px 20px 0">
+              <div style="font:800 26px 'Bricolage Grotesque';letter-spacing:-.02em;margin-bottom:14px">Search</div>
+              <div style="display:flex;align-items:center;gap:10px;height:46px;background:#161616;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:0 14px">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+                <span style="font:500 14px 'Hanken Grotesk';color:#fff">ember</span>
+              </div>
+            </div>
+
+            <!-- dimmed result list behind -->
+            <div style="position:absolute;top:148px;left:20px;right:20px;bottom:70px;overflow:hidden;filter:brightness(.4)">
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><div style="width:42px;height:60px;border-radius:8px;background:linear-gradient(150deg,#7c3aed,#1e1b4b)"></div><div><div style="font:700 14px 'Hanken Grotesk'">Embers</div><div style="font:500 11px 'Hanken Grotesk';color:#8E8E93">2015 · Drama</div></div></div>
+              <div style="height:60px;margin-bottom:14px"></div>
+              <div style="display:flex;align-items:center;gap:12px"><div style="width:42px;height:60px;border-radius:8px;background:linear-gradient(150deg,#0EA5A4,#0a1f22)"></div><div><div style="font:700 14px 'Hanken Grotesk'">Ember Days</div><div style="font:500 11px 'Hanken Grotesk';color:#8E8E93">2020 · Indie</div></div></div>
+            </div>
+
+            <!-- scrim -->
+            <div style="position:absolute;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(2px)"></div>
+
+            <!-- lifted card + quick-log menu -->
+            <div style="position:absolute;top:214px;left:24px;right:24px;z-index:20">
+              <div style="display:flex;align-items:center;gap:12px;padding:10px;background:#1c1c1c;border:1px solid rgba(255,255,255,.16);border-radius:16px;box-shadow:0 26px 50px -14px rgba(0,0,0,.85);transform:scale(1.04)">
+                <div style="width:52px;height:74px;border-radius:9px;background:linear-gradient(150deg,#F59E0B,#7c2d12);flex-shrink:0"></div>
+                <div style="flex:1;min-width:0"><div style="font:800 16px 'Bricolage Grotesque';letter-spacing:-.01em">Ember &amp; Ash</div><div style="font:500 11px 'Hanken Grotesk';color:#8E8E93">2018 · War · Drama · ★ 8.1</div></div>
+              </div>
+
+              <!-- radial-ish quick actions -->
+              <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px">
+                <div style="display:flex;align-items:center;gap:12px;height:50px;padding:0 16px;background:#22C55E;border-radius:14px;box-shadow:0 12px 26px -10px rgba(34,197,94,.7)">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#06250f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                  <span style="font:700 15px 'Hanken Grotesk';color:#06250f">Mark watched</span>
+                  <span style="margin-left:auto;font:600 11px 'Hanken Grotesk';color:rgba(6,37,15,.65)">release ↑</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;height:50px;padding:0 16px;background:#161616;border:1px solid rgba(255,255,255,.12);border-radius:14px">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12v16l-6-4-6 4z"/></svg>
+                  <span style="font:700 15px 'Hanken Grotesk';color:#fff">Add to watchlist</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;height:50px;padding:0 16px;background:#161616;border:1px solid rgba(255,255,255,.12);border-radius:14px">
+                  <div style="display:flex;gap:3px">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#EAB308"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.7 1.4 6.8L12 17.8 5.9 21.5l1.4-6.8L2.2 9l6.9-.7z"/></svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#EAB308"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.7 1.4 6.8L12 17.8 5.9 21.5l1.4-6.8L2.2 9l6.9-.7z"/></svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#EAB308"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.7 1.4 6.8L12 17.8 5.9 21.5l1.4-6.8L2.2 9l6.9-.7z"/></svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5c5f66" stroke-width="1.6"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.7 1.4 6.8L12 17.8 5.9 21.5l1.4-6.8L2.2 9l6.9-.7z"/></svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5c5f66" stroke-width="1.6"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.7 1.4 6.8L12 17.8 5.9 21.5l1.4-6.8L2.2 9l6.9-.7z"/></svg>
+                  </div>
+                  <span style="margin-left:auto;font:600 12px 'Hanken Grotesk';color:#8E8E93">slide to rate — optional</span>
+                </div>
+              </div>
+              <div style="text-align:center;margin-top:14px;font:600 11px 'Hanken Grotesk';color:#8E8E93">Hold · slide to an action · release. No detail page.</div>
+            </div>
+
+            <div style="position:absolute;bottom:0;left:0;right:0;height:64px;background:#0A0A0A;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-around;padding-bottom:6px;z-index:30">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg><span style="font:600 9px 'Hanken Grotesk'">Discover</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg><span style="font:600 9px 'Hanken Grotesk'">Build</span></div>
+              <div style="width:46px;height:46px;border-radius:50%;background:#F43F5E;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px -6px rgba(244,63,94,.7),0 0 0 3px rgba(244,63,94,.25);margin-top:-18px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span style="font:600 9px 'Hanken Grotesk'">Library</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-4 3.5-6 7-6s7 2 7 6"/></svg><span style="font:600 9px 'Hanken Grotesk'">Profile</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ FRAME 9 · BACKLOG BLITZ ============ -->
+      <div style="display:flex;flex-direction:column;gap:16px;align-items:flex-start">
+        <div style="font:600 12px 'Hanken Grotesk';letter-spacing:.12em;text-transform:uppercase;color:#F43F5E">Backlog Blitz · clear years in minutes</div>
+        <div style="position:relative;width:300px;height:640px;border-radius:42px;background:#000;padding:7px;box-shadow:0 40px 90px -20px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.06)">
+          <div style="position:relative;width:100%;height:100%;border-radius:35px;overflow:hidden;background:#0A0A0A">
+            <div style="position:absolute;top:0;left:0;right:0;height:38px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;z-index:60"><span style="font:600 12px 'Hanken Grotesk';color:#fff">9:41</span><div style="display:flex;gap:6px;align-items:center"><svg width="17" height="11" viewBox="0 0 17 11" fill="#fff"><rect y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" width="3" height="11" rx="1"/></svg><div style="width:20px;height:10px;border:1.4px solid #fff;border-radius:2.5px;padding:1.3px"><div style="width:75%;height:100%;background:#fff;border-radius:1px"></div></div></div></div>
+
+            <div style="position:absolute;top:46px;left:0;right:0;padding:6px 20px 0">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between">
+                <div>
+                  <div style="font:800 26px 'Bricolage Grotesque';letter-spacing:-.02em;line-height:1">Backlog Blitz</div>
+                  <div style="display:flex;align-items:center;gap:6px;margin-top:5px">
+                    <div style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;background:rgba(244,63,94,.15);border:1px solid rgba(244,63,94,.35)"><svg width="10" height="12" viewBox="0 0 24 28" fill="#F43F5E"><path d="M12 0c2 6-6 8-6 15a8 8 0 0016 0c0-4-2-6-3-9-2 3-3 3-4 2 1-3-1-6-3-8z"/></svg><span style="font:700 10px 'Hanken Grotesk';color:#F43F5E">6-day streak</span></div>
+                  </div>
+                </div>
+                <div style="text-align:right"><div style="font:800 28px 'Bricolage Grotesque';color:#22C55E;line-height:1">23</div><div style="font:600 9px 'Hanken Grotesk';color:#5c5f66;letter-spacing:.06em">LOGGED TODAY</div></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;height:44px;background:#161616;border:1px solid rgba(255,255,255,.1);border-radius:13px;padding:0 13px;margin-top:14px">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+                <span style="font:500 13px 'Hanken Grotesk';color:#8E8E93">Type a title…</span>
+              </div>
+            </div>
+
+            <div style="position:absolute;top:190px;left:20px;right:20px;bottom:88px;overflow:hidden">
+              <div style="font:700 10px 'Hanken Grotesk';letter-spacing:.1em;text-transform:uppercase;color:#5c5f66;margin-bottom:12px">Popular you likely saw</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <!-- tapped -->
+                <div style="position:relative;border-radius:12px;overflow:hidden;aspect-ratio:16/10;background:linear-gradient(150deg,#F43F5E,#7c1d3a)"><div style="position:absolute;inset:0;background:rgba(0,0,0,.5)"></div><div style="position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:#22C55E;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#06250f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div><div style="position:absolute;bottom:6px;left:8px;right:8px;font:700 11px 'Hanken Grotesk';color:#fff">Neon Harbor</div></div>
+                <div style="position:relative;border-radius:12px;overflow:hidden;aspect-ratio:16/10;background:linear-gradient(150deg,#0EA5A4,#0a1f22)"><div style="position:absolute;bottom:6px;left:8px;right:8px;font:700 11px 'Hanken Grotesk';color:#fff">The Quiet Year</div></div>
+                <div style="position:relative;border-radius:12px;overflow:hidden;aspect-ratio:16/10;background:linear-gradient(150deg,#3B82F6,#1e1b4b)"><div style="position:absolute;bottom:6px;left:8px;right:8px;font:700 11px 'Hanken Grotesk';color:#fff">Saltwater</div></div>
+                <!-- tapped -->
+                <div style="position:relative;border-radius:12px;overflow:hidden;aspect-ratio:16/10;background:linear-gradient(150deg,#F59E0B,#7c2d12)"><div style="position:absolute;inset:0;background:rgba(0,0,0,.5)"></div><div style="position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:#22C55E;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#06250f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div><div style="position:absolute;bottom:6px;left:8px;right:8px;font:700 11px 'Hanken Grotesk';color:#fff">Ember &amp; Ash</div></div>
+                <div style="position:relative;border-radius:12px;overflow:hidden;aspect-ratio:16/10;background:linear-gradient(150deg,#D946EF,#2e1065)"><div style="position:absolute;bottom:6px;left:8px;right:8px;font:700 11px 'Hanken Grotesk';color:#fff">Velvet Static</div></div>
+                <div style="position:relative;border-radius:12px;overflow:hidden;aspect-ratio:16/10;background:linear-gradient(150deg,#22C55E,#052e16)"><div style="position:absolute;bottom:6px;left:8px;right:8px;font:700 11px 'Hanken Grotesk';color:#fff">Low Tide</div></div>
+              </div>
+            </div>
+
+            <!-- undo bar -->
+            <div style="position:absolute;bottom:70px;left:20px;right:20px;display:flex;align-items:center;gap:10px;height:40px;padding:0 14px;background:#1c1c1c;border:1px solid rgba(255,255,255,.12);border-radius:12px;z-index:30">
+              <span style="font:500 12px 'Hanken Grotesk';color:#cbd0d6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Logged <b style="color:#fff">Ember &amp; Ash</b></span>
+              <span style="margin-left:auto;font:700 12px 'Hanken Grotesk';color:#F43F5E">Undo</span>
+            </div>
+
+            <div style="position:absolute;bottom:0;left:0;right:0;height:64px;background:#0A0A0A;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-around;padding-bottom:6px">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg><span style="font:600 9px 'Hanken Grotesk'">Discover</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#fff"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5z" fill="currentColor" stroke="none" opacity=".25"/><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg><span style="font:600 9px 'Hanken Grotesk'">Build</span></div>
+              <div style="width:46px;height:46px;border-radius:50%;background:#F43F5E;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px -6px rgba(244,63,94,.7);margin-top:-18px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span style="font:600 9px 'Hanken Grotesk'">Library</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-4 3.5-6 7-6s7 2 7 6"/></svg><span style="font:600 9px 'Hanken Grotesk'">Profile</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ FRAME 10 · AI ASSISTANT ============ -->
+      <div style="display:flex;flex-direction:column;gap:16px;align-items:flex-start">
+        <div style="font:600 12px 'Hanken Grotesk';letter-spacing:.12em;text-transform:uppercase;color:#F43F5E">Ask filmarr · AI recall &amp; recommend</div>
+        <div style="position:relative;width:300px;height:640px;border-radius:42px;background:#000;padding:7px;box-shadow:0 40px 90px -20px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.06)">
+          <div style="position:relative;width:100%;height:100%;border-radius:35px;overflow:hidden;background:#0A0A0A">
+            <div style="position:absolute;top:0;left:0;right:0;height:38px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;z-index:60"><span style="font:600 12px 'Hanken Grotesk';color:#fff">9:41</span><div style="display:flex;gap:6px;align-items:center"><svg width="17" height="11" viewBox="0 0 17 11" fill="#fff"><rect y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" width="3" height="11" rx="1"/></svg><div style="width:20px;height:10px;border:1.4px solid #fff;border-radius:2.5px;padding:1.3px"><div style="width:75%;height:100%;background:#fff;border-radius:1px"></div></div></div></div>
+
+            <div style="position:absolute;top:48px;left:0;right:0;padding:6px 20px 0;display:flex;align-items:center;gap:9px">
+              <div style="width:26px;height:26px;border-radius:8px;background:linear-gradient(150deg,#F43F5E,#9f1239);display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/></svg></div>
+              <div style="font:800 20px 'Bricolage Grotesque';letter-spacing:-.02em">Ask filmarr</div>
+            </div>
+
+            <div style="position:absolute;top:96px;left:20px;right:20px;bottom:74px;overflow:hidden">
+              <!-- user query -->
+              <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+                <div style="max-width:80%;background:#3B82F6;color:#fff;border-radius:16px 16px 4px 16px;padding:10px 13px;font:500 13px 'Hanken Grotesk';line-height:1.4">that submarine thriller from the 90s with the sonar scene</div>
+              </div>
+              <!-- ai answer -->
+              <div style="display:flex;gap:9px;margin-bottom:14px">
+                <div style="width:24px;height:24px;border-radius:7px;flex-shrink:0;background:linear-gradient(150deg,#F43F5E,#9f1239);display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/></svg></div>
+                <div style="font:500 13px 'Hanken Grotesk';color:#cbd0d6;line-height:1.45">That's almost certainly <b style="color:#fff">Crimson Deep</b> (1995) — the sonar standoff is the one everyone remembers.</div>
+              </div>
+              <!-- result card with quick add -->
+              <div style="display:flex;align-items:center;gap:12px;padding:10px;background:#161616;border:1px solid rgba(255,255,255,.1);border-radius:14px;margin-bottom:20px;margin-left:33px">
+                <div style="width:44px;height:62px;border-radius:8px;flex-shrink:0;background:linear-gradient(150deg,#0e7490,#052e2e)"></div>
+                <div style="flex:1;min-width:0"><div style="font:800 15px 'Bricolage Grotesque';letter-spacing:-.01em">Crimson Deep</div><div style="font:500 11px 'Hanken Grotesk';color:#8E8E93;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">1995 · Thriller · ★ 7.8</div></div>
+                <div style="width:34px;height:34px;border-radius:50%;background:#22C55E;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#06250f" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+              </div>
+
+              <!-- suggestion chips -->
+              <div style="font:700 10px 'Hanken Grotesk';letter-spacing:.1em;text-transform:uppercase;color:#5c5f66;margin-bottom:10px">Try asking</div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="padding:11px 14px;background:#161616;border:1px solid rgba(255,255,255,.08);border-radius:12px;font:500 12.5px 'Hanken Grotesk';color:#cbd0d6">Recommend something like my 5-star films but lighter</div>
+                <div style="padding:11px 14px;background:#161616;border:1px solid rgba(255,255,255,.08);border-radius:12px;font:500 12.5px 'Hanken Grotesk';color:#cbd0d6">What should I watch tonight in under 100 min?</div>
+                <div style="padding:11px 14px;background:#161616;border:1px solid rgba(255,255,255,.08);border-radius:12px;font:500 12.5px 'Hanken Grotesk';color:#cbd0d6">Draft a review for the last film I logged</div>
+              </div>
+            </div>
+
+            <!-- input -->
+            <div style="position:absolute;bottom:12px;left:20px;right:20px;display:flex;align-items:center;gap:10px;height:48px;background:#161616;border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:0 6px 0 15px">
+              <span style="font:500 13px 'Hanken Grotesk';color:#5c5f66;flex:1">Ask anything about film…</span>
+              <div style="width:36px;height:36px;border-radius:11px;background:#F43F5E;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ FRAME 11 · PROFILE / STATS ============ -->
+      <div style="display:flex;flex-direction:column;gap:16px;align-items:flex-start">
+        <div style="font:600 12px 'Hanken Grotesk';letter-spacing:.12em;text-transform:uppercase;color:#5c5f66">Profile · your year in film</div>
+        <div style="position:relative;width:300px;height:640px;border-radius:42px;background:#000;padding:7px;box-shadow:0 40px 90px -20px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.06)">
+          <div style="position:relative;width:100%;height:100%;border-radius:35px;overflow:hidden;background:#0A0A0A">
+            <div style="position:absolute;top:0;left:0;right:0;height:38px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;z-index:60"><span style="font:600 12px 'Hanken Grotesk';color:#fff">9:41</span><div style="display:flex;gap:6px;align-items:center"><svg width="17" height="11" viewBox="0 0 17 11" fill="#fff"><rect y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" width="3" height="11" rx="1"/></svg><div style="width:20px;height:10px;border:1.4px solid #fff;border-radius:2.5px;padding:1.3px"><div style="width:75%;height:100%;background:#fff;border-radius:1px"></div></div></div></div>
+
+            <div style="position:absolute;top:56px;left:0;right:0;bottom:70px;overflow:hidden;padding:0 20px">
+              <div style="display:flex;align-items:center;gap:13px">
+                <div style="width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#F43F5E,#7c1d3a);flex-shrink:0;display:flex;align-items:center;justify-content:center;font:800 22px 'Bricolage Grotesque'">M</div>
+                <div style="flex:1"><div style="font:800 20px 'Bricolage Grotesque';letter-spacing:-.01em">mehdi</div><div style="font:500 12px 'Hanken Grotesk';color:#8E8E93">@mehdiacho · joined 2024</div></div>
+                <div style="width:34px;height:34px;border-radius:50%;background:#161616;border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.5-2-3.5-2.4 1a7 7 0 00-2-1.2L16 1h-4l-.5 2.6a7 7 0 00-2 1.2l-2.4-1-2 3.5 2 1.5A7 7 0 005 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.5 2.4-1a7 7 0 002 1.2L12 23h0" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+
+              <div style="display:flex;gap:9px;margin-top:20px">
+                <div style="flex:1;background:#0f1014;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:12px 10px;text-align:center"><div style="font:800 24px 'Bricolage Grotesque';color:#fff;line-height:1">142</div><div style="font:600 9px 'Hanken Grotesk';color:#8E8E93;letter-spacing:.05em;margin-top:2px">FILMS</div></div>
+                <div style="flex:1;background:#0f1014;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:12px 10px;text-align:center"><div style="font:800 24px 'Bricolage Grotesque';color:#EAB308;line-height:1">31</div><div style="font:600 9px 'Hanken Grotesk';color:#8E8E93;letter-spacing:.05em;margin-top:2px">THIS YR</div></div>
+                <div style="flex:1;background:#0f1014;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:12px 10px;text-align:center"><div style="font:800 24px 'Bricolage Grotesque';color:#F43F5E;line-height:1">18</div><div style="font:600 9px 'Hanken Grotesk';color:#8E8E93;letter-spacing:.05em;margin-top:2px">LISTS</div></div>
+              </div>
+
+              <div style="font:700 10px 'Hanken Grotesk';letter-spacing:.1em;text-transform:uppercase;color:#5c5f66;margin:22px 0 12px">Ratings spread</div>
+              <div style="display:flex;align-items:flex-end;gap:7px;height:78px">
+                <div style="flex:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px"><div style="width:100%;height:14%;background:#3a3d44;border-radius:4px"></div><span style="font:600 8px 'Hanken Grotesk';color:#5c5f66">½</span></div>
+                <div style="flex:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px"><div style="width:100%;height:22%;background:#3a3d44;border-radius:4px"></div><span style="font:600 8px 'Hanken Grotesk';color:#5c5f66">★</span></div>
+                <div style="flex:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px"><div style="width:100%;height:40%;background:#5c5f66;border-radius:4px"></div><span style="font:600 8px 'Hanken Grotesk';color:#5c5f66">2</span></div>
+                <div style="flex:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px"><div style="width:100%;height:64%;background:#8E8E93;border-radius:4px"></div><span style="font:600 8px 'Hanken Grotesk';color:#5c5f66">3</span></div>
+                <div style="flex:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px"><div style="width:100%;height:100%;background:linear-gradient(#EAB308,#a16207);border-radius:4px"></div><span style="font:600 8px 'Hanken Grotesk';color:#EAB308">4</span></div>
+                <div style="flex:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px"><div style="width:100%;height:72%;background:linear-gradient(#F43F5E,#9f1239);border-radius:4px"></div><span style="font:600 8px 'Hanken Grotesk';color:#F43F5E">5</span></div>
+              </div>
+
+              <div style="font:700 10px 'Hanken Grotesk';letter-spacing:.1em;text-transform:uppercase;color:#5c5f66;margin:22px 0 12px">Top genres</div>
+              <div style="display:flex;flex-direction:column;gap:9px">
+                <div style="display:flex;align-items:center;gap:10px"><span style="font:600 11px 'Hanken Grotesk';color:#cbd0d6;width:52px">Drama</span><div style="flex:1;height:7px;border-radius:4px;background:rgba(255,255,255,.07);overflow:hidden"><div style="width:88%;height:100%;background:#F43F5E"></div></div><span style="font:600 10px 'Hanken Grotesk';color:#8E8E93">48</span></div>
+                <div style="display:flex;align-items:center;gap:10px"><span style="font:600 11px 'Hanken Grotesk';color:#cbd0d6;width:52px">Thriller</span><div style="flex:1;height:7px;border-radius:4px;background:rgba(255,255,255,.07);overflow:hidden"><div style="width:62%;height:100%;background:#3B82F6"></div></div><span style="font:600 10px 'Hanken Grotesk';color:#8E8E93">34</span></div>
+                <div style="display:flex;align-items:center;gap:10px"><span style="font:600 11px 'Hanken Grotesk';color:#cbd0d6;width:52px">Sci-Fi</span><div style="flex:1;height:7px;border-radius:4px;background:rgba(255,255,255,.07);overflow:hidden"><div style="width:44%;height:100%;background:#22C55E"></div></div><span style="font:600 10px 'Hanken Grotesk';color:#8E8E93">24</span></div>
+              </div>
+            </div>
+
+            <div style="position:absolute;bottom:0;left:0;right:0;height:64px;background:#0A0A0A;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-around;padding-bottom:6px">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg><span style="font:600 9px 'Hanken Grotesk'">Discover</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg><span style="font:600 9px 'Hanken Grotesk'">Build</span></div>
+              <div style="width:46px;height:46px;border-radius:50%;background:#F43F5E;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px -6px rgba(244,63,94,.7);margin-top:-18px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span style="font:600 9px 'Hanken Grotesk'">Library</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#fff"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" fill="currentColor" stroke="none" opacity=".25"/><circle cx="12" cy="8" r="4"/><path d="M5 20c0-4 3.5-6 7-6s7 2 7 6"/></svg><span style="font:600 9px 'Hanken Grotesk'">Profile</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ FRAME 12 · SETTINGS / LETTERBOXD SYNC ============ -->
+      <div style="display:flex;flex-direction:column;gap:16px;align-items:flex-start">
+        <div style="font:600 12px 'Hanken Grotesk';letter-spacing:.12em;text-transform:uppercase;color:#5c5f66">Import · Letterboxd sync</div>
+        <div style="position:relative;width:300px;height:640px;border-radius:42px;background:#000;padding:7px;box-shadow:0 40px 90px -20px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.06)">
+          <div style="position:relative;width:100%;height:100%;border-radius:35px;overflow:hidden;background:#0A0A0A">
+            <div style="position:absolute;top:0;left:0;right:0;height:38px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;z-index:60"><span style="font:600 12px 'Hanken Grotesk';color:#fff">9:41</span><div style="display:flex;gap:6px;align-items:center"><svg width="17" height="11" viewBox="0 0 17 11" fill="#fff"><rect y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" width="3" height="11" rx="1"/></svg><div style="width:20px;height:10px;border:1.4px solid #fff;border-radius:2.5px;padding:1.3px"><div style="width:75%;height:100%;background:#fff;border-radius:1px"></div></div></div></div>
+            <div style="position:absolute;top:48px;left:16px;width:34px;height:34px;border-radius:50%;background:#161616;border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;z-index:30"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></div>
+
+            <div style="position:absolute;top:56px;left:0;right:0;bottom:0;overflow:hidden;padding:0 20px">
+              <div style="text-align:center;margin-top:26px">
+                <div style="width:56px;height:56px;border-radius:16px;background:#161616;border:1px solid rgba(255,255,255,.1);display:inline-flex;align-items:center;justify-content:center;gap:3px"><span style="width:11px;height:11px;border-radius:50%;background:#FF8000"></span><span style="width:11px;height:11px;border-radius:50%;background:#00E054"></span><span style="width:11px;height:11px;border-radius:50%;background:#40BCF4"></span></div>
+                <div style="font:800 22px 'Bricolage Grotesque';letter-spacing:-.01em;margin-top:14px">Import from Letterboxd</div>
+                <div style="font:400 12.5px 'Hanken Grotesk';color:#8E8E93;margin-top:6px;line-height:1.45;padding:0 6px">Drop your export .zip — we'll map every diary entry, rating, and review into filmarr.</div>
+              </div>
+
+              <!-- progress -->
+              <div style="margin-top:24px;background:#0f1014;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><span style="font:700 12px 'Hanken Grotesk';color:#fff">Importing…</span><span style="font:700 12px 'Hanken Grotesk';color:#22C55E">862 / 1,204</span></div>
+                <div style="height:8px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden"><div style="width:72%;height:100%;background:linear-gradient(90deg,#00E054,#22C55E)"></div></div>
+                <div style="display:flex;gap:8px;margin-top:14px">
+                  <div style="flex:1;text-align:center"><div style="font:800 16px 'Bricolage Grotesque';color:#fff">862</div><div style="font:600 8px 'Hanken Grotesk';color:#5c5f66;letter-spacing:.05em">MATCHED</div></div>
+                  <div style="flex:1;text-align:center"><div style="font:800 16px 'Bricolage Grotesque';color:#EAB308">14</div><div style="font:600 8px 'Hanken Grotesk';color:#5c5f66;letter-spacing:.05em">REVIEW</div></div>
+                  <div style="flex:1;text-align:center"><div style="font:800 16px 'Bricolage Grotesque';color:#8E8E93">328</div><div style="font:600 8px 'Hanken Grotesk';color:#5c5f66;letter-spacing:.05em">QUEUED</div></div>
+                </div>
+              </div>
+
+              <div style="font:700 10px 'Hanken Grotesk';letter-spacing:.1em;text-transform:uppercase;color:#5c5f66;margin:22px 0 10px">Also sync</div>
+              <div style="display:flex;flex-direction:column;gap:9px">
+                <div style="display:flex;align-items:center;gap:12px;height:50px;padding:0 14px;background:#0f1014;border:1px solid rgba(255,255,255,.07);border-radius:13px"><span style="font:600 13px 'Hanken Grotesk';color:#fff;flex:1">Keep watchlist in sync</span><div style="width:42px;height:25px;border-radius:13px;background:#22C55E;padding:2.5px;display:flex;justify-content:flex-end"><div style="width:20px;height:20px;border-radius:50%;background:#fff"></div></div></div>
+                <div style="display:flex;align-items:center;gap:12px;height:50px;padding:0 14px;background:#0f1014;border:1px solid rgba(255,255,255,.07);border-radius:13px"><span style="font:600 13px 'Hanken Grotesk';color:#fff;flex:1">Import star ratings</span><div style="width:42px;height:25px;border-radius:13px;background:#22C55E;padding:2.5px;display:flex;justify-content:flex-end"><div style="width:20px;height:20px;border-radius:50%;background:#fff"></div></div></div>
+                <div style="display:flex;align-items:center;gap:12px;height:50px;padding:0 14px;background:#0f1014;border:1px solid rgba(255,255,255,.07);border-radius:13px"><span style="font:600 13px 'Hanken Grotesk';color:#8E8E93;flex:1">Let AI fill missing reviews</span><div style="width:42px;height:25px;border-radius:13px;background:#2a2a2a;padding:2.5px;display:flex;justify-content:flex-start"><div style="width:20px;height:20px;border-radius:50%;background:#6b6b6b"></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ FRAME 14 · TONIGHT ============ -->
+      <div style="display:flex;flex-direction:column;gap:16px;align-items:flex-start">
+        <div style="font:600 12px 'Hanken Grotesk';letter-spacing:.12em;text-transform:uppercase;color:#F43F5E">Tonight · one pick, no scrolling</div>
+        <div style="position:relative;width:300px;height:640px;border-radius:42px;background:#000;padding:7px;box-shadow:0 40px 90px -20px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.06)">
+          <div style="position:relative;width:100%;height:100%;border-radius:35px;overflow:hidden;background:#0A0A0A">
+            <div style="position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.045) 1px,transparent 1px);background-size:5px 5px"></div>
+            <div style="position:absolute;top:0;left:0;right:0;height:38px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;z-index:60"><span style="font:600 12px 'Hanken Grotesk';color:#fff">9:41</span><div style="display:flex;gap:6px;align-items:center"><svg width="17" height="11" viewBox="0 0 17 11" fill="#fff"><rect y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" width="3" height="11" rx="1"/></svg><div style="width:20px;height:10px;border:1.4px solid #fff;border-radius:2.5px;padding:1.3px"><div style="width:75%;height:100%;background:#fff;border-radius:1px"></div></div></div></div>
+
+            <div style="position:absolute;top:56px;left:0;right:0;bottom:74px;overflow:hidden;padding:0 20px">
+              <div style="font:800 30px 'Bricolage Grotesque';letter-spacing:-.025em;line-height:.95">What's the<br>mood tonight?</div>
+
+              <div style="font:700 10px 'Hanken Grotesk';letter-spacing:.1em;text-transform:uppercase;color:#5c5f66;margin:20px 0 9px">Mood</div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px">
+                <span style="padding:8px 13px;border-radius:999px;background:#F43F5E;color:#fff;font:600 12.5px 'Hanken Grotesk'">Cozy</span>
+                <span style="padding:8px 13px;border-radius:999px;background:#161616;color:#cfcfcf;border:1px solid rgba(255,255,255,.1);font:600 12.5px 'Hanken Grotesk'">Tense</span>
+                <span style="padding:8px 13px;border-radius:999px;background:#161616;color:#cfcfcf;border:1px solid rgba(255,255,255,.1);font:600 12.5px 'Hanken Grotesk'">Weird</span>
+                <span style="padding:8px 13px;border-radius:999px;background:#161616;color:#cfcfcf;border:1px solid rgba(255,255,255,.1);font:600 12.5px 'Hanken Grotesk'">Big &amp; loud</span>
+              </div>
+
+              <div style="font:700 10px 'Hanken Grotesk';letter-spacing:.1em;text-transform:uppercase;color:#5c5f66;margin:18px 0 9px">Time you've got</div>
+              <div style="display:flex;align-items:center;gap:12px">
+                <div style="flex:1;height:5px;border-radius:3px;background:rgba(255,255,255,.1);position:relative"><div style="width:55%;height:100%;background:#F43F5E;border-radius:3px"></div><div style="position:absolute;left:55%;top:50%;transform:translate(-50%,-50%);width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.6)"></div></div>
+                <span style="font:800 15px 'Bricolage Grotesque';color:#fff;white-space:nowrap">~110 min</span>
+              </div>
+
+              <div style="font:700 10px 'Hanken Grotesk';letter-spacing:.1em;text-transform:uppercase;color:#5c5f66;margin:18px 0 9px">Watching with</div>
+              <div style="display:flex;background:#161616;border-radius:11px;padding:3px">
+                <div style="flex:1;text-align:center;padding:7px;border-radius:8px;background:#fff;color:#0A0A0A;font:700 12px 'Hanken Grotesk'">Solo</div>
+                <div style="flex:1;text-align:center;padding:7px;border-radius:8px;color:#8E8E93;font:700 12px 'Hanken Grotesk'">Date</div>
+                <div style="flex:1;text-align:center;padding:7px;border-radius:8px;color:#8E8E93;font:700 12px 'Hanken Grotesk'">Group</div>
+              </div>
+
+              <!-- the pick -->
+              <div style="margin-top:20px;position:relative;border-radius:18px;overflow:hidden;background:linear-gradient(150deg,#0EA5A4,#0a1f22);height:150px;box-shadow:0 18px 40px -12px rgba(0,0,0,.7)">
+                <div style="position:absolute;inset:0;background:radial-gradient(circle at 30% 18%,rgba(255,255,255,.2),transparent 55%)"></div>
+                <div style="position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.07) 1px,transparent 1px);background-size:4px 4px"></div>
+                <div style="position:absolute;left:0;right:0;bottom:0;height:70%;background:linear-gradient(transparent,rgba(0,0,0,.9))"></div>
+                <div style="position:absolute;top:10px;left:12px;padding:4px 9px;border-radius:999px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.2);font:700 9px 'Hanken Grotesk';color:#fff;letter-spacing:.06em">YOUR PICK</div>
+                <div style="position:absolute;left:14px;right:14px;bottom:12px">
+                  <div style="font:800 20px 'Bricolage Grotesque';letter-spacing:-.01em">The Quiet Year</div>
+                  <div style="font:500 11px 'Hanken Grotesk';color:rgba(255,255,255,.75);margin-top:2px">2019 · Drama · 1h 47m · cozy match 94%</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:12px">
+                <button style="flex:1;height:44px;border:0;border-radius:13px;background:#F43F5E;color:#fff;font:700 13px 'Hanken Grotesk'">Watch this</button>
+                <button style="width:100px;height:44px;border:1px solid rgba(255,255,255,.12);border-radius:13px;background:#161616;color:#cbd0d6;font:700 13px 'Hanken Grotesk'">Reroll</button>
+              </div>
+            </div>
+
+            <div style="position:absolute;bottom:0;left:0;right:0;height:64px;background:#0A0A0A;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-around;padding-bottom:6px">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#fff"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z" fill="currentColor" stroke="none"/></svg><span style="font:600 9px 'Hanken Grotesk'">Discover</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg><span style="font:600 9px 'Hanken Grotesk'">Build</span></div>
+              <div style="width:46px;height:46px;border-radius:50%;background:#F43F5E;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px -6px rgba(244,63,94,.7);margin-top:-18px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span style="font:600 9px 'Hanken Grotesk'">Library</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-4 3.5-6 7-6s7 2 7 6"/></svg><span style="font:600 9px 'Hanken Grotesk'">Profile</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ FRAME 15 · CONFIDENCE LOG ============ -->
+      <div style="display:flex;flex-direction:column;gap:16px;align-items:flex-start">
+        <div style="font:600 12px 'Hanken Grotesk';letter-spacing:.12em;text-transform:uppercase;color:#F43F5E">Confidence log · memories are fuzzy</div>
+        <div style="position:relative;width:300px;height:640px;border-radius:42px;background:#000;padding:7px;box-shadow:0 40px 90px -20px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.06)">
+          <div style="position:relative;width:100%;height:100%;border-radius:35px;overflow:hidden;background:#0A0A0A">
+            <div style="position:absolute;top:0;left:0;right:0;height:38px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;z-index:60"><span style="font:600 12px 'Hanken Grotesk';color:#fff">9:41</span><div style="display:flex;gap:6px;align-items:center"><svg width="17" height="11" viewBox="0 0 17 11" fill="#fff"><rect y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" width="3" height="11" rx="1"/></svg><div style="width:20px;height:10px;border:1.4px solid #fff;border-radius:2.5px;padding:1.3px"><div style="width:75%;height:100%;background:#fff;border-radius:1px"></div></div></div></div>
+
+            <!-- dimmed backdrop -->
+            <div style="position:absolute;inset:0;background:#0A0A0A"></div>
+            <div style="position:absolute;top:46px;left:20px;filter:brightness(.35)">
+              <div style="font:800 26px 'Bricolage Grotesque';letter-spacing:-.02em">Search</div>
+            </div>
+            <div style="position:absolute;inset:0;background:rgba(0,0,0,.5)"></div>
+
+            <!-- sheet -->
+            <div style="position:absolute;left:0;right:0;bottom:0;border-radius:24px 24px 0 0;background:#141519;border-top:1px solid rgba(255,255,255,.1);padding:14px 20px 22px">
+              <div style="width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.2);margin:0 auto 16px"></div>
+              <div style="display:flex;align-items:center;gap:12px">
+                <div style="width:46px;height:66px;border-radius:9px;flex-shrink:0;background:linear-gradient(150deg,#F59E0B,#7c2d12)"></div>
+                <div><div style="font:800 18px 'Bricolage Grotesque';letter-spacing:-.01em">Ember &amp; Ash</div><div style="font:500 11px 'Hanken Grotesk';color:#8E8E93">2018 · War · Drama</div></div>
+              </div>
+
+              <div style="font:700 10px 'Hanken Grotesk';letter-spacing:.1em;text-transform:uppercase;color:#5c5f66;margin:18px 0 9px">When did you see it?</div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px">
+                <span style="padding:8px 13px;border-radius:999px;background:#161616;color:#cfcfcf;border:1px solid rgba(255,255,255,.1);font:600 12px 'Hanken Grotesk'">This year</span>
+                <span style="padding:8px 13px;border-radius:999px;background:#3B82F6;color:#fff;font:600 12px 'Hanken Grotesk'">A few years back</span>
+                <span style="padding:8px 13px;border-radius:999px;background:#161616;color:#cfcfcf;border:1px solid rgba(255,255,255,.1);font:600 12px 'Hanken Grotesk'">2010s</span>
+                <span style="padding:8px 13px;border-radius:999px;background:#161616;color:#cfcfcf;border:1px solid rgba(255,255,255,.1);font:600 12px 'Hanken Grotesk'">Long ago</span>
+                <span style="padding:8px 13px;border-radius:999px;background:#161616;color:#cfcfcf;border:1px solid rgba(255,255,255,.1);font:600 12px 'Hanken Grotesk'">No idea</span>
+              </div>
+
+              <div style="font:700 10px 'Hanken Grotesk';letter-spacing:.1em;text-transform:uppercase;color:#5c5f66;margin:16px 0 9px">How do you remember it?</div>
+              <div style="display:flex;gap:8px">
+                <div style="flex:1;text-align:center;padding:10px 4px;border-radius:12px;background:rgba(34,197,94,.14);border:1px solid rgba(34,197,94,.45)"><div style="font:800 15px 'Bricolage Grotesque';color:#22C55E">Loved</div></div>
+                <div style="flex:1;text-align:center;padding:10px 4px;border-radius:12px;background:#161616;border:1px solid rgba(255,255,255,.1)"><div style="font:800 15px 'Bricolage Grotesque';color:#cbd0d6">Liked</div></div>
+                <div style="flex:1;text-align:center;padding:10px 4px;border-radius:12px;background:#161616;border:1px solid rgba(255,255,255,.1)"><div style="font:800 15px 'Bricolage Grotesque';color:#cbd0d6">Meh</div></div>
+                <div style="flex:1;text-align:center;padding:10px 4px;border-radius:12px;background:#161616;border:1px solid rgba(255,255,255,.1)"><div style="font:800 15px 'Bricolage Grotesque';color:#cbd0d6">Nope</div></div>
+              </div>
+
+              <div style="display:flex;align-items:center;gap:9px;margin-top:16px;padding:10px 13px;border-radius:12px;background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.22)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="#F43F5E"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/></svg>
+                <span style="font:400 11px 'Hanken Grotesk';color:#cbd0d6;line-height:1.4">Fuzzy is fine. filmarr refines dates &amp; ratings later as your taste graph grows.</span>
+              </div>
+
+              <button style="width:100%;height:50px;border:0;border-radius:15px;background:#F43F5E;color:#fff;font:700 14px 'Hanken Grotesk';margin-top:16px">Log it — fuzzy and all</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ FRAME 16 · GRAPH OVERLAP ============ -->
+      <div style="display:flex;flex-direction:column;gap:16px;align-items:flex-start">
+        <div style="font:600 12px 'Hanken Grotesk';letter-spacing:.12em;text-transform:uppercase;color:#F43F5E">Overlap · your graph × a friend's</div>
+        <div style="position:relative;width:300px;height:640px;border-radius:42px;background:#000;padding:7px;box-shadow:0 40px 90px -20px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.06)">
+          <div style="position:relative;width:100%;height:100%;border-radius:35px;overflow:hidden;background:#0A0A0A">
+            <div style="position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.045) 1px,transparent 1px);background-size:5px 5px"></div>
+            <div style="position:absolute;top:0;left:0;right:0;height:38px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;z-index:60"><span style="font:600 12px 'Hanken Grotesk';color:#fff">9:41</span><div style="display:flex;gap:6px;align-items:center"><svg width="17" height="11" viewBox="0 0 17 11" fill="#fff"><rect y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" width="3" height="11" rx="1"/></svg><div style="width:20px;height:10px;border:1.4px solid #fff;border-radius:2.5px;padding:1.3px"><div style="width:75%;height:100%;background:#fff;border-radius:1px"></div></div></div></div>
+
+            <div style="position:absolute;top:50px;left:0;right:0;padding:6px 20px 0">
+              <div style="display:flex;align-items:center;gap:10px">
+                <div style="display:flex">
+                  <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#F43F5E,#7c1d3a);border:2px solid #0A0A0A;display:flex;align-items:center;justify-content:center;font:800 13px 'Bricolage Grotesque'">M</div>
+                  <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#3B82F6,#1e1b4b);border:2px solid #0A0A0A;margin-left:-10px;display:flex;align-items:center;justify-content:center;font:800 13px 'Bricolage Grotesque'">A</div>
+                </div>
+                <div>
+                  <div style="font:800 20px 'Bricolage Grotesque';letter-spacing:-.02em;line-height:1">You × Ana</div>
+                  <div style="font:400 11px 'Hanken Grotesk';color:#8E8E93;margin-top:2px">Taste overlap · 68%</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- overlap venn graph -->
+            <div style="position:absolute;top:116px;left:0;right:0;bottom:216px">
+              <svg width="100%" height="100%" viewBox="0 0 286 300" preserveAspectRatio="xMidYMid meet">
+                <circle cx="105" cy="145" r="88" fill="#F43F5E" opacity=".13"/>
+                <circle cx="181" cy="145" r="88" fill="#3B82F6" opacity=".13"/>
+                <circle cx="105" cy="145" r="88" fill="none" stroke="#F43F5E" stroke-width="1.5" opacity=".5"/>
+                <circle cx="181" cy="145" r="88" fill="none" stroke="#3B82F6" stroke-width="1.5" opacity=".5"/>
+                <!-- your nodes -->
+                <circle cx="62" cy="110" r="11" fill="url(#o1)"/>
+                <circle cx="55" cy="180" r="9" fill="url(#o2)"/>
+                <!-- friend nodes -->
+                <circle cx="228" cy="105" r="11" fill="url(#o3)"/>
+                <circle cx="232" cy="182" r="9" fill="url(#o4)"/>
+                <!-- overlap nodes -->
+                <circle cx="143" cy="112" r="14" fill="url(#o5)"/>
+                <circle cx="143" cy="165" r="12" fill="url(#o6)"/>
+                <circle cx="143" cy="212" r="9" fill="url(#o7)"/>
+                <defs>
+                  <linearGradient id="o1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#D946EF"/><stop offset="1" stop-color="#2e1065"/></linearGradient>
+                  <linearGradient id="o2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F59E0B"/><stop offset="1" stop-color="#7c2d12"/></linearGradient>
+                  <linearGradient id="o3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0EA5A4"/><stop offset="1" stop-color="#0a1f22"/></linearGradient>
+                  <linearGradient id="o4" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#22C55E"/><stop offset="1" stop-color="#052e16"/></linearGradient>
+                  <linearGradient id="o5" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F43F5E"/><stop offset="1" stop-color="#3B82F6"/></linearGradient>
+                  <linearGradient id="o6" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EAB308"/><stop offset="1" stop-color="#a16207"/></linearGradient>
+                  <linearGradient id="o7" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#64748B"/><stop offset="1" stop-color="#0e1a24"/></linearGradient>
+                </defs>
+                <text x="62" y="82" text-anchor="middle" fill="#F43F5E" style="font:800 9px 'Hanken Grotesk'">YOURS</text>
+                <text x="228" y="82" text-anchor="middle" fill="#3B82F6" style="font:800 9px 'Hanken Grotesk'">ANA'S</text>
+                <text x="143" y="256" text-anchor="middle" fill="#fff" style="font:800 9px 'Hanken Grotesk'">THE OVERLAP</text>
+              </svg>
+            </div>
+
+            <!-- watch together strip -->
+            <div style="position:absolute;bottom:74px;left:0;right:0;padding:0 20px">
+              <div style="font:700 10px 'Hanken Grotesk';letter-spacing:.1em;text-transform:uppercase;color:#5c5f66;margin-bottom:9px">In the overlap — neither of you has seen</div>
+              <div style="display:flex;align-items:center;gap:10px;background:#0f1014;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px 12px">
+                <div style="width:38px;height:54px;border-radius:8px;flex-shrink:0;background:linear-gradient(150deg,#D946EF,#2e1065)"></div>
+                <div style="flex:1;min-width:0"><div style="font:800 14px 'Bricolage Grotesque';letter-spacing:-.01em">Velvet Static</div><div style="font:500 10.5px 'Hanken Grotesk';color:#8E8E93">both-match 91% · Mystery</div></div>
+                <button style="height:34px;padding:0 13px;border:0;border-radius:10px;background:#F43F5E;color:#fff;font:700 11px 'Hanken Grotesk';flex-shrink:0">Watch together</button>
+              </div>
+            </div>
+
+            <div style="position:absolute;bottom:0;left:0;right:0;height:64px;background:#0A0A0A;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-around;padding-bottom:6px">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg><span style="font:600 9px 'Hanken Grotesk'">Discover</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg><span style="font:600 9px 'Hanken Grotesk'">Build</span></div>
+              <div style="width:46px;height:46px;border-radius:50%;background:#F43F5E;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px -6px rgba(244,63,94,.7);margin-top:-18px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span style="font:600 9px 'Hanken Grotesk'">Library</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#fff"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" fill="currentColor" stroke="none" opacity=".25"/><circle cx="12" cy="8" r="4"/><path d="M5 20c0-4 3.5-6 7-6s7 2 7 6"/></svg><span style="font:600 9px 'Hanken Grotesk'">Profile</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ FRAME 13 · RECOMMENDER GRAPH ============ -->
+      <div style="display:flex;flex-direction:column;gap:16px;align-items:flex-start">
+        <div style="font:600 12px 'Hanken Grotesk';letter-spacing:.12em;text-transform:uppercase;color:#5c5f66">Taste graph · why we recommend</div>
+        <div style="position:relative;width:300px;height:640px;border-radius:42px;background:#000;padding:7px;box-shadow:0 40px 90px -20px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.06)">
+          <div style="position:relative;width:100%;height:100%;border-radius:35px;overflow:hidden;background:#0A0A0A">
+            <div style="position:absolute;top:0;left:0;right:0;height:38px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;z-index:60"><span style="font:600 12px 'Hanken Grotesk';color:#fff">9:41</span><div style="display:flex;gap:6px;align-items:center"><svg width="17" height="11" viewBox="0 0 17 11" fill="#fff"><rect y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" width="3" height="11" rx="1"/></svg><div style="width:20px;height:10px;border:1.4px solid #fff;border-radius:2.5px;padding:1.3px"><div style="width:75%;height:100%;background:#fff;border-radius:1px"></div></div></div></div>
+
+            <div style="position:absolute;top:50px;left:0;right:0;padding:6px 20px 0">
+              <div style="font:800 22px 'Bricolage Grotesque';letter-spacing:-.02em;line-height:1">Your taste graph</div>
+              <div style="font:400 12px 'Hanken Grotesk';color:#8E8E93;margin-top:3px">Films you loved, and what connects them</div>
+            </div>
+
+            <!-- graph canvas -->
+            <div style="position:absolute;top:118px;left:0;right:0;bottom:150px;overflow:hidden">
+              <svg width="100%" height="100%" viewBox="0 0 286 340" preserveAspectRatio="xMidYMid meet">
+                <line x1="143" y1="150" x2="70" y2="70" stroke="#F43F5E" stroke-width="1.5" opacity=".4"/>
+                <line x1="143" y1="150" x2="215" y2="72" stroke="#3B82F6" stroke-width="1.5" opacity=".4"/>
+                <line x1="143" y1="150" x2="58" y2="200" stroke="#22C55E" stroke-width="1.5" opacity=".4"/>
+                <line x1="143" y1="150" x2="220" y2="215" stroke="#EAB308" stroke-width="1.5" opacity=".4"/>
+                <line x1="143" y1="150" x2="120" y2="270" stroke="#D946EF" stroke-width="1.5" opacity=".4"/>
+                <line x1="70" y1="70" x2="215" y2="72" stroke="#fff" stroke-width="1" opacity=".12"/>
+                <line x1="58" y1="200" x2="120" y2="270" stroke="#fff" stroke-width="1" opacity=".12"/>
+                <line x1="220" y1="215" x2="120" y2="270" stroke="#fff" stroke-width="1" opacity=".12"/>
+                <!-- center -->
+                <circle cx="143" cy="150" r="30" fill="#F43F5E" opacity=".18"/>
+                <circle cx="143" cy="150" r="22" fill="url(#c0)"/>
+                <!-- satellites -->
+                <circle cx="70" cy="70" r="16" fill="url(#c1)"/>
+                <circle cx="215" cy="72" r="14" fill="url(#c2)"/>
+                <circle cx="58" cy="200" r="13" fill="url(#c3)"/>
+                <circle cx="220" cy="215" r="15" fill="url(#c4)"/>
+                <circle cx="120" cy="270" r="12" fill="url(#c5)"/>
+                <defs>
+                  <linearGradient id="c0" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F43F5E"/><stop offset="1" stop-color="#7c1d3a"/></linearGradient>
+                  <linearGradient id="c1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#D946EF"/><stop offset="1" stop-color="#2e1065"/></linearGradient>
+                  <linearGradient id="c2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3B82F6"/><stop offset="1" stop-color="#1e1b4b"/></linearGradient>
+                  <linearGradient id="c3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0EA5A4"/><stop offset="1" stop-color="#0a1f22"/></linearGradient>
+                  <linearGradient id="c4" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F59E0B"/><stop offset="1" stop-color="#7c2d12"/></linearGradient>
+                  <linearGradient id="c5" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#22C55E"/><stop offset="1" stop-color="#052e16"/></linearGradient>
+                </defs>
+                <text x="143" y="153" text-anchor="middle" fill="#fff" style="font:800 8px 'Hanken Grotesk'">YOU</text>
+              </svg>
+              <div style="position:absolute;top:16px;left:14px;font:600 9px 'Hanken Grotesk';color:#D946EF">A24 core</div>
+              <div style="position:absolute;top:16px;right:24px;font:600 9px 'Hanken Grotesk';color:#3B82F6">slow-burn</div>
+              <div style="position:absolute;bottom:82px;left:14px;font:600 9px 'Hanken Grotesk';color:#0EA5A4">coastal</div>
+            </div>
+
+            <!-- reco strip -->
+            <div style="position:absolute;bottom:70px;left:0;right:0;padding:0 20px">
+              <div style="display:flex;align-items:center;gap:8px;background:#0f1014;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:11px 13px">
+                <div style="width:40px;height:56px;border-radius:8px;flex-shrink:0;background:linear-gradient(150deg,#3B82F6,#1e1b4b)"></div>
+                <div style="flex:1;min-width:0"><div style="font:800 14px 'Bricolage Grotesque';letter-spacing:-.01em">Saltwater</div><div style="font:500 10.5px 'Hanken Grotesk';color:#8E8E93">92% match · shares 3 nodes with your top films</div></div>
+                <div style="width:32px;height:32px;border-radius:50%;background:#22C55E;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#06250f" stroke-width="2.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+              </div>
+            </div>
+
+            <div style="position:absolute;bottom:0;left:0;right:0;height:64px;background:#0A0A0A;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-around;padding-bottom:6px">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg><span style="font:600 9px 'Hanken Grotesk'">Discover</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg><span style="font:600 9px 'Hanken Grotesk'">Build</span></div>
+              <div style="width:46px;height:46px;border-radius:50%;background:#F43F5E;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px -6px rgba(244,63,94,.7);margin-top:-18px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#fff"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5" fill="currentColor" stroke="none" opacity=".25"/><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span style="font:600 9px 'Hanken Grotesk'">Library</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-4 3.5-6 7-6s7 2 7 6"/></svg><span style="font:600 9px 'Hanken Grotesk'">Profile</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== VARIATIONS ===== -->
+  <div style="max-width:1400px;margin:80px auto 0">
+    <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:8px">
+      <div style="font:700 13px 'Hanken Grotesk';letter-spacing:.18em;text-transform:uppercase;color:#F43F5E">03</div>
+      <div style="font:700 26px 'Bricolage Grotesque';letter-spacing:-.01em">Variations to mix &amp; match</div>
+    </div>
+    <div style="font:400 14px 'Hanken Grotesk';color:#8E8E93;margin-bottom:40px">Atomic explorations — swipe-card treatments, the review interaction, navigation, and overall mood.</div>
+    <!-- VARIATION GROUP A · SWIPE CARD TREATMENTS -->
+    <div style="margin-bottom:44px">
+      <div style="font:700 15px 'Bricolage Grotesque';margin-bottom:4px">A · Swipe-card treatments</div>
+      <div style="font:400 13px 'Hanken Grotesk';color:#8E8E93;margin-bottom:20px">Three ways to render the Discover card. The live hero uses the poster-dominant take.</div>
+      <div style="display:flex;flex-wrap:wrap;gap:20px">
+        <!-- A1 poster-dominant -->
+        <div style="width:200px">
+          <div style="position:relative;width:200px;height:290px;border-radius:20px;overflow:hidden;background:linear-gradient(150deg,#F43F5E,#7c1d3a);box-shadow:0 20px 40px -14px rgba(0,0,0,.6)">
+            <div style="position:absolute;inset:0;background:radial-gradient(circle at 30% 18%,rgba(255,255,255,.22),transparent 55%)"></div>
+            <div style="position:absolute;left:0;right:0;bottom:0;height:55%;background:linear-gradient(transparent,rgba(0,0,0,.9))"></div>
+            <div style="position:absolute;top:14px;left:14px;right:14px;font:800 26px 'Bricolage Grotesque';line-height:.9;text-transform:uppercase;opacity:.9">Neon Harbor</div>
+            <div style="position:absolute;left:14px;right:14px;bottom:14px"><div style="font:800 17px 'Bricolage Grotesque'">Neon Harbor</div><div style="font:500 11px 'Hanken Grotesk';color:rgba(255,255,255,.72);margin-top:3px">2021 · Sci-Fi · ★ 4.5</div></div>
+          </div>
+          <div style="font:600 11px 'Hanken Grotesk';color:#cbd0d6;margin-top:10px">A1 · Poster-dominant <span style="color:#22C55E">· live</span></div>
+        </div>
+        <!-- A2 editorial -->
+        <div style="width:200px">
+          <div style="position:relative;width:200px;height:290px;border-radius:20px;overflow:hidden;background:#111216;border:1px solid rgba(255,255,255,.08);box-shadow:0 20px 40px -14px rgba(0,0,0,.6)">
+            <div style="height:150px;background:linear-gradient(150deg,#3B82F6,#1e1b4b);margin:12px 12px 0;border-radius:12px"></div>
+            <div style="padding:12px 14px"><div style="font:800 18px 'Bricolage Grotesque';line-height:1">Saltwater</div><div style="font:500 11px 'Hanken Grotesk';color:#8E8E93;margin-top:3px">2023 · Thriller</div><div style="display:flex;gap:2px;margin-top:8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="#EAB308"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.7 1.4 6.8L12 17.8 5.9 21.5l1.4-6.8L2.2 9l6.9-.7z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="#EAB308"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.7 1.4 6.8L12 17.8 5.9 21.5l1.4-6.8L2.2 9l6.9-.7z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="#EAB308"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.7 1.4 6.8L12 17.8 5.9 21.5l1.4-6.8L2.2 9l6.9-.7z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5c5f66" stroke-width="1.6"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.7 1.4 6.8L12 17.8 5.9 21.5l1.4-6.8L2.2 9l6.9-.7z"/></svg></div></div>
+          </div>
+          <div style="font:600 11px 'Hanken Grotesk';color:#cbd0d6;margin-top:10px">A2 · Editorial — metadata-forward</div>
+        </div>
+        <!-- A3 minimal -->
+        <div style="width:200px">
+          <div style="position:relative;width:200px;height:290px;border-radius:20px;overflow:hidden;background:linear-gradient(150deg,#D946EF,#2e1065);box-shadow:0 20px 40px -14px rgba(0,0,0,.6)">
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><div style="width:70px;height:70px;border-radius:50%;background:rgba(0,0,0,.3);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center"><svg width="30" height="30" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></div></div>
+            <div style="position:absolute;left:14px;right:14px;bottom:14px"><div style="font:800 17px 'Bricolage Grotesque'">Velvet Static</div></div>
+          </div>
+          <div style="font:600 11px 'Hanken Grotesk';color:#cbd0d6;margin-top:10px">A3 · Minimal — art only, tap for info</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VARIATION GROUP B · QUICK-ADD INTERACTION -->
+    <div style="margin-bottom:44px">
+      <div style="font:700 15px 'Bricolage Grotesque';margin-bottom:4px">B · Quick-add interaction</div>
+      <div style="font:400 13px 'Hanken Grotesk';color:#8E8E93;margin-bottom:20px">The signature interaction as a state progression: idle → hold → release. One gesture, zero required fields.</div>
+      <div style="display:flex;flex-wrap:wrap;gap:20px">
+        <div style="width:230px;background:#0f1014;border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:18px">
+          <div style="height:150px;display:flex;align-items:center">
+            <div style="width:100%;display:flex;align-items:center;gap:10px;padding:9px;background:#161616;border:1px solid rgba(255,255,255,.09);border-radius:13px">
+              <div style="width:34px;height:48px;border-radius:7px;background:linear-gradient(150deg,#F59E0B,#7c2d12);flex-shrink:0"></div>
+              <div style="flex:1;min-width:0"><div style="font:700 12px 'Hanken Grotesk';color:#fff">Ember &amp; Ash</div><div style="font:500 10px 'Hanken Grotesk';color:#8E8E93">2018 · War · Drama</div></div>
+              <div style="width:26px;height:26px;border-radius:50%;background:#0f1014;border:1px solid rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+            </div>
+          </div>
+          <div style="font:600 11px 'Hanken Grotesk';color:#cbd0d6;margin-top:6px">1 · Idle — any search result row</div>
+        </div>
+        <div style="width:230px;background:#0f1014;border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:18px">
+          <div style="position:relative;height:150px;display:flex;flex-direction:column;justify-content:center;gap:7px;background:rgba(0,0,0,.45);border-radius:12px;padding:10px">
+            <div style="display:flex;align-items:center;gap:10px;padding:8px;background:#1c1c1c;border:1px solid rgba(255,255,255,.18);border-radius:12px;box-shadow:0 14px 28px -10px rgba(0,0,0,.8)">
+              <div style="width:28px;height:40px;border-radius:6px;background:linear-gradient(150deg,#F59E0B,#7c2d12);flex-shrink:0"></div>
+              <div style="font:700 11.5px 'Hanken Grotesk';color:#fff">Ember &amp; Ash</div>
+            </div>
+            <div style="display:flex;align-items:center;height:30px;padding:0 11px;background:#22C55E;border-radius:9px"><span style="font:700 10.5px 'Hanken Grotesk';color:#06250f">✓ Mark watched</span></div>
+            <div style="display:flex;align-items:center;height:30px;padding:0 11px;background:#161616;border:1px solid rgba(255,255,255,.12);border-radius:9px"><span style="font:700 10.5px 'Hanken Grotesk';color:#3B82F6">+ Watchlist</span></div>
+            <div style="position:absolute;right:16px;bottom:42px;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.22);border:2px solid rgba(255,255,255,.55)"></div>
+          </div>
+          <div style="font:600 11px 'Hanken Grotesk';color:#cbd0d6;margin-top:6px">2 · Hold 280ms — actions unfold under your thumb</div>
+        </div>
+        <div style="width:230px;background:#0f1014;border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:18px">
+          <div style="height:150px;display:flex;flex-direction:column;justify-content:center;gap:10px">
+            <div style="display:flex;align-items:center;gap:10px;padding:9px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.4);border-radius:13px">
+              <div style="width:34px;height:48px;border-radius:7px;background:linear-gradient(150deg,#F59E0B,#7c2d12);flex-shrink:0"></div>
+              <div style="flex:1;min-width:0"><div style="font:700 12px 'Hanken Grotesk';color:#fff">Ember &amp; Ash</div><div style="font:500 10px 'Hanken Grotesk';color:#22C55E">In your library</div></div>
+              <div style="width:26px;height:26px;border-radius:50%;background:#22C55E;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#06250f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;height:34px;padding:0 12px;background:#1c1c1c;border:1px solid rgba(255,255,255,.12);border-radius:10px"><span style="font:500 10.5px 'Hanken Grotesk';color:#cbd0d6">Logged — no rating needed</span><span style="margin-left:auto;font:700 10.5px 'Hanken Grotesk';color:#F43F5E">Undo</span></div>
+          </div>
+          <div style="font:600 11px 'Hanken Grotesk';color:#cbd0d6;margin-top:6px">3 · Release — logged. Rating stays optional</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VARIATION GROUP C · NAVIGATION -->
+    <div style="margin-bottom:44px">
+      <div style="font:700 15px 'Bricolage Grotesque';margin-bottom:4px">C · Navigation — decided</div>
+      <div style="font:400 13px 'Hanken Grotesk';color:#8E8E93;margin-bottom:20px">One direction, applied to every frame above: a center Quick-Log FAB. Search &amp; quick-add live behind it — logging is never more than one tap away.</div>
+      <div style="display:flex;flex-wrap:wrap;gap:20px">
+        <div style="width:480px;max-width:100%;background:#0f1014;border:1px solid rgba(244,63,94,.25);border-radius:18px;padding:18px">
+          <div style="height:70px;display:flex;align-items:center;justify-content:space-around;background:#0A0A0A;border-radius:12px;border:1px solid rgba(255,255,255,.06)">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#fff"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z" fill="currentColor" stroke="none"/></svg><span style="font:600 8px 'Hanken Grotesk'">Discover</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg><span style="font:600 8px 'Hanken Grotesk'">Build</span></div>
+            <div style="width:42px;height:42px;border-radius:50%;background:#F43F5E;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px -6px rgba(244,63,94,.7);margin-top:-16px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span style="font:600 8px 'Hanken Grotesk'">Library</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5c5f66"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-4 3.5-6 7-6s7 2 7 6"/></svg><span style="font:600 8px 'Hanken Grotesk'">Profile</span></div>
+          </div>
+          <div style="font:600 11px 'Hanken Grotesk';color:#cbd0d6;margin-top:12px">Discover · Build · <span style="color:#F43F5E">＋ Quick-Log</span> · Library · Profile</div>
+          <div style="font:400 11px 'Hanken Grotesk';color:#8E8E93;margin-top:4px;line-height:1.5">The ＋ opens the search-first quick-log sheet from anywhere. Tap → type → hold a result → released, logged. Top tabs and adaptive rail were considered and dropped: the FAB is the thesis, made physical.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- VARIATION GROUP D · MOOD -->
+    <div>
+      <div style="font:700 15px 'Bricolage Grotesque';margin-bottom:4px">D · Mood &amp; accent</div>
+      <div style="font:400 13px 'Hanken Grotesk';color:#8E8E93;margin-bottom:20px">All dark. The hero uses carbon + rose. Others shift the temperature.</div>
+      <div style="display:flex;flex-wrap:wrap;gap:20px">
+        <div style="width:150px"><div style="height:110px;border-radius:16px;background:#0A0A0A;border:1px solid rgba(255,255,255,.1);position:relative;overflow:hidden"><div style="position:absolute;bottom:12px;left:12px;width:44px;height:56px;border-radius:8px;background:linear-gradient(150deg,#F43F5E,#7c1d3a)"></div><div style="position:absolute;top:12px;right:12px;width:14px;height:14px;border-radius:50%;background:#F43F5E"></div></div><div style="font:600 11px 'Hanken Grotesk';color:#cbd0d6;margin-top:10px">D1 · Carbon + rose <span style="color:#22C55E">· live</span></div></div>
+        <div style="width:150px"><div style="height:110px;border-radius:16px;background:#000;border:1px solid rgba(255,255,255,.1);position:relative;overflow:hidden"><div style="position:absolute;bottom:12px;left:12px;width:44px;height:56px;border-radius:8px;background:linear-gradient(150deg,#EAB308,#422006)"></div><div style="position:absolute;top:12px;right:12px;width:14px;height:14px;border-radius:50%;background:#EAB308"></div></div><div style="font:600 11px 'Hanken Grotesk';color:#cbd0d6;margin-top:10px">D2 · True-black + gold</div></div>
+        <div style="width:150px"><div style="height:110px;border-radius:16px;background:#0B0E14;border:1px solid rgba(59,130,246,.25);position:relative;overflow:hidden"><div style="position:absolute;bottom:12px;left:12px;width:44px;height:56px;border-radius:8px;background:linear-gradient(150deg,#3B82F6,#1e1b4b)"></div><div style="position:absolute;top:12px;right:12px;width:14px;height:14px;border-radius:50%;background:#3B82F6"></div></div><div style="font:600 11px 'Hanken Grotesk';color:#cbd0d6;margin-top:10px">D3 · Midnight blue</div></div>
+        <div style="width:150px"><div style="height:110px;border-radius:16px;background:#100B0A;border:1px solid rgba(234,179,8,.2);position:relative;overflow:hidden"><div style="position:absolute;bottom:12px;left:12px;width:44px;height:56px;border-radius:8px;background:linear-gradient(150deg,#F59E0B,#7c2d12)"></div><div style="position:absolute;top:12px;right:12px;width:14px;height:14px;border-radius:50%;background:#f59e0b"></div></div><div style="font:600 11px 'Hanken Grotesk';color:#cbd0d6;margin-top:10px">D4 · Warm cinema</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1500,&quot;height&quot;:1000}}">
+class Component extends DCLogic {
+  state = { idx: 0, dx: 0, dy: 0, dragging: false, focus: false };
+
+  movies = [
+    { title: 'Neon Harbor',    year: 2021, genres: 'Sci-Fi · Drama', rating: '4.5', g1: '#F43F5E', g2: '#7c1d3a' },
+    { title: 'The Quiet Year', year: 2019, genres: 'Drama',          rating: '4.0', g1: '#0EA5A4', g2: '#0a1f22' },
+    { title: 'Saltwater',      year: 2023, genres: 'Thriller',       rating: '3.5', g1: '#3B82F6', g2: '#1e1b4b' },
+    { title: 'Ember & Ash',    year: 2018, genres: 'War · Drama',    rating: '4.5', g1: '#F59E0B', g2: '#7c2d12' },
+    { title: 'Velvet Static',  year: 2024, genres: 'Mystery',        rating: '4.5', g1: '#D946EF', g2: '#2e1065' },
+    { title: 'Low Tide',       year: 2017, genres: 'Drama',          rating: '4.0', g1: '#22C55E', g2: '#052e16' }
+  ];
+
+  onDown(e) {
+    this._start = { x: e.clientX, y: e.clientY };
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch (_) {}
+    this.setState({ dragging: true, dx: 0, dy: 0 });
+  }
+  onMove(e) {
+    if (!this.state.dragging) return;
+    this.setState({ dx: e.clientX - this._start.x, dy: (e.clientY - this._start.y) * 0.25 });
+  }
+  onUp() {
+    if (!this.state.dragging) return;
+    const { dx } = this.state;
+    const fly = Math.abs(dx) > 80;
+    if (fly) {
+      this.setState(s => ({ idx: (s.idx + 1) % this.movies.length, dx: 0, dy: 0, dragging: false, focus: false }));
+    } else {
+      this.setState({ dx: 0, dy: 0, dragging: false });
+    }
+  }
+  toggleFocus() { this.setState(s => ({ focus: !s.focus })); }
+
+  poster(m) { return `linear-gradient(150deg, ${m.g1}, ${m.g2})`; }
+
+  renderVals() {
+    const m = this.movies, i = this.state.idx;
+    const top = m[i % m.length], next = m[(i + 1) % m.length];
+    const { dx, dy, dragging } = this.state;
+    const rot = (dx / 300) * 16;
+    const a = (v, lo) => Math.max(0, Math.min(1, (v - lo) / 90));
+    return {
+      topTitle: top.title, topYear: top.year, topGenres: top.genres, topRating: top.rating,
+      topPoster: this.poster(top), nextPoster: this.poster(next),
+      topTransform: `translate(${dx}px, ${dy}px) rotate(${rot}deg)`,
+      topTransition: dragging ? 'none' : 'transform .42s cubic-bezier(.2,.8,.2,1)',
+      rightA: dx > 0 ? a(dx, 24) : 0,
+      leftA:  dx < 0 ? a(-dx, 24) : 0,
+      focus: this.state.focus,
+      onDown: e => this.onDown(e), onMove: e => this.onMove(e), onUp: () => this.onUp(),
+      toggleFocus: () => this.toggleFocus()
+    };
+  }
+}
+</script>
+</body>
+</html>
