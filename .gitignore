@@ -36,3 +36,7 @@ npm-debug.log*
 
 # alembic versions are intentionally committed (needed for deployment)
 
+
+# Local agent config can hold API keys
+.codex/
+.mcp.json
